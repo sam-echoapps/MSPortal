@@ -1,0 +1,247 @@
+<link rel="stylesheet" href="../../css/task.css">
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-xl-margin-4x">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-margin-4x" style="width: 100%;padding-right: 50px;">
+        <div class="oj-flex">
+            <oj-action-card id="name" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                    style="width: 60px;height:70px;background-color: #f0efff;border-radius: 50%;">
+                    <oj-avatar
+                            role="img"
+                            src="[[profilePhotoShow]]"
+                            :title="Profile Photo">
+                        </oj-avatar>
+                </div>
+                <div class="oj-flex oj-sm-flex-direction-column" style="margin-top:10px;">
+                    <span style="font-weight: 600;font-size: 15px;">
+                        <oj-bind-text value="[[employeeName]]"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="[[employeeDesignation]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+        <oj-action-card id="1" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+        <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+            <div class="oj-sm-4 oj-md-4">
+                <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                    style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                    <i class="fa-solid fa-spinner fa-2x" style="color: #745ffc;"></i>
+                </div>
+            </div>
+            <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                    <oj-bind-text value="Task In Progress"></oj-bind-text>
+                </span>
+                <span style="font-weight: 600;font-size: 30px;">
+                    <oj-bind-text value="[[progressCount]]"></oj-bind-text>
+                </span>
+            </div>
+        </div>
+    </oj-action-card>
+    <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-sm-4 oj-md-4">
+                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                        <i class="fa-solid fa-list-check fa-2x" style="color: #745ffc;"></i>
+                    </div>
+                </div>
+                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="Tasks completed"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 30px;">
+                        <oj-bind-text value="[[doneCount]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+        <oj-action-card id="3" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-sm-4 oj-md-4">
+                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                        <i class="fa-solid fa-clock-rotate-left fa-2x" style="color: #745ffc;"></i>
+                    </div>
+                </div>
+                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="Task Pending"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 30px;">
+                        <oj-bind-text value="[[pendingCount]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+        <oj-action-card id="4" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+        <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+            <div class="oj-sm-4 oj-md-4">
+                <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                    style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                    <i class="fa-solid fa-thumbs-down fa-2x" style="color: #745ffc;"></i>
+                </div>
+            </div>
+            <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                    <oj-bind-text value="Tasks Dropped"></oj-bind-text>
+                </span>
+                <span style="font-weight: 600;font-size: 30px;">
+                    <oj-bind-text value="[[droppedCount]]"></oj-bind-text>
+                </span>
+            </div>
+        </div>
+    </oj-action-card>
+        
+        </div>        
+        </div>
+    </div>
+
+<oj-dialog id="openAddTask" class="popupTask" dialog-title="Add Task" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{taskName}}"></oj-input-text>
+            <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{dueDate}}"></oj-input-date>
+            <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{reminderDate}}"></oj-input-date>
+            <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
+                    data="[[priorityList]]" value="{{priority}}"></oj-select-single>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <oj-button chroming="solid"  on-oj-action="[[addTask]]" class="oj-sm-padding-3x-vertical">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add Task
+          </oj-button>
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
+            </oj-input-text>
+        </div>
+      </div> 
+        
+
+<div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table id='taskTable' aria-label='All Table' data='[[TaskList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerText": "SL.No", "field": "slno", "id": "slno",
+    "headerClassName" : "table-header-style"	 },
+    { "headerText": "Task Name", "field": "task_name", "id": "task_name",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Owner", "field": "owner", "id": "owner" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Priority", "field": "priority", "id": "priority" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Due Date", "field": "due_date", "id": "due_date" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Reminder Date", "field": "reminder_date", "id": "reminder_date" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate" },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Action",
+      "maxWidth" : "10rem",
+      "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+      "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+     <template slot="actionTemplate" data-oj-as="cell">
+         <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[goToEditTask]]">
+          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+          Edit
+        </oj-button>
+     </template>
+     <template slot="bgTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+            <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+            <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
+            <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+      </oj-bind-if>
+      </template>
+    </oj-table>
+</div>
+</div>
+</div>
+
+<oj-dialog id="openEditTask" class="popupTask" dialog-title="Edit Task" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{editTaskName}}"></oj-input-text>
+            <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}"></oj-input-date>
+            <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}"></oj-input-date>
+            <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
+                    data="[[priorityList]]" value="{{editPriority}}"></oj-select-single>
+            <oj-select-single required id="status" label-hint="Status" label-edge="inside"
+            data="[[statusList]]" value="{{editStatus}}"></oj-select-single>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmitUpdate]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+    
+
+    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+    <oj-dialog id="successView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Task added successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+
+    <oj-dialog id="updateSuccessView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Task updated successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 

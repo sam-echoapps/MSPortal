@@ -1,0 +1,176 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 5px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-list-check icon"></i></span>&nbsp;Working Pattern </span>
+          <span class="hint-note">(Create timings and edit pattern name.)</span></div> 
+          <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+            <div class="oj-flex-item oj-sm-padding-2x-horizontal">
+              <oj-button chroming="solid" on-oj-action="[[back]]"  class="oj-sm-padding-2x-vertical">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;Workin Pattern
+              </oj-button>
+            </div>
+          </div>
+    </div>
+</div>
+
+<div id="working" style="margin-top: -20px;">
+  
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="table_view">
+      <oj-table class="oj-panel" id='workingTable' aria-label='All Table' data='[[workData]]' display='list'
+          selection-mode='{"row": "single"}' columns='[
+          { "headerClassName" : "table-header-style",
+          "headerText": "SL.No", "field": "no", "id": "no" },
+          { "headerClassName" : "table-header-style",
+            "headerText": "Day", "field": "day", "id": "day" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Start Time", "field": "start_time", "id": "start_time", "template": "bgTemplate" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Finish Time", "field": "finish_time", "id": "finish_time", "template": "bgTemplate2" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Break Time (Min)", "field": "break_time", "id": "break_time" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+        <template slot="actionTemplate" data-oj-as="cell">
+          <oj-button
+            chroming="borderless"
+            display="icons" on-oj-action="[[edit]]">
+            <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+            Edit
+          </oj-button>
+        </oj-button>
+          <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[deletePattern]]">
+          <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+          Delete
+        </oj-button>
+        </template>
+        
+        <template slot="bgTemplate" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.start_time == '00:00' ]]">
+              <div><oj-bind-text value="No time selected"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.start_time != '00:00' ]]">
+            <div><oj-bind-text value="[[cell.row.start_time]]"></oj-bind-text></div>
+        </oj-bind-if>
+        </template>
+
+        <template slot="bgTemplate2" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.finish_time == '00:00' ]]">
+              <div><oj-bind-text value="No time selected"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.finish_time != '00:00' ]]">
+            <div><oj-bind-text value="[[cell.row.finish_time]]"></oj-bind-text></div>
+        </oj-bind-if>
+        </template>
+      </oj-table>
+    </div>
+
+</div>
+
+<div class="oj-panel" style="margin-bottom: 50px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+  <oj-validation-group id="formValidation2" class="form-container" role="group">
+    <div id="form-container" class="" style="margin-top: -10px; margin-bottom: -40px;">
+        <oj-form-layout id="pattern" class="form" direction="row" max-columns="4">
+            <oj-input-text id="pattern"  label-hint="Pattern Name" value="{{pattern_Name}}" required="true" 
+            style="padding-left: 10px; padding-right: 10px;"></oj-input-text>
+            <oj-combobox-one id="public_holiday" label-hint="Public Holidays" label-edge="inside" 
+            style="padding-left: 0px; padding-right: 10px;" value="{{holiday}}" options="[[holiday_List]]"></oj-combobox-one>
+        <div class="">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-1x-vertical">
+                <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit2]]" style="margin-left: -10px;"><i class="fas fa-save"></i> Submit</oj-button>
+            </div>
+        </div>
+    </oj-form-layout>
+    </div>
+  </oj-validation-group>
+</div>
+
+<oj-dialog id="openEditTime" class="popupGoal" dialog-title="Edit Timings" modality="modeless" drag-affordance="title-bar"
+    cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+      <div id="form-container">
+        <oj-form-layout id="timings" class="form" direction="row" max-columns="1">
+            <oj-input-time
+            value="{{start_time}}"
+            converter="[[timeConverter]]"
+            label-hint="Start Time" required="true"></oj-input-time>
+            <oj-input-time
+            value="{{finish_time}}"
+            converter="[[timeConverter]]"
+            label-hint="Finish Time" required="true"></oj-input-time>
+          <oj-input-text id="break" label-hint="Break Time (Minutes)" value="{{break_time}}" on-value-changed="[[PatternValidator]]" required="true"></oj-input-text>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[breakTimeError]]'></oj-bind-text></div>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas"></i> Update</oj-button>
+      </div>
+  </oj-validation-group>
+</oj-dialog>
+
+<oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+  <div class="demo-popup-body">
+      <div class="demo-popup-content oj-sm-padding-2x">
+          <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+      </div>
+  </div>
+</oj-popup>
+
+<oj-dialog id="successView">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Time Changed</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Time changed successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<oj-dialog id="successView2">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Work Pattern</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Work Pattern updated successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<oj-dialog id="confirmPopup">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Delete Timing</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Do you want to delete the timings?</p>
+      </div>
+  </div>
+  <div  class="oj-flex-bar" slot="footer" style="margin-top: -90px;">
+      <oj-button id="okdelButton" chroming="solid" class="" on-oj-action="[[submitDelete]]">
+        Yes
+      </oj-button>
+    </div>
+</oj-dialog>
+
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div>

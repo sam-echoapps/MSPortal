@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; display:none;">
+</div>
+
+<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+        <oj-bind-for-each data="[[tabData]]">
+        <template>
+            <oj-option value="[[$current.data.id]]">
+            <span>
+                <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+            </span>
+            </oj-option>
+        </template>
+        </oj-bind-for-each>
+    </oj-buttonset-one>
+    </div>
+</div>
+
+<div id="documents" style="margin-top: -20px;">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end" style="margin-top: -1px; margin-bottom: -30px;">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueDocuments]]" value="{{filter}}" clear-icon="always">
+          </oj-input-text>
+        </div>
+    </div>
+  
+    <!-- Table container -->
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" id="document_view">
+
+      <oj-table class="oj-panel" id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData]]"
+      columns-default.sortable="enabled" layout="fixed"
+      columns='[
+          {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
+          {"headerClassName" : "table-header-style","headerText": "Document Name", "id": "document_name"}, 
+          {"headerClassName" : "table-header-style","headerText": "View", "id": "document_link"},
+          {"headerClassName" : "table-header-style","headerText": "Uploaded Date", "id": "uploaded_date"},
+          {"headerClassName" : "table-header-style","headerText": "Uploaded By", "id": "uploaded_by"},
+          {"headerClassName" : "table-header-style","headerText": "Role", "id": "user_role"}
+      ]'
+      class="demo-table-container" style='width: 100%;'>
+      
+      <template slot="rowTemplate" data-oj-as="row">
+          <tr>
+              <td><oj-bind-text value="[[row.data.no]]"></oj-bind-text></td>
+              <td><oj-bind-text value="[[row.data.document_name]]"></oj-bind-text></td>
+              <td>
+                  <a :data-document-link="[[row.data.document_link]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa">
+                      <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+                  </a>
+              </td>
+              <td><oj-bind-text value="[[row.data.uploaded_date]]"></oj-bind-text></td>
+              <td><oj-bind-text value="[[row.data.uploaded_by]]"></oj-bind-text></td>
+              <td><oj-bind-text value="[[row.data.user_role]]"></oj-bind-text></td>
+          </tr>
+      </template>
+  </oj-table> 
+
+
+    </div>
+</div>
+
+<div id="employee_documents" style=" display:none; margin-top: -20px;">
+
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end" style="margin-top: -1px; margin-bottom: -30px;">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <oj-input-text id="filter2" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueDocuments2]]" value="{{filter2}}" clear-icon="always">
+          </oj-input-text>
+        </div>
+    </div>
+  
+    <!-- Table container -->
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical"  id="document_view2">
+        <oj-table class="oj-panel" id="documentTable2" aria-label="All Table" accessibility.row-header="name" data="[[documentData2]]"
+            columns-default.sortable="enabled" layout="fixed"
+            columns='[
+                {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
+                {"headerClassName" : "table-header-style","headerText": "Document Name", "id": "document_name"}, 
+                {"headerClassName" : "table-header-style","headerText": "View", "id": "document_link"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded Date", "id": "uploaded_date"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded By", "id": "uploaded_by"},
+                {"headerClassName" : "table-header-style","headerText": "Role", "id": "user_role"}
+            ]'
+            class="demo-table-container" style='width: 100%;'>
+            
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td><oj-bind-text value="[[row.data.no]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.document_name]]"></oj-bind-text></td>
+                    <td>
+                        <a :data-document-link="[[row.data.document_link]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa">
+                            <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+                        </a>
+                    </td>
+                    <td><oj-bind-text value="[[row.data.uploaded_date]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.uploaded_by]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.user_role]]"></oj-bind-text></td>
+                </tr>
+            </template>
+        </oj-table> 
+    </div>
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

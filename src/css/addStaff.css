@@ -1,0 +1,321 @@
+#form-container{
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+#form-container-employee{
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    margin-top: 30px;
+    background-color: #ffffff;
+    margin-left: 150px;
+    margin-right: 150px;
+    margin-bottom: 150px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #b9adad;
+}
+
+#form-container-custom{
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    margin-top: 30px;
+    background-color: #ffffff;
+    margin-left: 150px;
+    margin-right: 150px;
+    margin-bottom: 150px;
+    border-radius: 20px;
+}
+
+.form{
+    width: 100%;
+}
+
+#formValidation{
+    width: 100%;
+}
+
+.demo-max-width {
+    max-width: 100% !important;
+  }
+
+#formValidationDepartment{
+    width: 100%;
+}
+
+#formValidationRoles{
+    width: 100%;
+}
+
+#formValidationDesignation{
+    width: 100%;
+}
+
+#form-container-row{
+    padding-left: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+
+#formValidationLeave{
+    width: 100%;
+}
+
+#formValidationReview{
+    width: 100%;
+}
+
+
+
+#addphoto {
+    max-width: 300px;  /* Adjust the width as needed */
+    max-height: 300px; /* Adjust the height as needed */
+    overflow: hidden;  /* Ensures content that overflows is hidden */
+}
+
+#addphoto .demo-max-width {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the area */
+}
+
+/* Additional styles for the oj-file-picker component */
+#profilePhoto {
+    width: 100%;
+    height: auto; /* Allows the height to adjust based on width */
+    max-height: inherit; /* Inherits the max-height from the parent div */
+}
+
+.custom-input {
+    height: 80px; /* Set this value to the desired height */
+    box-sizing: border-box; /* Ensures padding and borders are included in the height */
+}
+
+#employment-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#employment-grid .employment-flex-item {
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+#employment-grid .employment-sm-6 {
+    flex: 1 1 50%;
+    max-width: 50%;
+}
+
+#yearFilterLeave{
+    width: 25%;
+}
+
+#yearFilterLeave2{
+    width: 25%;
+}
+
+#holidayMessage {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #F5F8FF;
+    border-radius: 15px;
+    color: #213446;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+#holidayMessage p {
+    margin: 10px 0;
+}
+
+#holidayMessage p strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#leavesview {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #F5F8FF;
+    border-radius: 15px;
+    color: #213446;
+    margin-left: 50px;
+    margin-right: 50px;
+    box-shadow: 0 0 10px #b9adad;
+}
+
+#leavesview p {
+    margin: 10px 0;
+    font-weight: bold;
+    color: #213446;
+}
+
+.available-day{
+    background-color: rgb(189, 181, 181) !important; /* Adjust color as needed */
+    border-radius: 15%; /* Slightly rounded corners */
+}
+
+/* GoalsView Page Start */
+.goal-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 10px 0;
+    background-color: #F5F8FF; /* Updated background color */
+    box-shadow: 0 0 10px #b9adad;
+    border-radius: 10px;
+}
+
+.goal-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.goal-subject {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #213446; /* Updated heading color */
+}
+
+.goal-dates {
+    font-size: 0.9em;
+    color: #213446;
+}
+
+.date-label {
+    color: #213446; /* Color for date labels */
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.goal-card-body {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.goal-description {
+    margin-top: 10px;
+}
+
+.goal-comments-container,
+.admin-comments-container {
+    display: flex;
+    align-items: center;
+    margin-top: -5px;
+}
+
+.goal-comments,
+.admin-comments {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.goal-comments-container,
+.admin-comments-container{
+    margin-left: 0px;
+}
+
+.goal-status,
+.admin-status {
+    margin-top: 5px;
+}
+
+.goal-card-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+/* GoalsView Page End */
+
+.horizontal-radioset {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+#addRoles {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    color: #213446;
+    box-shadow: 0 0 10px #b9adad;
+    margin-left: 200px;
+    margin-right: 200px;
+}
+
+/* Custom Button Styles */
+.custom-button {
+    background-color: #34B53A;  /* Set the background color */
+    color: white;               /* Set the text color */
+    border: none;               /* Remove any border */
+    padding: 10px 20px;         /* Adjust padding as needed */
+    font-size: 14px;            /* Set font size */
+    border-radius: 4px;         /* Optional: Add border radius for rounded corners */
+    cursor: pointer;            /* Change cursor to pointer on hover */
+    align-items: center;        /* Center the icon and text vertically */
+}
+
+/* Hover and Focus Styles */
+.custom-button:hover {
+    background-color: #2E9A32;  /* Darken background on hover */
+}
+
+.custom-button:focus {
+    outline: none;              /* Remove outline on focus */
+}
+
+/* Custom Styles for the Inactive Employees Button */
+.custom-button2 {
+    background-color: #FF3A29;  /* Set the background color */
+    color: white;               /* Set the text color */
+    border: none;               /* Remove any border */
+    padding: 10px 20px;         /* Adjust padding as needed */
+    font-size: 14px;            /* Set font size */
+    border-radius: 4px;         /* Optional: Add border radius for rounded corners */
+    cursor: pointer;            /* Change cursor to pointer on hover */
+    align-items: center;        /* Center the icon and text vertically */
+}
+
+/* Hover and Focus Styles */
+.custom-button2:hover {
+    background-color: #D83224;  /* Darken background on hover */
+}
+
+.custom-button2:focus {
+    outline: none;              /* Remove outline on focus */
+}
+
+
+
+
+
+
+
+
+

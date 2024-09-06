@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;margin-top: -50px;margin-bottom: -50px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Goals Settings </span><span class="hint-note">(Add the starting month of goals for this year.)</span></div> 
+        <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+            <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+                <oj-validation-group id="formValidation" class="form-container" role="group">
+                    <div id="form-container" style="margin-top: 40px;">
+                        <oj-form-layout id="goals" class="form" direction="row" max-columns="2">
+                        <div>
+                            <div class="oj-flex-item">
+                                <oj-select-single
+                                class="oj-sm-padding-2x-vertical"
+                                id="select1"
+                                value="{{month}}"
+                                data="{{Month_List}}"
+                                label-edge="inside"
+                                label-hint="Select the Month" required style="width: 200px;">      
+                                </oj-select-single>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="oj-flex-item">
+                                <oj-button class="oj-sm-padding-3x-vertical" id="save" chroming="solid" 
+                                on-oj-action="[[formSubmit]]" style="margin-left: -140px;"><i class="fas fa-save"></i> Submit</oj-button>
+                            </div>
+                        </div>
+                        </oj-form-layout>
+                    </div>
+                </oj-validation-group>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+    
+<oj-dialog id="successView">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Goal month added successfully</p>
+        </div>
+    </div>
+</oj-dialog>
+
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div>  

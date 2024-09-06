@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="../../css/signin.css">
+
+<div id="contentView" style="display:none;">
+<div class="login-div ojet-flex">
+    <div class="login-form">
+        <oj-bind-if test="[[logo() == 'no' ]]">
+            <oj-avatar
+                size="xl"
+                role="img"
+                src="../../css/images/sample_company.jpg"
+                :title="Company Logo"
+                alt="QuickHCM360 HR Application">
+            </oj-avatar> 
+        </oj-bind-if> 
+<!--    <img style= "width:150px;height:100px;"src="../../css/images/sample_company.jpg" alt="QuickHCM360 HR Application">  -->                  
+      <oj-bind-if test="[[logo() == 'yes' ]]">
+        <oj-avatar
+            role="img"
+            src="[[companyLogoShow]]"
+            :title="Company Logo">
+        </oj-avatar> 
+        </oj-bind-if> 
+        <oj-validation-group id="formValidation"role="group">
+            <oj-form-layout label-edge="top" id="form-container">
+                <oj-input-text required id="control1" value="{{username}}" label-hint="Username"></oj-input-text>
+                <oj-input-password required id="control3" value="{{password}}" label-hint="Password"></oj-input-password>
+            </oj-form-layout>
+        </oj-validation-group>
+          <oj-button chroming="solid" style="width:280px" id="button1" on-oj-action="[[signIn]]">
+            <i class="fa fa-sign-in" aria-hidden="true"></i>
+            Login
+        </oj-button>
+    </div>
+    <oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center" 
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+
+    <oj-dialog id="errorLog" style="width:500px;min-width:500px;max-width:500px;">
+        <div slot="header">
+            <p id="dialogTitleId" class="oj-dialog-title">
+                Login Error
+            </p>
+        </div>
+        <div slot="body">
+            Invalid Login Credentials
+        </div>
+        <div slot="footer">
+            <oj-button id="okdelButton" on-oj-action="[[LoginMsgOKClose]]">
+                OK
+            </oj-button>
+        </div>
+    </oj-dialog>
+</div>
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div>

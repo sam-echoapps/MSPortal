@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div style="display:none;" id="contentView">
+<!---
+    class="oj-panel oj-xl-margin-4x"
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+          <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-user icon"></i></span>&nbsp;Edit Documents </span></div>
+    </div> -->
+</div>
+
+
+<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+        <oj-bind-for-each data="[[tabData]]">
+        <template>
+            <oj-option value="[[$current.data.id]]">
+            <span>
+                <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+            </span>
+            </oj-option>
+        </template>
+        </oj-bind-for-each>
+    </oj-buttonset-one>
+    </div>
+</div>
+
+
+<div id="documents">
+    <div class="oj-flex oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+        <div class="oj-flex-item" style="margin-top:  -30px; margin-bottom: -50px;">
+            <oj-validation-group id="formValidation2" class="form-container" role="group">
+                <div id="form-container" class="">
+                    <oj-form-layout id="document" class="form" direction="row" max-columns="4">
+                        <oj-input-text id="document"  label-hint="Document Name" required="true" value="{{documentName}}"></oj-input-text>
+                        <oj-select-single
+                            id="select2"
+                            value="{{Roles}}"
+                            data="{{RolesList}}"
+                            label-edge="inside"
+                            label-hint="Who can access"
+                            required="true">      
+                        </oj-select-single>
+                        <div class="">
+                            <div class="oj-flex-item">
+                                <oj-file-picker  id="documentUpload" style="margin-top: -10px;" class="demo-max-width custom-input" primary-text="Upload"
+                                secondary-text="[[documentText]]" on-oj-select="[[documentUpload]]">
+                                </oj-file-picker>
+                                <div class="oj-text-color-danger"><oj-bind-text value='[[typeError2]]'></oj-bind-text></div></br>                  
+                            </div>
+                        </div> 
+                    
+                    <div class="">
+                        <div class="oj-flex-item">
+                            <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit2]]"><i class="fas fa-save"></i> Submit</oj-button>
+                        </div>
+                    </div>
+                </oj-form-layout>
+                </div>
+            </oj-validation-group>
+        </div>
+    </div>
+
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="document_view">
+
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end" style="margin-top: -1px; margin-bottom: 5px;">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+              <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+                placeholder="Search.." on-raw-value-changed="[[handleValueDocuments]]" value="{{filter}}" clear-icon="always">
+              </oj-input-text>
+            </div>
+        </div>
+
+        <oj-table class="oj-panel" id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData]]"
+            columns-default.sortable="enabled" layout="fixed"
+            columns='[
+                {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
+                {"headerClassName" : "table-header-style","headerText": "Document Name", "id": "document_name"}, 
+                {"headerClassName" : "table-header-style","headerText": "View", "id": "document_link"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded Date", "id": "uploaded_date"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded By", "id": "uploaded_by"},
+                {"headerClassName" : "table-header-style","headerText": "Role", "id": "user_role"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded For", "id": "uploaded_for"},
+                {"headerClassName" : "table-header-style","headerText": "Action", "id": "action","sortable": "disabled"}
+            ]'
+            class="demo-table-container" style='width: 100%;'>
+            
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td><oj-bind-text value="[[row.data.no]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.document_name]]"></oj-bind-text></td>
+                    <td>
+                        <a :data-document-link="[[row.data.document_link]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa">
+                            <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+                        </a>
+                    </td>
+                    <td><oj-bind-text value="[[row.data.uploaded_date]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.uploaded_by]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.user_role]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.uploaded_for]]"></oj-bind-text></td>
+                    <td>  
+                        <oj-bind-if test="[[userrole() != 'junior hr' && userrole() != 'junior accounts']]">
+                            <oj-button chroming="borderless" display="icons" on-oj-action="[[deleteDocument]]">
+                                <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+                                Delete
+                            </oj-button>
+                        </oj-bind-if>
+                    </td>
+                </tr>
+            </template>
+        </oj-table>
+      
+    </div>
+</div>
+
+
+<div id="employee_documents" style="display:none;">
+    <div class="oj-flex oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+        <div class="oj-flex-item" style="margin-top:  -30px; margin-bottom: -50px;">
+            <oj-validation-group id="formValidation3" class="form-container" role="group">
+                <div id="form-container">
+                  <oj-form-layout id="memebers" class="form" direction="row" max-columns="2">
+                    <div class="">
+                        <div class="oj-flex-item">
+                            <oj-select-single
+                            id="select1"
+                            value="{{Member}}"
+                            data="{{Members_List}}"
+                            label-edge="inside"
+                            label-hint="Select the Employee"
+                            style="width: 300px; margin-left: -200px;">      
+                            </oj-select-single>
+                        </div>
+                    </div>
+                    <div style="margin-left: -330px; margin-top: 5px;">
+                        <div class="oj-flex-item">
+                            <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit3]]"><i class="fas fa-save"></i> Submit</oj-button>
+                        </div>
+                    </div>
+                  </oj-form-layout>
+                </div>
+            </oj-validation-group>
+        </div>
+    </div>
+
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" id="document_view2" style="display:none; margin-top: -80px;">
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end" style="margin-top: 70px; margin-bottom: 5px;">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+              <oj-input-text id="filter2" label-hint="Search" label-edge="inside"
+                placeholder="Search.." on-raw-value-changed="[[handleValueDocuments2]]" value="{{filter2}}" clear-icon="always">
+              </oj-input-text>
+            </div>
+        </div>
+
+        <oj-table class="oj-panel" id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData2]]"
+            columns-default.sortable="enabled" layout="fixed"
+            columns='[
+                {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
+                {"headerClassName" : "table-header-style","headerText": "Document Name", "id": "document_name"}, 
+                {"headerClassName" : "table-header-style","headerText": "View", "id": "document_link"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded Date", "id": "uploaded_date"},
+                {"headerClassName" : "table-header-style","headerText": "Uploaded By", "id": "uploaded_by"},
+                {"headerClassName" : "table-header-style","headerText": "Role", "id": "user_role"},
+                {"headerClassName" : "table-header-style","headerText": "Action", "id": "action","sortable": "disabled"}
+            ]'
+            class="demo-table-container" style='width: 100%;'>
+            
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td><oj-bind-text value="[[row.data.no]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.document_name]]"></oj-bind-text></td>
+                    <td>
+                        <a :data-document-link="[[row.data.document_link]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa">
+                            <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+                        </a>
+                    </td>
+                    <td><oj-bind-text value="[[row.data.uploaded_date]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.uploaded_by]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.user_role]]"></oj-bind-text></td>
+                    <td>
+                        <oj-button chroming="borderless" display="icons" on-oj-action="[[deleteDocument2]]">
+                            <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+                            Delete
+                        </oj-button>
+                    </td>
+                </tr>
+            </template>
+        </oj-table> 
+
+    </div>
+
+</div>
+
+
+<oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+    
+<oj-dialog id="popup3">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Document Updated successfully</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<oj-dialog id="successView">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Document Delete</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Document deleted successfully</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

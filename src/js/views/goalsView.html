@@ -1,0 +1,199 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-xl-margin-4x" style="margin: 10px;padding: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div>
+            <span class="hint-title">
+                <span class="icon-container"><i class="fas fa-list-check icon"></i></span>&nbsp;My Goals
+            </span>
+            <span class="hint-note">(Goals details.)</span>
+        </div>
+    </div>
+
+    <div id="actionView" class="goal-card" style="display: none;">
+        <div class="goal-card-header">
+            <span class="goal-subject"><oj-bind-text value="[[goalSubject]]"></oj-bind-text></span>
+            <span class="goal-dates">
+                <span class="date-label">Start:</span> <oj-bind-text value="[[startDate]]"></oj-bind-text>
+                <span class="date-label">End:</span> <oj-bind-text value="[[endDate]]"></oj-bind-text>
+            </span>
+        </div>
+        <div class="goal-card-body">
+            <p class="goal-description">
+                <strong>Description:</strong> <oj-bind-text value="[[description]]"></oj-bind-text>
+            </p>
+            <div class="goal-comments-container">
+                <p class="goal-comments"><strong>My Comments:</strong> <oj-bind-text value="[[staffComments]]"></oj-bind-text></p>
+                <oj-button chroming="borderless" display="icons" on-oj-action="[[viewMyComments]]">
+                    <span slot="startIcon" class="fa-solid fa-eye review-btn"></span>
+                    View My Comment History
+                </oj-button>
+            </div>
+            <div class="admin-comments-container">
+                <p class="admin-comments"><strong>Admin Comments:</strong> <oj-bind-text value="[[adminComments]]"></oj-bind-text></p>
+                <oj-button chroming="borderless" display="icons" on-oj-action="[[viewAdminComments]]">
+                    <span slot="startIcon" class="fa-solid fa-eye review-btn"></span>
+                    View Admin Comment History
+                </oj-button>
+            </div>
+            <p class="goal-status"><strong>My Status:</strong> <oj-bind-text value="[[status]]"></oj-bind-text></p>
+            <p class="admin-status"><strong>Goal Status:</strong> <oj-bind-text value="[[adminStatus]]"></oj-bind-text></p>
+        </div>
+        
+        <div class="goal-card-actions">
+            <oj-bind-if test="[[userrole() != 'junior hr']]">
+                <oj-button chroming="borderless" display="icons" on-oj-action="[[editGoal]]">
+                    <span slot="startIcon" class="fa-solid fa-pencil review-btn"></span>
+                    Edit
+                </oj-button>
+            </oj-bind-if>
+            <oj-bind-if test="[[userrole() != 'junior hr']]">
+                <oj-button chroming="borderless" display="icons" on-oj-action="[[deleteGoal]]">
+                    <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+                    Delete
+                </oj-button>
+            </oj-bind-if>
+        </div>
+    </div>
+</div>
+
+<oj-dialog id="viewMyComments" class="popupGoal" dialog-title="Comments History" modality="modeless" drag-affordance="title-bar" 
+cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-list-view
+        id="commentsListView"
+        aria-label="Comments list"
+        data="[[commentsDataProvider]]"
+        class="oj-listview-item-padding-off">
+        <template slot="itemTemplate" data-oj-as="item">
+            <oj-list-item-layout>
+                <span class="oj-typography-body-md oj-text-color-primary">
+                    <oj-bind-text value="[[item.data.comment]]"></oj-bind-text>
+                </span>
+                <span slot="secondary" class="oj-typography-body-sm oj-text-color-secondary">
+                    <oj-bind-text value="[[item.data.created_at]]"></oj-bind-text>
+                </span>
+            </oj-list-item-layout>
+        </template>
+    </oj-list-view>
+</oj-dialog>
+
+<oj-dialog id="viewAdminComments" class="popupGoal" dialog-title="Comments History" modality="modeless" drag-affordance="title-bar" 
+cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-list-view
+        id="commentsListView2"
+        aria-label="Comments list"
+        data="[[commentsDataProvider2]]"
+        class="oj-listview-item-padding-off">
+        <template slot="itemTemplate" data-oj-as="item">
+            <oj-list-item-layout>
+                <span class="oj-typography-body-md oj-text-color-primary">
+                    <oj-bind-text value="[[item.data.comment]]"></oj-bind-text>
+                </span>
+                <span slot="secondary" class="oj-typography-body-sm oj-text-color-secondary">
+                    <oj-bind-text value="[[item.data.created_at]]"></oj-bind-text>
+                </span>
+            </oj-list-item-layout>
+        </template>
+    </oj-list-view>
+</oj-dialog>
+
+<oj-dialog id="openEditGoal" class="popupGoal" dialog-title="Edit Goal" modality="modeless" drag-affordance="title-bar"
+cancel-behavior="[[CancelBehaviorOpt]]">
+<oj-validation-group id="formValidationEdit" class="form-container" role="group" style="padding-bottom: 50px;">
+  <div id="form-container">
+      <oj-form-layout id="goal-information" class="form" direction="row" max-columns="1">
+          <oj-input-text id="goalSubject" label-hint="Goal Subject" required="true" value="{{goalSubject2}}"></oj-input-text>
+          <oj-text-area id="description" value="{{description2}}" required="true" label-hint="Description" raw-valuenewE=""
+          rows="3" clear-icon="always">
+          </oj-text-area>
+          <oj-input-date id="startDate" label-hint="Start Date" required="true" value="{{startDate2}}"></oj-input-date>
+          <oj-input-date id="endDate" label-hint="End Date" required="true" value="{{endDate2}}"></oj-input-date>
+          <oj-bind-if test="[[userrole() == 'director']]">
+            <oj-select-single label-hint="Current work Status" class="oj-sm-padding-2x-vertical"
+                label-edge="inside" data="[[statusList]]" value="{{status2}}">
+            </oj-select-single>
+            <oj-select-single label-hint="Goal Status" class="oj-sm-padding-2x-vertical"
+            label-edge="inside" data="[[statusList2]]" value="{{adminStatus2}}">
+            </oj-select-single>
+            <oj-text-area id="my_comments" value="{{staffComments2}}" label-hint="My Comments" raw-valuenewE=""
+            rows="3" clear-icon="always"> 
+            </oj-text-area>
+            <oj-text-area id="admin_comments" value="{{adminComments2}}" label-hint="Goal Comments" raw-valuenewE=""
+            rows="3" clear-icon="always"> 
+            </oj-text-area>
+          </oj-bind-if>
+          <oj-bind-if test="[[userrole() != 'director']]">
+            <oj-select-single label-hint="Current work Status" class="oj-sm-padding-2x-vertical"
+                label-edge="inside" data="[[statusList]]" value="{{status2}}">
+            </oj-select-single>
+            <oj-text-area id="my_comments2" value="{{staffComments2}}" label-hint="My Comments" raw-valuenewE=""
+            rows="3" clear-icon="always"> 
+            </oj-text-area>
+          </oj-bind-if>
+      </oj-form-layout>
+      <oj-button id="save" chroming="solid" on-oj-action="[[formEditSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+  </div>
+</oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="successView">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Goal edited successfully</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<oj-dialog id="confirmPopup">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Delete Goal</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Do you want to delete the Goal?</p>
+        </div>
+    </div>
+    <div  class="oj-flex-bar" slot="footer" style="margin-top: -90px;">
+        <oj-button id="okdelButton" chroming="solid" class="" on-oj-action="[[submitDelete]]">
+          Yes
+        </oj-button>
+      </div>
+</oj-dialog>
+
+<oj-dialog id="successView2">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Goal Deleted</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Goal deleted successfully</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

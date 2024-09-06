@@ -1,0 +1,161 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-xl-margin-4x" style="margin: 10px;padding: 10px;">
+    <div class="oj-flex oj-panel oj-xl-margin-4x" style="margin-bottom: -30px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <oj-validation-group id="formValidation2" class="form-container" role="group">
+            <div id="form-container-cu" class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+                  <oj-form-layout id="patternChange" class="" 
+                  direction="row" max-columns="4" style="margin-bottom: -30px;">
+                      <oj-select-single
+                          id="select2"
+                          class="oj-md-padding-12x-horizontal oj-sm-padding-2x-vertical"
+                          value="{{Patterns}}"
+                          data="{{PatternsList}}"
+                          label-edge="inside"
+                          label-hint="Change default pattern"
+                          required="true"
+                          style="margin-left: -50px;">      
+                      </oj-select-single>
+                  <div class="">
+                      <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical" style="margin-left: -110px;">
+                          <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit2]]" class="oj-sm-padding-1x-vertical">
+                            <i class="fas fa-save"></i> Submit</oj-button>
+                      </div>
+                  </div>
+                </oj-form-layout>
+             </div>
+          </oj-validation-group>
+        </div>
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-6x-vertical">
+            <oj-button chroming="solid" on-oj-action="[[addPattern]]" class="oj-sm-padding-2x-vertical">
+                <i class="fa-solid fa-plus"></i>&nbsp;Add New Pattern
+              </oj-button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="working">
+  
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="table_view">
+      <oj-table class="oj-panel" id='workingTable' aria-label='All Table' data='[[patternData]]' display='list'
+          selection-mode='{"row": "single"}' columns='[
+          { "headerClassName" : "table-header-style",
+          "headerText": "SL.No", "field": "no", "id": "no" },
+          { "headerClassName" : "table-header-style",
+            "headerText": "Pattern Name", "field": "pattern_name", "id": "pattern_name" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Days", "field": "days", "id": "days" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Assigned", "field": "count", "id": "count" },
+          { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+        <template slot="actionTemplate" data-oj-as="cell">
+          <oj-button
+            chroming="borderless"
+            display="icons"
+            on-oj-action="[[edit]]">
+            <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+            Edit
+          </oj-button>
+            <oj-button
+            chroming="borderless"
+            display="icons"
+            on-oj-action="[[deletePattern]]">
+            <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+            Delete
+          </oj-button>
+        </template>
+      </oj-table>
+    </div>
+
+</div>
+
+
+<oj-dialog id="openAddPattern" class="popupGoal" dialog-title="Add Working Pattern" modality="modeless" drag-affordance="title-bar"
+    cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+      <div id="form-container">
+        <oj-form-layout id="team-information" class="form" direction="row" max-columns="1">
+          <oj-input-text id="patterName" label-hint="Pattern Name" required="true" value="{{pattern_Name}}"></oj-input-text>
+          <oj-radioset id="rowDirectionEnabledRadioset" value="{{make_Default}}" class="oj-choice-direction-row" label-hint="Default Pattern">
+            <oj-option value="No">No</oj-option>
+            <oj-option value="Yes">Yes</oj-option>
+          </oj-radioset>
+          <oj-radioset id="rowDirectionEnabledRadioset" value="{{holiday}}" class="oj-choice-direction-row" label-hint="Public Holidays">
+            <oj-option value="Not Deducted">Not Deducted</oj-option>
+            <oj-option value="Deducted">Deducted</oj-option>
+            <oj-option value="Work Public Holidays">Work Public Holidays</oj-option>
+          </oj-radioset>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Create</oj-button>
+      </div>
+  </oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="confirmPopup">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Delete Work Pattern</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Do you want to delete the work pattern?</p>
+      </div>
+  </div>
+  <div  class="oj-flex-bar" slot="footer" style="margin-top: -90px;">
+      <oj-button id="okdelButton" chroming="solid" class="" on-oj-action="[[submitDelete]]">
+        Yes
+      </oj-button>
+    </div>
+</oj-dialog>
+
+<oj-popup id="popup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+  <div class="demo-popup-body">
+      <div class="demo-popup-content oj-sm-padding-2x">
+          <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+      </div>
+  </div>
+</oj-popup>
+
+<oj-dialog id="successView">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Pattern Created</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose2]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Pattern created successfully, To set timings for this working pattern close this.</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<oj-dialog id="successView2">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Work Pattern</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Default work pattern changed</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div>

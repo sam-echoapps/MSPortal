@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Company Holiday </span><span class="hint-note">(Create and manage company holidays.)</span></div> 
+        <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+            <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+            <div class="oj-flex-item oj-xl-3  oj-md-3 oj-sm-4 oj-md-padding-2x-horizontal  oj-sm-padding-2x-horizontal">
+                <oj-select-single label-hint="Select Year" class="oj-sm-padding-2x-vertical"
+                label-edge="inside" data="[[yearList]]" value="{{yearFilter}}" on-value-changed="[[filterYear]]">
+                </oj-select-single>
+            </div>
+            <oj-bind-if test="[[userrole() != 'senior accounts']]">
+              <div class="oj-flex-item oj-sm-padding-2x-horizontal">
+                <oj-button chroming="solid"  on-oj-action="[[addHoliday]]" class="oj-sm-padding-3x-vertical">
+                    <i class="fa-solid fa-plus"></i>&nbsp;Add Holiday
+                  </oj-button>
+              </div>
+            </oj-bind-if>
+            </div>
+          </div>
+        </div>
+    </div>
+
+<oj-dialog id="openAddHoliday" class="popupHoliday" dialog-title="Add Holiday" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="holiday-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="holidayName" label-hint="Holiday Name" required="true" value="{{holidayName}}"></oj-input-text>
+            <oj-input-date id="holidayDate" label-hint="Date" required="true" value="{{holidayDate}}"></oj-input-date>
+            <oj-input-text id="comments" label-hint="Comments" value="{{comments}}"></oj-input-text>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+<div style="display:none;" class="oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table class="oj-panel" id='holidayTable' aria-label='All Table' data='[[dataProvider]]' display='list'
+        selection-mode='{"row": "single"}'  columns='[
+        { "headerClassName" : "table-header-style",
+        "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Holiday Name", "field": "holiday_name", "id": "holiday_name" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Holiday Date", "field": "holiday_date", "id": "holiday_date" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Comments", "field": "comments", "id": "comments" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+         <template slot="actionTemplate" data-oj-as="cell">
+             <oj-button
+              chroming="borderless"
+              display="icons"
+              on-oj-action="[[deleteHoliday]]">
+              <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+              Delete
+            </oj-button>
+         </template>
+        </oj-table>
+</div>
+</div>
+
+    
+
+    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+    <oj-dialog id="successView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Holiday added successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 

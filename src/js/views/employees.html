@@ -1,0 +1,539 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div style="margin: 0px;padding: 0px; display:none;" id="contentView">
+  <!----
+  <div class="oj-flex oj-md-justify-content-space-between oj-md-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-users icon"></i></span>&nbsp;Employees </span><span class="hint-note">(Can view/edit employees and manage teams here.)</span></div> 
+  </div> -->
+</div> 
+
+<oj-bind-if test="[[userrole() != 'junior accounts' && userrole() != 'senior accounts']]">
+<div class=" oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+  <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+      <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab1}}" aria-label="Choose only one format">
+    <oj-bind-for-each data="[[tabData1]]">
+      <template>
+        <oj-option value="[[$current.data.id]]">
+          <span>
+            <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+          </span>
+        </oj-option>
+      </template>
+    </oj-bind-for-each>
+  </oj-buttonset-one>
+</div>
+</div>
+</oj-bind-if>
+
+<oj-bind-if test="[[userrole() == 'junior accounts' || userrole() == 'senior accounts']]">
+<div class=" oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+  <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+      <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab1}}" aria-label="Choose only one format">
+    <oj-bind-for-each data="[[tabData2]]">
+      <template>
+        <oj-option value="[[$current.data.id]]">
+          <span>
+            <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+          </span>
+        </oj-option>
+      </template>
+    </oj-bind-for-each>
+  </oj-buttonset-one>
+</div>
+</div>
+</oj-bind-if>
+
+<div id="employee">
+  <div style="display:none; box-shadow: 0 0 10px #b9adad;border-radius: 10px;" id="actionView">
+    <div class="oj-flex oj-panel oj-xl-margin-4x">
+      <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <oj-buttonset-one class="oj-sm-padding-1x-vertical oj-md-padding-4x-horizontal"
+        id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+          <oj-bind-for-each data="[[tabData]]">
+            <template>
+              <oj-option value="[[$current.data.id]]">
+                <span>
+                  <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+                </span>
+              </oj-option>
+            </template>
+          </oj-bind-for-each>
+        </oj-buttonset-one>
+
+        <!-- Custom Button HTML -->
+        <button id="save" class="custom-button">
+          <i class="fa-solid fa"></i>&nbsp;Active Employees: <span data-bind="text: activeEmployees"></span>
+        </button>
+
+        <!-- Custom Button for Inactive Employees -->
+        <button id="save" class="custom-button2">
+          <i class="fa-solid fa"></i>&nbsp;Inactive Employees: <span data-bind="text: inactiveEmployees"></span>
+        </button>
+
+      </div>
+
+      <div class="oj-md-2 oj-sm-12 oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <oj-select-single label-hint="Select Designation"
+        label-edge="inside" data="[[designationList]]" value="{{designationFilter}}" on-value-changed="[[filterDesignation]]">
+        </oj-select-single>
+      </div>
+      <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <oj-input-text id="filter2" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueTeams2]]" value="{{filter2}}" clear-icon="always">
+          </oj-input-text>
+        </div>
+      </div> 
+    </div>
+  </div>
+         
+    <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none; display:none;" id="tableView">
+      <oj-bind-if test="[[status() == 'active' ]]">
+      <div class="oj-panel">
+    <oj-table  id='staffTable' aria-label='All Table' data='[[staffList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerClassName" : "table-header-style",
+    "headerText": "",
+    "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+    "template": "photoTemplate", "id": "photo","sortable": "disabled" },
+    { "headerText": "Name", "field": "name", "id": "name",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Employee Id", "field": "employee_id", "id": "employee_id" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Designation", "field": "designation", "id": "designation" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Role", "field": "role", "id": "role" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Phone", "field": "phone", "id": "phone" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Email", "field": "email", "id": "email" },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Action",
+      "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+      "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+      <template slot="photoTemplate" data-oj-as="cell">
+        <oj-avatar
+        class="oj-sm-padding-3x-vertical"
+        shape="circle"
+        slot="leading"
+        role="img"
+        size="xs"
+        src="[[cell.row.photo]]"
+        :title="[[cell.row.name]]"></oj-avatar>
+    </template>
+     <template slot="actionTemplate" data-oj-as="cell">
+      <oj-bind-if test="[[userrole() != 'junior accounts']]">
+         <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[goToEditStaff]]">
+          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+          Edit
+        </oj-button>
+      </oj-bind-if>
+        <oj-bind-if test="[[userrole() != 'junior manager' && userrole() != 'junior hr' 
+        && userrole() != 'junior accounts' && userrole() != 'senior accounts']]">
+          <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[inactiveStaff]]">
+          <span slot="startIcon" class="fa-solid fa-ban deactivate-btn"></span>
+          Deactivate
+        </oj-button>
+      </oj-bind-if>
+      <oj-bind-if test="[[userrole() != 'junior manager' && userrole() != 'senior manager' 
+      && userrole() != 'senior hr' && userrole() != 'junior hr' 
+      && userrole() != 'junior accounts' && userrole() != 'senior accounts']]">
+      <oj-button
+        chroming="borderless"
+        display="icons"
+        on-oj-action="[[deleteStaff]]">
+        <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+        Delete
+     </oj-button>
+    </oj-bind-if>
+     </template>
+    </oj-table>
+    </div>
+    </oj-bind-if>
+  
+      <oj-bind-if test="[[status() == 'inactive' ]]">
+        <div class="oj-panel">
+        <oj-table id='staffTable' aria-label='All Table' data='[[staffList]]' display='list'
+        selection-mode='{"row": "single"}'  columns='[
+        { "headerClassName" : "table-header-style",
+          "headerText": "",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "photoTemplate", "id": "photo","sortable": "disabled" },
+        { "headerText": "Name", "field": "name", "id": "name",
+          "headerClassName" : "table-header-style"	 },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Employee Id", "field": "employee_id", "id": "employee_id" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Designation", "field": "designation", "id": "designation" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Role", "field": "role", "id": "role" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Phone", "field": "phone", "id": "phone" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Email", "field": "email", "id": "email" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+          <template slot="photoTemplate" data-oj-as="cell">
+            <oj-avatar
+            class="oj-sm-padding-3x-vertical"
+            shape="circle"
+            slot="leading"
+            role="img"
+            size="xs"
+            src="[[cell.row.photo]]"
+            :title="[[cell.row.name]]"></oj-avatar>
+        </template>
+          <template slot="actionTemplate" data-oj-as="cell">
+            <oj-bind-if test="[[userrole() != 'junior manager' && userrole() != 'junior hr' && userrole() != 'junior accounts']]">
+              <oj-button
+                chroming="borderless"
+                display="icons"
+                on-oj-action="[[goToEditStaff]]">
+                <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+                Edit
+              </oj-button>
+            </oj-bind-if>
+            <oj-bind-if test="[[userrole() != 'junior manager' && userrole() != 'junior hr' 
+            && userrole() != 'junior accounts' && userrole() != 'senior accounts']]">
+              <oj-button
+              chroming="borderless"
+              display="icons"
+              on-oj-action="[[activateStaff]]">
+              <span slot="startIcon" class="fa-solid fa-unlock activate-btn"></span>
+              Activate
+              </oj-button>
+            </oj-bind-if>
+         </template>
+        </oj-table>
+        </div>
+      </oj-bind-if>
+    </div> 
+</div>
+
+
+<oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+  <div class="demo-popup-body">
+      <div class="demo-popup-content oj-sm-padding-2x">
+          <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+      </div>
+  </div>
+</oj-popup>
+
+<oj-dialog id="popup2">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Successfully Inactivated</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Employee inactivated successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+
+<oj-dialog id="popup3">
+  <div slot="header" style="display: contents;">
+    <p id="dialogTitleId" class="oj-dialog-title">Successfully Activated</p>
+    <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+        <span slot="startIcon" class="oj-ux-ico-close"></span>
+        Cancel
+    </oj-button>
+  </div>
+  <div slot="body">
+    <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+        <p style="font-weight: 500;text-align: left">Employee activated successfully</p>
+    </div>
+  </div>
+</oj-dialog>
+
+
+<div id="addemployee" style="margin-top: -10px;">
+  <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center oj-xl-margin-4x">
+    <oj-validation-group id="formValidation" class="form-container" role="group">
+        <div id="form-container-employee">
+            <oj-form-layout id="personal-information" class="form" direction="row" max-columns="2">
+              <oj-input-text id="firstname" label-hint="First Name" required="true" value="{{firstName}}"></oj-input-text>
+              <oj-input-text id="middlename" label-hint="Middle Name" value="{{middleName}}"></oj-input-text>
+              <oj-input-text id="lastname" label-hint="Last Name" required="true" value="{{lastName}}"></oj-input-text>
+              <div class="oj-flex">
+                <div class="oj-flex-item oj-sm-5 oj-sm-padding-2x-end oj-md-padding-3x-end">
+                    <oj-select-single required id="countryCode" label-hint="Country Code" label-edge="inside"
+                        data="[[countryCodes]]" value="{{countryCode}}"></oj-select-single>
+                </div>
+                <div class="oj-flex-item oj-sm-7 oj-sm-padding-2x-start oj-md-padding-3x-start">
+                    <oj-input-text id="phone" label-hint="Phone" required="true" value="{{phone}}" length.max="10" on-value-changed="[[phoneValidator]]"></oj-input-text>
+                </div>
+                <div class="oj-text-color-danger"><oj-bind-text value='[[phoneError]]'></oj-bind-text></div></br>
+              </div>
+              <div class="oj-flex">
+                <div class="oj-flex-item oj-sm-5 oj-sm-padding-2x-end oj-md-padding-3x-end">
+                    <oj-select-single required id="countryCode2" label-hint="Country Code" label-edge="inside"
+                        data="[[countryCodes]]" value="{{countryCode2}}"></oj-select-single>
+                </div>
+                <div class="oj-flex-item oj-sm-7 oj-sm-padding-2x-start oj-md-padding-3x-start">
+                    <oj-input-text id="phone2" label-hint="Emergency Contact" required="true" value="{{emergency_phone}}" length.max="10" on-value-changed="[[phoneValidator]]"></oj-input-text>
+                </div>
+                <div class="oj-text-color-danger"><oj-bind-text value='[[phoneError]]'></oj-bind-text></div></br>
+              </div>
+              <div>
+                <oj-input-text id="email" label-hint="Email" required="true" value="{{email}}" on-value-changed="[[emailPatternValidator]]"></oj-input-text>
+                <div class="oj-text-color-danger"><oj-bind-text value='[[emailError]]'></oj-bind-text></div>
+              </div>
+              <oj-select-single id="Nationality" label-hint="Nationality" label-edge="inside" data="[[nationList]]" value="{{nationality}}"></oj-select-single>
+              <oj-input-date id="birth_day" label-hint="Birth Day" value="{{birth_day}}"></oj-input-date>
+              <oj-radioset id="rowDirectionEnabledRadioset" value="{{gender}}" class="oj-choice-direction-row" label-hint="Gender">
+                <oj-option value="male">Male</oj-option>
+                <oj-option value="female">Female</oj-option>
+                <oj-option value="others">Others</oj-option>
+              </oj-radioset>
+              <div> </div>
+              <oj-select-single id="department" label-hint="Department" label-edge="inside" required="true" class="oj-form-control-max-width-md" 
+              value="{{department}}"  data="[[departmentList]]" on-value-changed="[[getDesignationList]]"></oj-select-single>
+              <oj-select-single id="designation" label-hint="Designation" label-edge="inside" required="true" class="oj-form-control-max-width-md" 
+              value="{{designation}}"  data="[[designationList2]]"></oj-select-single>
+
+              <oj-bind-if test="[[userrole() != 'junior manager' && userrole() != 'senior manager' && userrole() != 'junior hr']]">
+                <oj-select-single 
+                    id="roles" 
+                    label-hint="Roles" 
+                    label-edge="inside" 
+                    required="true" 
+                    class="oj-form-control-max-width-md" 
+                    value="{{roles}}" 
+                    data="[[rolesList]]">
+                </oj-select-single>
+            </oj-bind-if>
+
+            <oj-bind-if test="[[userrole() == 'junior manager' || userrole() == 'senior manager' || userrole() == 'junior hr']]">
+                <oj-select-single 
+                    id="roles" 
+                    label-hint="Roles" 
+                    label-edge="inside" 
+                    required="true" 
+                    class="oj-form-control-max-width-md" 
+                    value="{{roles}}" 
+                    data="[[rolesList]]" 
+                    readonly="true">
+                </oj-select-single>
+            </oj-bind-if>
+
+              <oj-input-date id="joining_date" label-hint="Joining Date" value="{{joining_date}}"></oj-input-date>
+              <!--<oj-select-single id="employee_type" label-hint="Employee Type" label-edge="inside" data="[[employee_type_List]]" value="{{employee_type}}"></oj-select-single>
+              <oj-input-date id="termination_date" label-hint="Termination Date" value="{{termination_date}}"></oj-input-date> -->
+              <div id="addphoto">        
+                <oj-file-picker  id="profilePhoto" class="demo-max-width" primary-text="Profile Photo" secondary-text="[[secondaryText]]" on-oj-select="[[uploadProfilePhoto]]"></oj-file-picker>
+                <div class="oj-text-color-danger"><oj-bind-text value='[[typeError]]'></oj-bind-text></div>
+              </div>
+            </oj-form-layout>
+            <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Create</oj-button>
+          </div>
+    </oj-validation-group>
+
+    <oj-popup id="popup4" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+    <oj-dialog id="popup5">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Added</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose2]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Employee added successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+  </div>
+</div>
+
+<div id="manage">
+  <div class="oj-flex oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+      <oj-button chroming="solid" on-oj-action="[[addTeam]]" class="oj-sm-padding-2x-vertical">
+        <i class="fa-solid fa-plus"></i>&nbsp;Add Team
+      </oj-button>
+    </div>
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+      <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+          placeholder="Search.." on-raw-value-changed="[[handleValueTeams]]" value="{{filter}}" clear-icon="always">
+        </oj-input-text>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table container -->
+  <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="table_view">
+    <div class="oj-panel">
+    <oj-table id='teamTable' aria-label='All Table' data='[[teamsData]]' display='list'
+        selection-mode='{"row": "single"}' columns='[
+        { "headerClassName" : "table-header-style",
+        "headerText": "SL.No", "field": "no", "id": "no" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Team Name", "field": "team_name", "id": "team_name" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Team Leader", "field": "team_leader", "id": "team_leader" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Team Members", "field": "team_members_count", "id": "team_members_count" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Action",
+        "maxWidth" : "10rem",
+        "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+        "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+      <template slot="actionTemplate" data-oj-as="cell">
+        <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[goToEditTeam]]">
+          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+          Edit
+        </oj-button>
+          <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[deleteTeam]]">
+          <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+          Delete
+        </oj-button>
+      </template>
+    </oj-table>
+    </div>
+  </div>
+</div>
+
+
+<oj-dialog id="openAddTeam" class="popupGoal" dialog-title="Add Team" modality="modeless" drag-affordance="title-bar"
+    cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-validation-group id="formValidation3" class="form-container" role="group" style="padding-bottom: 50px;">
+      <div id="form-container">
+        <oj-form-layout id="team-information" class="form" direction="row" max-columns="1">
+          <oj-input-text id="teamName" label-hint="Team Name" required="true" value="{{team_Name}}"></oj-input-text>
+          <oj-input-text id="description" label-hint="Team Description" value="{{team_Description}}"></oj-input-text>
+          <oj-select-single id="team_Leader" label-hint="Team Leader" label-edge="inside" class="oj-form-control-max-width-md" value="{{team_Leader}}" data="[[team_Leader_List]]"></oj-select-single>
+          <oj-select-many
+          id="select1"
+          value="{{team_Member}}"
+          options="{{team_Members_List}}"
+          label-edge="inside"
+          label-hint="Select the Team Members"
+          class="oj-form-control-max-width-md">      
+          </oj-select-many>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit2]]"><i class="fas fa-save"></i> Create Team</oj-button>
+      </div>
+  </oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="openEditTeam" class="popupGoal" dialog-title="Edit Team" modality="modeless" drag-affordance="title-bar"
+    cancel-behavior="[[CancelBehaviorOpt]]">
+    <oj-validation-group id="formValidation4" class="form-container" role="group" style="padding-bottom: 50px;">
+      <div id="form-container">
+        <oj-form-layout id="team-information2" class="form" direction="row" max-columns="1">
+          <oj-input-text id="teamName" label-hint="Team Name" required="true" value="{{team_Name2}}"></oj-input-text>
+          <oj-input-text id="description" label-hint="Team Description" value="{{team_Description2}}"></oj-input-text>
+          <oj-combobox-one id="team_Leader" label-hint="Team Leader" label-edge="inside" class="oj-form-control-max-width-md" value="{{team_Leader2}}" options="[[team_Leader_List]]"></oj-combobox-one>
+          <oj-combobox-many
+          id="select1"
+          value="{{team_Member2}}"
+          options="{{team_Members_List}}"
+          label-edge="inside"
+          label-hint="Select the Team Members"
+          class="oj-form-control-max-width-md">      
+          </oj-combobox-many>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit4]]"><i class="fas fa-save"></i> Update Team</oj-button>
+      </div>
+  </oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="successView">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Team Created</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose3]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Team created successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<oj-dialog id="successView2">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Team Updated</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose4]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Team updated successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<oj-dialog id="successView3">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Team Delete</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose5]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Team deleted successfully</p>
+      </div>
+  </div>
+</oj-dialog>
+
+<oj-dialog id="confirmPopup">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Delete Staff</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Do you want to delete the staff?</p>
+      </div>
+  </div>
+  <div  class="oj-flex-bar" slot="footer" style="margin-top: -90px;">
+      <oj-button id="okdelButton" chroming="solid" class="" on-oj-action="[[submitDelete]]">
+        Yes
+      </oj-button>
+    </div>
+</oj-dialog>
+
+<div class="centered-container" id="loaderView">
+  <div class="loader"></div>
+</div>   

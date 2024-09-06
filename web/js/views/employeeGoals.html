@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-list-check icon"></i></span>&nbsp;Employee Goals </span><span class="hint-note">(Manage employee goals.)</span></div> 
+        <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+            <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+            <div class="oj-flex-item oj-xl-3  oj-md-3 oj-sm-4 oj-md-padding-2x-horizontal  oj-sm-padding-2x-horizontal">
+                <oj-select-single label-hint="Select Year" class="oj-sm-padding-2x-vertical"
+                label-edge="inside" data="[[yearList]]" value="{{yearFilter}}" on-value-changed="[[filterYear]]">
+                </oj-select-single>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display:none;" class="oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table class="oj-panel" id='goalTable' aria-label='All Table' data='[[dataProvider]]' display='list'
+        selection-mode='{"row": "single"}'  columns='[
+        { "headerClassName" : "table-header-style",
+        "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Goal Subject", "field": "goal_subject", "id": "goal_subject" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Start Date", "field": "start_date", "id": "start_date" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "End Date", "field": "end_date", "id": "end_date" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Status", "id": "status", "template": "bgTemplate"},
+        { "headerClassName" : "table-header-style",
+        "headerText": "Goal Status", "field": "admin_status", "id": "admin_status", "template": "bgTemplate2" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+         <template slot="actionTemplate" data-oj-as="cell">
+            <oj-button
+            chroming="borderless"
+            display="icons"
+            on-oj-action="[[viewGoal]]">
+            <span slot="startIcon" class="fa-solid fa-eye delete-btn"></span>
+            View
+          </oj-button>
+         </template>
+         <template slot="bgTemplate" data-oj-as="cell">
+            <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+                <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.status == 'Under Review' ]]">
+                <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.status == 'Working' ]]">
+                <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.status == 'Completed' ]]">
+                <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+            </oj-bind-if>
+          </template>
+          <template slot="bgTemplate2" data-oj-as="cell">
+            <oj-bind-if test="[[cell.row.admin_status == 'Submitted' ]]">
+                <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.admin_status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.admin_status == 'Pending' ]]">
+                <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.admin_status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.admin_status == 'Under Review' ]]">
+                <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.admin_status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.admin_status == 'Reject' ]]">
+                <div class="oj-table-element-reject"><oj-bind-text value="Rejected"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.admin_status == 'Approve' ]]">
+                <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+            </oj-bind-if>
+           </template>
+        </oj-table>
+</div>
+</div>
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

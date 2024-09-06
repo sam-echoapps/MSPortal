@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+<div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+      <div><span class="hint-title"> <span class="icon-container"><i class="fa-solid fa-person-walking-arrow-right icon">
+      </i></span>&nbsp;Leave Settings</span><span class="hint-note"> (Set total number of leaves and leave types and manage them.)</span></div> 
+      <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-margin-4x">
+        <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+          <div class="oj-flex-item oj-md-padding-2x-horizontal  oj-sm-padding-2x-horizontal">
+            <oj-button chroming="solid"  on-oj-action="[[addLeaveMonth]]"><i class="fa-solid fa-plus">
+              </i>&nbsp;Leave Starting Month
+            </oj-button>
+            <!--<oj-button chroming="solid"  on-oj-action="[[addTotalLeave]]">
+              <h9 class="oj-xl-margin-4x"><i class="fa-solid fa-plus">
+              </i>&nbsp;Yearly Leaves : <oj-bind-text value="[[totalLeave]]"></oj-bind-text></h9>
+            </oj-button> -->
+          </div>
+          <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-horizontal">
+            <oj-button chroming="solid"  on-oj-action="[[addLeaveTypes]]">
+              <i class="fa-solid fa-plus"></i>&nbsp;Add Leave Type
+            </oj-button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- <div class="oj-panel oj-flex oj-xl-margin-4x">
+  <div id="total-leave-card">
+    <oj-action-card id="total-leave" on-oj-action="" chroming="solid" class="total-leave-card oj-sm-padding-2x demo-card-content">
+        <p class="leave-count"><oj-bind-text value="[[totalLeave]]"></oj-bind-text></p>
+        <p>Total Leaves</p>
+    </oj-action-card>
+</div> -->
+
+<div class="oj-flex oj-xl-margin-4x">
+ <!--  <oj-button chroming="solid" class="oj-xl-margin-4x" on-oj-action="[[addTotalLeave]]">
+    <p class="oj-xl-margin-4x">Total Yearly Leaves : <oj-bind-text value="[[totalLeave]]"></oj-bind-text></p>
+  </oj-button> -->
+
+  <oj-table class="oj-panel" class="oj-xl-margin-4x" id='leaveTypeTable' aria-label='All Table' data='[[dataProvider]]' display='list'
+        selection-mode='{"row": "single"}'  columns='[
+        { "headerClassName" : "table-header-style",
+        "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Leave Type", "field": "leaveType", "id": "leaveType" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Action",
+          "maxWidth" : "10rem",
+          "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+          "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+         <template slot="actionTemplate" data-oj-as="cell">
+             <oj-button
+              chroming="borderless"
+              display="icons"
+              on-oj-action="[[deleteLeaveType]]">
+              <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+              Delete
+            </oj-button>
+         </template>
+        </oj-table>
+</div>
+
+<!--<oj-dialog id="openAddTotalLeave" class="popupDialog" dialog-title="Add Total Leave" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="total-leave-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="totalLeave" label-hint="Total Leave" required="true" value="{{totalLeave}}"></oj-input-text>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog> -->
+
+<oj-dialog id="openAddLeaveMonth" class="popupDialog" dialog-title="Add Leave month" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidationMonth" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="total-leave-month-information" class="form" direction="row" max-columns="1">
+            <oj-combobox-one id="LeaveMonth" label-hint="Add Leave Year Starting Month" required="true" label-edge="inside" 
+            style="padding-left: 0px; padding-right: 10px;" value="{{start_month}}" options="[[month_List]]"></oj-combobox-one>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmitMonth]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="openAddLeaveType" class="popupDialog" dialog-title="Add Leave Type" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidationLeave" class="form-container" role="group" style="padding-bottom: 50px;">
+      <div id="form-container">
+          <oj-form-layout id="leave-type-information" class="form" direction="row" max-columns="1">
+              <oj-input-text id="leaveType" label-hint="Leave Type" required="true" value="{{leaveType}}"></oj-input-text>
+          </oj-form-layout>
+          <oj-button id="save" chroming="solid" on-oj-action="[[leaveFormSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+      </div>
+  </oj-validation-group>
+</oj-dialog>
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+<div class="demo-popup-body">
+    <div class="demo-popup-content oj-sm-padding-2x">
+        <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+    </div>
+</div>
+</oj-popup>
+
+<oj-dialog id="successView">
+  <div slot="header" style="display: contents;">
+    <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+    <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+        <span slot="startIcon" class="oj-ux-ico-close"></span>
+        Cancel
+    </oj-button>
+</div>
+<div slot="body">
+    <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+      <p style="font-weight: 500;text-align: left">Added successfully</p>
+    </div>
+</div>
+</oj-dialog>
+
+<oj-dialog id="popup2">
+  <div slot="header" style="display: contents;">
+    <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+    <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+        <span slot="startIcon" class="oj-ux-ico-close"></span>
+        Cancel
+    </oj-button>
+</div>
+<div slot="body">
+    <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+      <p style="font-weight: 500;text-align: left">Leave Type added successfully</p>
+    </div>
+</div>
+</oj-dialog>
+
+
+<div class="centered-container" id="loaderView">
+  <div class="loader"></div>
+</div> 

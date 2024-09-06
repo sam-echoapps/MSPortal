@@ -1,0 +1,75 @@
+* {
+	margin: 0px; 
+	padding: 0px; 
+	box-sizing: border-box;
+}
+
+
+
+
+.wrap-login100 {
+  width: 100%;
+/*   background: 
+    linear-gradient(90deg, rgba(2,0,36,0.5) 0%, rgba(9,9,121,0.5) 35%, rgba(0,212,255,0.5) 100%),
+    url('../css/images/hr-module-bg.jpg'); */
+
+/*   background-size: cover;*/  
+  background:         linear-gradient(90deg, rgba(2, 0, 36, 0.2) 0%, rgba(9, 9, 121, 0.2) 35%, rgba(0, 212, 255, 0.2) 100%),
+  url('../css/images/hr-module-bg.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
+}
+
+
+
+.login100-form {
+  width: 560px;
+  min-height: 100vh;
+  display: block;
+  background-color: #ffffff;
+  padding: 173px 55px 55px 55px;
+}
+
+
+.login-body{
+  background-color:#d0d0d0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-div{
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  width: 350px;
+}
+
+.logo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.submit-btn{
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.input{
+  margin-top: 20px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 200px;
+  font-size:13px;
+}
