@@ -40,18 +40,14 @@
         </div>
         
         <div class="goal-card-actions">
-            <oj-bind-if test="[[userrole() != 'junior hr']]">
-                <oj-button chroming="borderless" display="icons" on-oj-action="[[editGoal]]">
-                    <span slot="startIcon" class="fa-solid fa-pencil review-btn"></span>
-                    Edit
-                </oj-button>
-            </oj-bind-if>
-            <oj-bind-if test="[[userrole() != 'junior hr']]">
-                <oj-button chroming="borderless" display="icons" on-oj-action="[[deleteGoal]]">
-                    <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
-                    Delete
-                </oj-button>
-            </oj-bind-if>
+            <oj-button chroming="borderless" display="icons" on-oj-action="[[editGoal]]">
+                <span slot="startIcon" class="fa-solid fa-pencil review-btn"></span>
+                Edit
+            </oj-button>
+            <oj-button chroming="borderless" display="icons" on-oj-action="[[deleteGoal]]">
+                <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+                Delete
+            </oj-button>
         </div>
     </div>
 </div>
@@ -107,25 +103,27 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           </oj-text-area>
           <oj-input-date id="startDate" label-hint="Start Date" required="true" value="{{startDate2}}"></oj-input-date>
           <oj-input-date id="endDate" label-hint="End Date" required="true" value="{{endDate2}}"></oj-input-date>
-          <oj-bind-if test="[[userrole() == 'director']]">
+          <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior manager' 
+          || userrole() == 'senior hr' || userrole() == 'senior accounts']]">
             <oj-select-single label-hint="Current work Status" class="oj-sm-padding-2x-vertical"
                 label-edge="inside" data="[[statusList]]" value="{{status2}}">
             </oj-select-single>
-            <oj-select-single label-hint="Goal Status" class="oj-sm-padding-2x-vertical"
+            <oj-select-single label-hint="Admin Goal Status" class="oj-sm-padding-2x-vertical"
             label-edge="inside" data="[[statusList2]]" value="{{adminStatus2}}">
             </oj-select-single>
-            <oj-text-area id="my_comments" value="{{staffComments2}}" label-hint="My Comments" raw-valuenewE=""
+            <oj-text-area id="my_comments" value="{{staffComments2}}" label-hint="Comments" raw-valuenewE=""
             rows="3" clear-icon="always"> 
             </oj-text-area>
-            <oj-text-area id="admin_comments" value="{{adminComments2}}" label-hint="Goal Comments" raw-valuenewE=""
+            <oj-text-area id="admin_comments" value="{{adminComments2}}" label-hint="Admin Goal Comments" raw-valuenewE=""
             rows="3" clear-icon="always"> 
             </oj-text-area>
           </oj-bind-if>
-          <oj-bind-if test="[[userrole() != 'director']]">
+          <oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior manager' 
+          && userrole() != 'senior hr' && userrole() != 'senior accounts']]">
             <oj-select-single label-hint="Current work Status" class="oj-sm-padding-2x-vertical"
                 label-edge="inside" data="[[statusList]]" value="{{status2}}">
             </oj-select-single>
-            <oj-text-area id="my_comments2" value="{{staffComments2}}" label-hint="My Comments" raw-valuenewE=""
+            <oj-text-area id="my_comments2" value="{{staffComments2}}" label-hint="Comments" raw-valuenewE=""
             rows="3" clear-icon="always"> 
             </oj-text-area>
           </oj-bind-if>

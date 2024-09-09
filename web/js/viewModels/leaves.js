@@ -24,18 +24,51 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getLeaves();
                         self.getMembers();
                         self.getHolidayDetails();
-                        self.getLeavesReport();
+                        self.getMyLeaves();
+
+                        if(window.location.pathname=='/Hr'){
+                            document.querySelectorAll('link').forEach(function(link){
+                                    const baseUrl = 'https://uanglobal.com/';
+                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                        link.href = self.rewriteUrl(link.href);
+                                    }
+                            });
+                            document.querySelectorAll('script').forEach(function(script) {
+                                    script.src = self.rewriteUrl(script.src);
+                            });
+                            document.querySelectorAll('img').forEach(function(img) {
+                                    img.src = self.rewriteUrl(img.src);
+                            });
+                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                    const currentSrc = avatar.getAttribute('src');
+                                    const newSrc = self.rewriteUrl(currentSrc);
+                                    avatar.setAttribute('src', newSrc);
+                            });
+                        }
+                        
                     }
                 }
 
                 self.tabData = [
                     { id: "calender", label: "Calender" },
                     { id: "leave_requests", label: "Apply Leave" },
-                    { id: "leave_approval", label: "Leave Requests" },
+                    { id: "my_requests", label: "My Requests" },
+                    { id: "leave_approval", label: "Employee Requests" },
                     { id: "leave_balance", label: "Leave Balance" },
-                    { id: "leave_report", label: "Leave Report" },
                 ];
 
+                self.tabData1 = [
+                    { id: "calender", label: "Calender" },
+                    { id: "leave_requests", label: "Apply Leave" },
+                    { id: "my_requests", label: "My Requests" },
+                ];
+
+                self.tabData2 = [
+                    { id: "calender", label: "Calender" },
+                    { id: "leave_requests", label: "Apply Leave" },
+                    { id: "my_requests", label: "My Requests" },
+                    { id: "leave_balance", label: "Leave Balance" },
+                ];
                 self.selectedTab = ko.observable("calender");
 
                 self.selectedTabAction = ko.computed(() => { 
@@ -44,7 +77,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#leave_requests").hide();
                         $("#leave_approval").hide();
                         $("#leave_balance").hide();
-                        $("#leave_report").hide();
+                        $("#my_requests").hide();
                     }
                     else if(self.selectedTab() == 'leave_requests'){
                         $("#calender").hide();
@@ -52,7 +85,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#leave_requests").show();
                         $("#leave_approval").hide();
                         $("#leave_balance").hide();
-                        $("#leave_report").hide();
+                        $("#my_requests").hide();
+                    }
+                    else if(self.selectedTab() == 'my_requests'){
+                        $("#calender").hide();
+                        $("#leave_requests").hide();
+                        $("#leave_approval").hide();
+                        $("#leave_balance").hide();
+                        self.getLeaveBalance();
+                        self.MyfilterYear();
+                        $("#my_requests").show();
                     }
                     else if(self.selectedTab() == 'leave_approval'){
                         $("#calender").hide();
@@ -60,7 +102,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#leave_requests").hide();
                         $("#leave_approval").show();
                         $("#leave_balance").hide();
-                        $("#leave_report").hide();
+                        $("#my_requests").hide();
                     }
                     else if(self.selectedTab() == 'leave_balance'){
                         $("#calender").hide();
@@ -69,15 +111,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getTeams();
                         self.changeLeaveBalance();
                         $("#leave_balance").show();
-                        $("#leave_report").hide();
-                    }
-                    else if(self.selectedTab() == 'leave_report'){
-                        $("#calender").hide();
-                        $("#leave_requests").hide();
-                        $("#leave_approval").hide();
-                        $("#leave_balance").hide();
-                        self.filterYear3();
-                        $("#leave_report").show();
+                        $("#my_requests").hide();
                     }
                 });
 
@@ -107,8 +141,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.getElementById('leave_requests').style.display = 'none';
                     document.getElementById('leave_approval').style.display = 'none';
                     document.getElementById('leave_balance').style.display = 'none';
-                    document.getElementById('leave_report').style.display = 'none';
-
+                    document.getElementById('my_requests').style.display = 'none';
                     $.ajax({
                         url: BaseURL + "/HRModuleGetEmployeeCalenderLeave",
                         type: 'POST',
@@ -129,7 +162,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             document.getElementById('leave_requests').style.display = 'none';
                             document.getElementById('leave_approval').style.display = 'none';
                             document.getElementById('leave_balance').style.display = 'none';
-                            document.getElementById('leave_report').style.display = 'none';
+                            document.getElementById('my_requests').style.display = 'none';
                                 
                             if (result.length != 0) {
                                 for (var i = 0; i < result.length; i++) {
@@ -252,7 +285,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.getStaff = ()=>{
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaff2",
-                        type: 'GET',
+                        type: 'POST',
+                        data: JSON.stringify({
+                            userId: sessionStorage.getItem("userId")
+                        }),
                         timeout: sessionStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
@@ -495,10 +531,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 }
                             }
 
+                            var j = 0;
                             if (result1[1].length != 0) {
                                 self.LeaveYearDet([]);
-                                for (var i = 0; i < result1[1].length; i++) {
-                                    self.LeaveYearDet.push({"label": result1[1][i][0], "value": result1[1][i][0]});
+                                for (j = 0; j < result1[1].length; j++) {
+                                    self.LeaveYearDet.push({"label": result1[1][j][0], "value": result1[1][j][0]});
                                 }
                                 self.LeaveYearDet.unshift({ value: 'All', label: 'All' });
                             }
@@ -826,145 +863,197 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     })
                 }
 
-                self.LeaveDet3 = ko.observableArray([]);
-                self.LeaveYearDet3 = ko.observableArray([]);
-                self.yearFilter3 = ko.observable('');
+              self.leaveTaken = ko.observable('');
+              self.leaveRemaining = ko.observable('');
 
-                self.getLeavesReport = () => {
-                    self.LeaveDet3([]);
-                    document.getElementById('loaderView').style.display = 'block';
-                    $.ajax({
-                        url: BaseURL + "/HRModuleGetEmployeeLeaveReport",
-                        type: 'POST',
-                        contentType: 'application/json', // Ensure the content type is set to JSON
-                        data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId")
-                        }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
-                        context: self,
-                        error: function(xhr, textStatus, errorThrown) {
-                            console.log(textStatus);
-                            document.getElementById('loaderView').style.display='none';
-                        },
-                        success: function(result1) {
-                            console.log(result1);
-                            document.getElementById('loaderView').style.display = 'none';
-                            //document.getElementById('leave_approval').style.display = 'block';
-                
-                            if (result1[0].length != 0) {
-                                for (var i = 0; i < result1[0].length; i++) {
-                                    self.LeaveDet3.push({
-                                        'no': i + 1,
-                                        'id': result1[0][i][0],
-                                        'name': result1[0][i][6],
-                                        'start_date': result1[0][i][1],
-                                        'end_date': result1[0][i][2],
-                                        'leave_type': result1[0][i][3],
-                                        'leave_reason': result1[0][i][4],
-                                        'status': result1[0][i][5]
-                                    });
-                                }
-                            }
+              self.getLeaveBalance = () => {
 
-                            if (result1[1].length != 0) {
-                                self.LeaveYearDet3([]);
-                                for (var i = 0; i < result1[1].length; i++) {
-                                    self.LeaveYearDet3.push({"label": result1[1][i][0], "value": result1[1][i][0]});
-                                }
-                                self.LeaveYearDet3.unshift({ value: 'All', label: 'All' });
-                            }
-                        }
-                    });
-                };
+                  document.getElementById('loaderView').style.display = 'block';
+                  $.ajax({
+                      url: BaseURL + "/HRModuleGetLeaveBalance",
+                      type: 'POST',
+                      data: JSON.stringify({ 
+                          staff_id: sessionStorage.getItem("userId"),
+                      }),
+                      contentType: "application/json", // Specify the content type as JSON
+                      timeout: sessionStorage.getItem("timeInterval"),
+                      context: self,
+                      error: function (xhr, textStatus, errorThrown) {
+                          console.log(textStatus);
+                          document.getElementById('loaderView').style.display = 'none';
+                      },
+                      success: function (data) {
+                          document.getElementById('loaderView').style.display = 'none';
+                          console.log(data);
+                          if (data && data.length > 0) {
+                              self.leaveTaken(data[0][0]);
+                              self.leaveRemaining(data[0][1]);
+                          }
+                      }
+                  });
+              };
 
-                self.yearList3 = new ArrayDataProvider(this.LeaveYearDet3, { keyAttributes: "value"});
+              self.MyLeaveDet = ko.observableArray([]);
+              self.MyLeaveYearDet = ko.observableArray([]);
+              self.MyYearFilter = ko.observable('');
 
-                self.filterYearCallCount_2 = 0; // Initialize counter
+              self.getMyLeaves = () => {
+                  self.MyLeaveDet([]);
+                  document.getElementById('loaderView').style.display = 'none';
+                  $.ajax({
+                      url: BaseURL + "/HRModuleGetSelfLeaveStatus",
+                      type: 'POST',
+                      data: JSON.stringify({
+                          staff_id: sessionStorage.getItem("userId")
+                      }),
+                      timeout: sessionStorage.getItem("timeInetrval"),
+                      context: self,
+                      error: function(xhr, textStatus, errorThrown) {
+                          console.log(textStatus);
+                      },
+                      success: function(result1) {
+                          console.log(result1);
 
-                self.filterYear3 = debounce(function () {
-                    self.LeaveDet3([]);
-                    self.filterYearCallCount_2++; // Increment counter
+                          if (result1[0].length != 0) {
+                              for (var i = 0; i < result1[0].length; i++) {
+                                  self.MyLeaveDet.push({
+                                      'no': i + 1,
+                                      'id': result1[0][i][0],
+                                      'start_date': result1[0][i][1],
+                                      'end_date': result1[0][i][2],
+                                      'leave_type': result1[0][i][3],
+                                      'leave_reason': result1[0][i][4],
+                                      'status': result1[0][i][5]
+                                  });
+                              }
+                          }
 
-                    if (self.yearFilter3() == '') {
-                        const currentYear = new Date().getFullYear();
-                        console.log(currentYear);
-                        self.yearFilter3(currentYear);
+                          if (result1[1].length != 0) {
+                              for (var i = 0; i < result1[1].length; i++) {
+                                  self.MyLeaveYearDet.push({"label": result1[1][i][0], "value": result1[1][i][0]});
+                              }
+                              self.MyLeaveYearDet.unshift({ value: 'All', label: 'All' });
+                          }
+                      }
+                  });
+              };
+
+              self.MyYearList = new ArrayDataProvider(this.LeaveYearDet, { keyAttributes: "value"});
+
+              self.MyfilterYearCallCount = 0; // Initialize counter
+
+              self.MyfilterYear = debounce(function () {
+                  self.MyLeaveDet([]);
+                  self.MyfilterYearCallCount++; // Increment counter
+
+                  if (self.MyYearFilter() == '') {
+                      const currentYear = new Date().getFullYear();
+                      console.log(currentYear);
+                      self.MyYearFilter(currentYear);
+                  }
+                  if (self.MyYearFilter() != '') {
+                      if (self.MyfilterYearCallCount <= 3) { // Clear only on first 3 calls
+                          self.MyLeaveDet([]);
+                      }
+                      document.getElementById('loaderView').style.display = 'block';
+                      $.ajax({
+                          url: BaseURL + "/HRModuleGetSelfLeaveStatusFilter",
+                          type: 'POST',
+                          data: JSON.stringify({
+                              staff_id: sessionStorage.getItem("userId"),
+                              year: self.MyYearFilter()
+                          }),
+                          dataType: 'json',
+                          timeout: sessionStorage.getItem("timeInetrval"),
+                          context: self,
+                          error: function(xhr, textStatus, errorThrown) {
+                              if (textStatus == 'timeout' || textStatus == 'error') {
+                                  document.querySelector('#TimeoutSup').open();
+                              }
+                          },
+                          success: function(result2) {
+                              console.log(result2);
+                              document.getElementById('loaderView').style.display = 'none';
+                              document.getElementById('my_requests').style.display = 'block';
+
+                              if (result2.length != 0) {
+
+                                  if (self.MyfilterYearCallCount <= 3) { // Clear only on first 3 calls
+                                      self.MyLeaveDet([]);
+                                  }
+
+                                  for (var i = 0; i <= result2.length; i++) {
+                                      self.MyLeaveDet.push({
+                                          'no': i + 1,
+                                          'id': result2[i][0],
+                                          'start_date': result2[i][1],
+                                          'end_date': result2[i][2],
+                                          'leave_type': result2[i][3],
+                                          'leave_reason': result2[i][4],
+                                          'status': result2[i][5]
+                                      });
+                                  }
+                              }
+                          }
+                      });
+                  }
+              }, 10); // 1-second debounce delay
+              
+              self.MyLeaveData = new ArrayDataProvider(this.MyLeaveDet, { keyAttributes: "id" });
+
+              
+              self.Myfilter = ko.observable('');
+
+              self.MyLeaveData = ko.computed(function () {
+                  let filterCriterion = null;
+                  if (self.Myfilter() && this.Myfilter() != '') {
+                      filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
+                          filterDef: { text: self.Myfilter() }
+                      });
+                  }
+                  const arrayDataProvider = new ArrayDataProvider(self.MyLeaveDet, { 
+                      keyAttributes: 'id',
+                      sortComparators: {
+                          comparators: new Map().set("dob", this.comparator),
+                      },
+                  });
+                  
+                  return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
+              }, self);
+
+              self.MyhandleValue = () => {                
+                  self.Myfilter(document.getElementById('MysearchFilter').rawValue);
+              };
+
+              self.leaveReport = ()=>{
+                self.router.go({path:'leaveReport'})
+            }
+            
+            
+            self.rewriteUrl=(url)=> {
+                if (url.includes('/Hr')) {
+                    return url;
+                }
+                const cssRegex = /\/css\//g;
+                const jsRegex = /\/js\//g;
+                const imgRegex = /\/img\//g;
+                const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                const baseUrl = 'https://uanglobal.com/';
+                if (url.startsWith(baseUrl)||url.startsWith('..')){
+                    if (cssRegex.test(url)){
+                            url = url.replace(cssRegex, '/Hr/css/');
+                            return url;
+                    } else if (jsRegex.test(url)) {
+                            url = url.replace(jsRegex, '/Hr/js/');
+                            return url;
+                    } else if (imgRegex.test(url)) {
+                            url = url.replace(imgRegex, '/Hr/img/');
+                            return url;
                     }
-                    if (self.yearFilter3() != '') {
-                        if (self.filterYearCallCount_2 <= 3) { // Clear only on first 3 calls
-                            self.LeaveDet3([]);
-                        }
-                        document.getElementById('loaderView').style.display = 'block';
-                        $.ajax({
-                            url: BaseURL + "/HRModuleGetYearLeaveFilterReport",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                year: self.yearFilter3(),
-                                userId: sessionStorage.getItem("userId")
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function(xhr, textStatus, errorThrown) {
-                                document.getElementById('loaderView').style.display = 'none';
-                                if (textStatus == 'timeout' || textStatus == 'error') {
-                                    document.querySelector('#TimeoutSup').open();
-                                }
-                            },
-                            success: function(result2) {
-                                console.log(result2);
-                                document.getElementById('loaderView').style.display = 'none';
-                                document.getElementById('leave_report').style.display = 'block';
-                                self.LeaveDet3([]);
+                }
+                return url;
+            }
 
-                                if (result2.length != 0) {
-                                    if (self.filterYearCallCount_2 <= 3) { // Clear only on first 3 calls
-                                        self.LeaveDet3([]);
-                                    }
-
-                                    for (var i = 0; i <= result2.length; i++) {
-                                        self.LeaveDet3.push({
-                                            'no': i + 1,
-                                            'id': result2[i][0],
-                                            'name': result2[i][6], // 'full_name' is now at the 7th position
-                                            'start_date': result2[i][1],
-                                            'end_date': result2[i][2],
-                                            'leave_type': result2[i][3],
-                                            'leave_reason': result2[i][4],
-                                            'status': result2[i][5]
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }, 10); // 1-second debounce delay
-                
-                self.LeaveData3 = new ArrayDataProvider(this.LeaveDet3, { keyAttributes: "id" });
-
-                self.filter3 = ko.observable('');
-
-                self.LeaveData3 = ko.computed(function () {
-                    let filterCriterion = null;
-                    if (self.filter3() && this.filter3() != '') {
-                        filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
-                            filterDef: { text: self.filter3() }
-                        });
-                    }
-                    const arrayDataProvider = new ArrayDataProvider(self.LeaveDet3, { 
-                        keyAttributes: 'id',
-                        sortComparators: {
-                            comparators: new Map().set("dob", this.comparator),
-                        },
-                    });
-                    
-                    return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
-                }, self);
-
-                self.handleValue3 = () => {                
-                    self.filter3(document.getElementById('searchFilter3').rawValue);
-                };
-                
 
             }
         }

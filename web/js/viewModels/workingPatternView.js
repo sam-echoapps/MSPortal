@@ -23,6 +23,27 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         app.onAppSuccess();
                         self.getPattern();
                         self.getWorkDetails();
+
+                        if(window.location.pathname=='/Hr'){
+                            document.querySelectorAll('link').forEach(function(link){
+                                    const baseUrl = 'https://uanglobal.com/';
+                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                        link.href = self.rewriteUrl(link.href);
+                                    }
+                            });
+                            document.querySelectorAll('script').forEach(function(script) {
+                                    script.src = self.rewriteUrl(script.src);
+                            });
+                            document.querySelectorAll('img').forEach(function(img) {
+                                    img.src = self.rewriteUrl(img.src);
+                            });
+                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                    const currentSrc = avatar.getAttribute('src');
+                                    const newSrc = self.rewriteUrl(currentSrc);
+                                    avatar.setAttribute('src', newSrc);
+                            });
+                        }
+
                     }
                 }
 
@@ -272,6 +293,30 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.router.go({path:'workingPattern'})
                 }
 
+                self.rewriteUrl=(url)=> {
+                    if (url.includes('/Hr')) {
+                        return url;
+                    }
+                    const cssRegex = /\/css\//g;
+                    const jsRegex = /\/js\//g;
+                    const imgRegex = /\/img\//g;
+                    const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                    const baseUrl = 'https://uanglobal.com/';
+                    if (url.startsWith(baseUrl)||url.startsWith('..')){
+                        if (cssRegex.test(url)){
+                                url = url.replace(cssRegex, '/Hr/css/');
+                                return url;
+                        } else if (jsRegex.test(url)) {
+                                url = url.replace(jsRegex, '/Hr/js/');
+                                return url;
+                        } else if (imgRegex.test(url)) {
+                                url = url.replace(imgRegex, '/Hr/img/');
+                                return url;
+                        }
+                    }
+                    return url;
+              }
+              
 
             }
         }

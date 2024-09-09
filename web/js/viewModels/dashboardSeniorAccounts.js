@@ -1,28 +1,574 @@
-define(['ojs/ojcore',"knockout","jquery","appController","ojs/ojconverterutils-i18n", "ojs/ojarraydataprovider",'ojs/ojknockout-keyset', "ojs/ojresponsiveutils", "ojs/ojresponsiveknockoututils", "ojs/ojknockout", "ojs/ojlistitemlayout", "ojs/ojtrain",
-    "ojs/ojlistview","ojs/ojradioset","ojs/ojlabelvalue","ojs/ojlabel" ,"ojs/ojselectcombobox","ojs/ojbutton" ,"ojs/ojprogress-bar", "ojs/ojdatetimepicker", 'ojs/ojtable', 'ojs/ojswitch', 'ojs/ojvalidationgroup','ojs/ojselector','ojs/ojtoolbar','ojs/ojfilepicker','ojs/ojcheckboxset', "ojs/ojavatar"], 
-function (oj,ko,$, app, ojconverterutils_i18n_1, ArrayDataProvider,  ojknockout_keyset_1,ResponsiveUtils, ResponsiveKnockoutUtils, AsyncRegExpValidator) {
+define(['ojs/ojcore',"knockout", 'ojs/ojcontext', "jquery","appController","ojs/ojconverterutils-i18n", 
+    "ojs/ojarraydataprovider",
+    "ojs/ojtable", "ojs/ojbutton", "ojs/ojcheckboxset", "ojs/ojgauge", "ojs/ojchart","ojs/ojdatetimepicker",
+    "ojs/ojlistview", "ojs/ojfilmstrip","ojs/ojlistitemlayout", "ojs/ojswitch", "ojs/ojbutton","ojs/ojactioncard"], 
+function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
+    
+    class dasboardSeniorAccountsViewModel {
+        constructor(args) {
+            var self = this;
 
-class DashboardStaffViewModel {
-    constructor(args) {
-        var self = this;
-       
-        self.connected = function () {
-            if (sessionStorage.getItem("userName") == null) {
-                self.router.go({ path: 'signin' });
-            }
-            else {
-               app.onAppSuccess();
-            }
-        };
+            self.router = args.parentRouter;
+            let BaseURL = sessionStorage.getItem("BaseURL")
 
-        var routerLength = args.parentRouter._routes.length;
-      
-        if(routerLength!=26){
-            location.reload();
-        }            
-        
-       
+            var routerLength = args.parentRouter._routes.length;
+          
+            if(routerLength!=26){
+                location.reload();
+            }
+
+            self.connected = function () {
+                if (sessionStorage.getItem("userName") == null) {
+                    self.router.go({ path: 'signin' });
+                }
+                else {
+                    self.getTaskCount();
+                    self.getEmployeeClockinData();
+                    self.checkEmployeClockedIn();
+                    self.getLeaveDetails();
+                    self.changeLeaveBalance();
+                    self.monthHolidays();
+                    self.getAbsentEmployees();
+                    self.getEmployeeLeaveRequests();
+                    app.onAppSuccess();
+
+                    if(window.location.pathname=='/Hr'){
+                        document.querySelectorAll('link').forEach(function(link){
+                                const baseUrl = 'https://uanglobal.com/';
+                                if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                    link.href = self.rewriteUrl(link.href);
+                                }
+                        });
+                        document.querySelectorAll('script').forEach(function(script) {
+                                script.src = self.rewriteUrl(script.src);
+                        });
+                        document.querySelectorAll('img').forEach(function(img) {
+                                img.src = self.rewriteUrl(img.src);
+                        });
+                        document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                const currentSrc = avatar.getAttribute('src');
+                                const newSrc = self.rewriteUrl(currentSrc);
+                                avatar.setAttribute('src', newSrc);
+                        });
+                    }
+                    
+                }
+            };
+            
+            self.totalTasks=ko.observable(0)
+            self.progressTasks=ko.observable(0)
+            self.completedTasks=ko.observable(0)
+            self.pendingTasks=ko.observable(0)
+
+            self.getTaskCount=()=>{
+                $.ajax({
+                    url: BaseURL + "/getTaskCount",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        self.totalTasks(data[0][0])
+                        self.progressTasks(data[0][1])
+                        self.completedTasks(data[0][2])
+                        self.pendingTasks(data[0][3])
+                    }
+                });
+            }
+
+            const date=new Date()
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+            self.currentDate=`${daysOfWeek[date.getDay()]} ${day}/${month}/${date.getFullYear()}`
+            
+            self.userName=ko.observable(sessionStorage.getItem("userName"))
+            self.clockInTime=ko.observable(0)
+            self.checkIn=ko.observable(false);
+
+            self.clockInBtnDisabled=ko.observable(false)
+            self.clockOutBtnDisabled=ko.observable(true)
+            
+            self.checkEmployeClockedIn=()=>{
+                $.ajax({
+                    url: BaseURL + "/checkEmployeeClockedIn",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        if(data==1){
+                            self.clockInBtnDisabled(true);
+                            self.clockOutBtnDisabled(false);
+                            self.checkIn(true)
+                            document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
+                            document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
+                        } 
+                        else {
+                            self.clockInBtnDisabled(false);
+                            self.clockOutBtnDisabled(true);
+                            self.checkIn(false)
+                            document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
+                            document.getElementById('clockIn').style.backgroundColor = '#3524ff';
+                        }
+                    }
+                });
+            }
+
+            self.getLocation=()=>{
+                return new Promise((resolve, reject) => {
+                    if ("geolocation" in navigator) {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                function (position) {
+                                    const latitude = position.coords.latitude;
+                                    const longitude = position.coords.longitude;
+
+                                    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+                                    fetch(url)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            let location = "";
+                                            if (data && data.address) {
+                                                const address = data.address;
+                                                location = `City: ${address.city || address.town || address.village}, State: ${address.state}, Country: ${address.country}`
+                                            
+                                            } else {
+                                                console.log('No address found for the given coordinates.');
+                                            }
+                                            console.log(location);
+                                            console.log(longitude);
+                                            console.log(latitude);
+
+                                            resolve([location, longitude, latitude]);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching data:', error);
+                                            resolve(["Unknown location", null, null]);
+                                        });
+                                    },
+                                    function (error) {
+                                        console.error(`Error: ${error.message}`);
+                                        resolve(["Unknown location", null, null]);
+                                    },
+                                    {
+                                        enableHighAccuracy: true,
+                                        timeout: 5000, 
+                                        maximumAge: 0 
+                                    }
+                                );
+                        }
+                        else {
+                            console.log("Geolocation is not supported");
+                            resolve(["Unknown location", null, null]);
+                        }
+                    }
+                });
+            }
+
+            self.clockInAction=async (e)=>{
+                let location = "Location not available";
+                let longitude = "";
+                let latitude = "";
+                try {
+                    [location, longitude, latitude] = await self.getLocation();
+                } catch (error) {
+                    console.warn("Failed to fetch location data:", error);
+                }
+                var now=new Date
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                self.clockInTime(`${hours}:${minutes}:${seconds}`) 
+
+                document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
+                document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
+                self.clockInBtnDisabled(true)
+                self.clockOutBtnDisabled(false)
+                self.checkIn(true)
+               
+                $.ajax({
+                    url: BaseURL + "/ClockinActivity",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId"),
+                        clockinTime: `${hours}:${minutes}:${seconds}`,
+                        clockinLocation: location,
+                        clockinLongitude: longitude,
+                        clockinLatitude: latitude,
+                        clockInStatus: "clockIn"
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeClockinData()
+                    }
+                });          
+            }
+
+            self.clockOutAction=()=>{
+                let popup = document.getElementById('clockOutPopup');
+                popup.open();
+            }
+
+            self.confirmClockOut=async ()=>{
+                let location = "Location not available";
+                let longitude = "";
+                let latitude = "";
+                try {
+                    [location, longitude, latitude] = await self.getLocation();
+                } catch (error) {
+                    console.warn("Failed to fetch location data:", error);
+                }
+                var now=new Date
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                
+                document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
+                document.getElementById('clockIn').style.backgroundColor = '#3524ff';
+                self.clockInBtnDisabled(false)
+                self.clockOutBtnDisabled(true)
+                self.checkIn(false)
+    
+                $.ajax({
+                    url: BaseURL + "/ClockoutActivity",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId"),
+                        clockOutTime: `${hours}:${minutes}:${seconds}`,
+                        clockOutLocation: location,
+                        clockOutLongitude: longitude,
+                        clockOutLatitude: latitude,
+                        clockOutStatus: "clockOut"
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeClockinData()
+                        self.cancelClockOut();
+                    }
+                });
+            }
+
+            self.cancelClockOut=()=>{
+                let popup = document.getElementById('clockOutPopup');
+                popup.close();
+            }
+            
+            self.currentTime=ko.observable()
+            self.liveShowTime=ko.observable()
+
+            self.getCurrentTime=()=>{
+                var now = new Date()
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                self.currentTime(`${hours}:${minutes}:${seconds}`)
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; 
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                var timeString = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+                self.liveShowTime(timeString)
+            }
+            setInterval(function(){
+                self.getCurrentTime()
+            },1000)
+            
+            self.getTime=(seconds)=>{
+                const workingHour=Math.floor(seconds/3600)
+                const workingMinutes=Math.floor((seconds%3600)/60)
+                const remainingSeconds = seconds % 60;
+                
+                return `${workingHour}:${workingMinutes}:${remainingSeconds}`
+            }
+            
+            self.totalLeaves=ko.observable(0);
+            self.leavesTaken=ko.observable(0);
+            self.leavesRemaining=ko.observable(0)
+
+            self.getLeaveDetails=()=>{
+                $.ajax({
+                    url: BaseURL + "/getLeavesDetails",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        if (data.length != 0) { 
+                            let totalLeaves=data[0][1]
+                            let remainingLeaves=data[0][2]
+                            let leavesTaken=totalLeaves-remainingLeaves
+                            self.totalLeaves(totalLeaves);
+                            self.leavesTaken(leavesTaken);
+                            self.leavesRemaining(remainingLeaves)
+                        }
+                    }
+                });
+            }
+
+            self.changeLeaveBalance = ()=>{
+                $.ajax({
+                    url: BaseURL+"/HRModuleChangeLeaveBalance",
+                    type: 'GET',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error fetching :", textStatus); // Log any error
+                    },
+                    success: function (data) {
+                        // console.log(data);
+                    }
+                })
+            }
+
+            self.applyLeave=()=>{
+                self.router.go({path : 'leaves'});     
+            }
+
+            self.holidays = ko.observableArray([]);
+
+            self.monthHolidays = ()=>{
+                self.holidays([])
+                $.ajax({
+                    url: BaseURL+"/getCurrentMonthHolidays",
+                    type: 'GET',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error fetching :", textStatus); // Log any error
+                    },
+                    success: function (data) {                  
+                        if (data.length != 0) { 
+                            for (var i = 0; i < data.length; i++) {
+                                self.holidays.push({
+                                    id: i,
+                                    holiday_name: data[i][0],
+                                    holiday_date: data[i][1],
+                                    holiday_day: data[i][2].slice(0,3)
+                                })
+                            }
+                        }
+                    }
+                })
+            }
+
+            self.holidayListDataProvider = new ArrayDataProvider(self.holidays, {
+                keyAttributes: "id",
+            });
+
+            self.absentEmployees = ko.observableArray([]);
+            self.getAbsentEmployees = ()=>{
+                self.absentEmployees([])
+                $.ajax({
+                    url: BaseURL+"/getAbsentEmployess",
+                    type: 'GET',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error fetching :", textStatus); // Log any error
+                    },
+                    success: function (data) { 
+                        if (data.length != 0) { 
+                            for (var i = 0; i < data.length; i++) {
+                                self.absentEmployees.push({
+                                    id: data[i][0],
+                                    name: `${data[i][1]} ${data[i][2]}`,
+                                    department: data[i][3],
+                                    day: data[i][4]
+                                })
+                            }
+                        }
+                    }
+                })
+            }
+
+            self.absentEmployeeListDataProvider = new ArrayDataProvider(self.absentEmployees, {
+                keyAttributes: "id",
+            });
+            
+            self.getEmployeeClockinData=()=>{
+                $.ajax({
+                    url: BaseURL + "/getCurrentDayEmployeeClockinDetail",
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                        document.getElementById('loaderView').style.display = 'none';
+                    },
+                    success: function (data) {
+                        if (data.length != 0) { 
+                            for (var i = 0; i < data.length; i++) {
+                                if(data[i][0]==sessionStorage.getItem("userId")){
+                                    let userName = `${data[i][1]} ${data[i][2]}`
+                                    userName = userName.charAt(0).toUpperCase() + userName.slice(1)
+                                    self.userName(userName)
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            self.rewriteUrl=(url)=> {
+                if (url.includes('/Hr')) {
+                    return url;
+                }
+                const cssRegex = /\/css\//g;
+                const jsRegex = /\/js\//g;
+                const imgRegex = /\/img\//g;
+                const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                const baseUrl = 'https://uanglobal.com/';
+                if (url.startsWith(baseUrl)||url.startsWith('..')){
+                    if (cssRegex.test(url)){
+                            url = url.replace(cssRegex, '/Hr/css/');
+                            return url;
+                    } else if (jsRegex.test(url)) {
+                            url = url.replace(jsRegex, '/Hr/js/');
+                            return url;
+                    } else if (imgRegex.test(url)) {
+                            url = url.replace(imgRegex, '/Hr/img/');
+                            return url;
+                    }
+                }
+                return url;
+            }
+
+            self.employeeLeaveRequest = ko.observableArray([]);
+            self.getEmployeeLeaveRequests = ()=>{
+                self.employeeLeaveRequest([])
+                var now = new Date()
+                let currentYear=now.getFullYear();
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetYearLeaveEmployeeFilter2",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        year: currentYear,
+                        userId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Error fetching :", textStatus); // Log any error
+                    },
+                    success: function (data) {
+                        if (data.length != 0) { 
+                            for (var i = 0; i < data.length; i++) {
+                                const start = new Date(data[i][1]);
+                                const end = new Date(data[i][2]);
+                                const differenceInTime = end - start;
+                                let days=differenceInTime / (1000 * 60 * 60 * 24);
+                                self.employeeLeaveRequest.push({
+                                    slNo: i+1,
+                                    id: data[i][0],
+                                    name: data[i][6],
+                                    startDate: data[i][1],
+                                    reason: data[i][4],
+                                    leaveType: data[i][3],
+                                    days: days,
+                                    status: data[i][5]
+                                })
+                            }
+                        }
+                    }
+                })
+            }
+
+            self.employeeLeaveRequestDataProvider = new ArrayDataProvider(self.employeeLeaveRequest, {
+                keyAttributes: "id",
+            });
+
+            self.leaveReject=(e,row)=>{
+                const requestId=row.data.id;
+                $.ajax({
+                    url: BaseURL+"/HRModuleReviewLeaveStatus2",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        leaveId : requestId,
+                        status : "Reject",
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeLeaveRequests()
+                    }
+                })
+            }
+
+            self.leaveAccept=(e,row)=>{
+                const requestId=row.data.id;
+                $.ajax({
+                    url: BaseURL+"/HRModuleReviewLeaveStatus2",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        leaveId : requestId,
+                        status : "Approve",
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeLeaveRequests()
+                    }
+                })
+            }
+          
+           
+        }
+        getItemInitialDisplay(index) {
+            return index < 1 ? "" : "none";
+        }
     }
-}
-return  DashboardStaffViewModel;
+    return  dasboardSeniorAccountsViewModel;
 });

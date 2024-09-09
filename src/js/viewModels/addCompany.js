@@ -352,8 +352,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.emailError("Invalid email address.");
                     } 
                     $.ajax({
-                         url: 'http://65.0.111.226:8050/HRModuleStaffEmailExist',
-                         //url: '/HRModuleStaffEmailExist',
+                        // url: '/Hr/HRModuleStaffEmailExist',
+                        //url: '/HRModuleStaffEmailExist',
+                        url: 'http://65.0.111.226:8050/HRModuleStaffEmailExist',
                         method: 'POST',
                         data: JSON.stringify({ email: email }),
                         success: function(response) {
@@ -473,7 +474,28 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     else {
                         app.onAppSuccess();
                         self.getCompanyDetails();
-                    }
+
+                        if(window.location.pathname=='/Hr'){
+                            document.querySelectorAll('link').forEach(function(link){
+                                    const baseUrl = 'https://uanglobal.com/';
+                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                        link.href = self.rewriteUrl(link.href);
+                                    }
+                            });
+                            document.querySelectorAll('script').forEach(function(script) {
+                                    script.src = self.rewriteUrl(script.src);
+                            });
+                            document.querySelectorAll('img').forEach(function(img) {
+                                    img.src = self.rewriteUrl(img.src);
+                            });
+                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                    const currentSrc = avatar.getAttribute('src');
+                                    const newSrc = self.rewriteUrl(currentSrc);
+                                    avatar.setAttribute('src', newSrc);
+                            });
+                        }
+                        
+                    } 
                 }
 
                 self.uploadCompanyLogo = function (event) {
@@ -793,6 +815,31 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     })
                 }
                 self.departmentList = new ArrayDataProvider(this.DepartmentDetList, { keyAttributes: "value"});
+
+                self.rewriteUrl=(url)=> {
+                    if (url.includes('/Hr')) {
+                        return url;
+                    }
+                    const cssRegex = /\/css\//g;
+                    const jsRegex = /\/js\//g;
+                    const imgRegex = /\/img\//g;
+                    const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                    const baseUrl = 'https://uanglobal.com/';
+                    if (url.startsWith(baseUrl)||url.startsWith('..')){
+                        if (cssRegex.test(url)){
+                                url = url.replace(cssRegex, '/Hr/css/');
+                                return url;
+                        } else if (jsRegex.test(url)) {
+                                url = url.replace(jsRegex, '/Hr/js/');
+                                return url;
+                        } else if (imgRegex.test(url)) {
+                                url = url.replace(imgRegex, '/Hr/img/');
+                                return url;
+                        }
+                    }
+                    return url;
+              }
+              
 
             }
         }

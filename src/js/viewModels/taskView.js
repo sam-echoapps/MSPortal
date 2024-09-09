@@ -287,6 +287,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }
 
+                    self.goToPage = (event)=>{
+                        self.router.go({path:'tasks'})
+                    }
+
                     self.rewriteUrl=(url)=> {
                         if (url.includes('/Hr')) {
                             return url;

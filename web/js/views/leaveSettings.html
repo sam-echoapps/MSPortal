@@ -32,12 +32,12 @@
     </oj-action-card>
 </div> -->
 
-<div class="oj-flex oj-xl-margin-4x">
+<div class="oj-panel oj-flex oj-xl-margin-4x">
  <!--  <oj-button chroming="solid" class="oj-xl-margin-4x" on-oj-action="[[addTotalLeave]]">
     <p class="oj-xl-margin-4x">Total Yearly Leaves : <oj-bind-text value="[[totalLeave]]"></oj-bind-text></p>
   </oj-button> -->
 
-  <oj-table class="oj-panel" class="oj-xl-margin-4x" id='leaveTypeTable' aria-label='All Table' data='[[dataProvider]]' display='list'
+  <oj-table id='leaveTypeTable' aria-label='All Table' data='[[dataProvider]]' display='list'
         selection-mode='{"row": "single"}'  columns='[
         { "headerClassName" : "table-header-style",
         "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
@@ -57,7 +57,7 @@
               Delete
             </oj-button>
          </template>
-        </oj-table>
+    </oj-table>
 </div>
 
 <!--<oj-dialog id="openAddTotalLeave" class="popupDialog" dialog-title="Add Total Leave" modality="modeless" drag-affordance="title-bar"

@@ -419,6 +419,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                       document.body.removeChild(link);
                     }
                   }
+
+                  self.goToPage = (event)=>{
+                    self.router.go({path:'tasks'})
+                }
+
                   
                   self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {

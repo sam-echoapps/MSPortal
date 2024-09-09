@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Leave Report </span><span class="hint-note">(View and export the employee Leave report.)</span></div>
+        <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+            <div class="oj-flex-item oj-sm-padding-2x-horizontal">
+              <oj-button chroming="solid" on-oj-action="[[back]]"  class="oj-sm-padding-2x-vertical">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;Leaves
+              </oj-button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<div id="allTask" class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+  <div class="oj-flex oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Department"
+        label-edge="inside" 
+        options="[[departmentList]]" 
+        value="{{departmentFilter}}"
+        on-value-changed="[[getDesignationFilter]]">
+      </oj-select-many>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Designation"
+        label-edge="inside" 
+        options="[[designationList]]" 
+        value="{{designationFilter}}"
+        on-value-changed="[[getStaffList]]">
+      </oj-select-many>
+      <div style="color:red;">
+        <oj-bind-text value="[[designationMissing]]"></oj-bind-text>
+    </div>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Staff"
+        label-edge="inside" 
+        options="[[staffList]]" 
+        value="{{staffFilter}}"
+        on-value-changed="[[clearStaffError]]">
+      </oj-select-many>
+      <div style="color:red;">
+        <oj-bind-text value="[[staffMissing]]"></oj-bind-text>
+    </div>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Status"
+        label-edge="inside" 
+        options="[[statusList]]" 
+        value="{{statusFilter}}">
+      </oj-select-many>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-input-date id="from" label-hint="Select From date" value="{{fromDate}}" date-picker="[[datePicker]]"
+      class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
+      </oj-input-date>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-input-date id="to" label-hint="Select To date" value="{{toDate}}" date-picker="[[datePicker]]"
+            class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>
+    </div>
+  </div>
+  <br>
+  <div class="oj-flex oj-md-justify-content-center" style="gap: 30px; padding-bottom: 10px;">
+    <oj-button id="show" chroming="borderless" on-oj-action="[[showData]]" 
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+    </oj-button>
+    <oj-button id="export"chroming="borderless" on-oj-action="[[downloadExcel]]" 
+        style="background-color: #34b53a;color: #fff;border-radius: 10px;">
+        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-download"></i> Export</span>
+    </oj-button>
+</div>
+  
+<div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+  <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+    <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+        placeholder="Search.." on-raw-value-changed="[[handleValueStaff]]" value="{{filter}}" clear-icon="always">
+        </oj-input-text>
+    </div>
+    </div>
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table id='staffTable' aria-label='All Table' data='[[TaskList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerClassName" : "table-header-style",
+      "headerText": "SL.No", "field": "slno", "id": "slno" },
+    { "headerText": "Name", "field": "name", "id": "name",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Department", "field": "department", "id": "department" },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Designation", "field": "designation", "id": "designation" },
+    { "headerText": "Leave Type", "field": "leave_type", "id": "leave_type",
+      "headerClassName" : "table-header-style"	 },
+    { "headerText": "Start Date", "field": "start_date", "id": "end_date",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+    "headerText": "End Date", "field": "end_date", "id": "end_date" },
+    { "headerText": "Status", "field": "status", "id": "status",
+    "headerClassName" : "table-header-style", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
+    <template slot="bgTemplate" data-oj-as="cell">
+      <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+          <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+      </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Approve' ]]">
+          <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+      </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Reject' ]]">
+        <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+    </oj-bind-if>
+    </template>
+    </oj-table>
+</div>
+</div>
+</div>
+    
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+    
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

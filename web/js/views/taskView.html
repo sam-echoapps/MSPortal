@@ -126,6 +126,12 @@
             placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
             </oj-input-text>
         </div>
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
+            style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Task List</span>
+        </oj-button>
+        </div>
       </div> 
         
 

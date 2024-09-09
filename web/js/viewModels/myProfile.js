@@ -596,6 +596,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.DepartmentDet = ko.observableArray([]);
                 self.DesignationDet = ko.observableArray([]);
                 self.line_manager = ko.observable('');
+                self.line_manager2 = ko.observable('');
                 self.EmployeeDet = ko.observableArray([]);
 
                 self.getStaff = ()=>{
@@ -645,6 +646,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.roles(result[0][22])
                             self.employee_type(result[0][23])
                             self.termination_date(result[0][24])
+                            self.line_manager2(result[0][25])
                             if(data[2] != ''){
                                 self.profilePhotoShow('data:image/jpeg;base64,'+data[2]);
                                 self.fileContent(self.profilePhotoShow())
@@ -718,6 +720,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
                 
                 self.formSubmit = ()=>{
+                    // Check if self.line_manager() is an integer
+                    const lineManagerValue = self.line_manager();
+                    if (Number.isInteger(Number(lineManagerValue))) {
+                        self.line_manager2(lineManagerValue);
+                    }
                     const formValid = self._checkValidationGroup("formValidation"); 
                     if (formValid) {
                         if(self.emailError()=='' && self.phoneError()=='' && self.typeError()==''){
@@ -751,7 +758,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     emergency_phone : self.emergencyPhone(),
                                     emergency_email : self.emergencyEmail(),
                                     nationality : self.nationality(),
-                                    line_manager : self.line_manager(),
+                                    line_manager : self.line_manager2(),
                                     middleName : self.middleName(),
                                     birth_day : self.birth_day(),
                                     gender : self.gender(),
@@ -797,7 +804,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     emergency_phone : self.emergencyPhone(),
                                     emergency_email : self.emergencyEmail(),
                                     nationality : self.nationality(),
-                                    line_manager : self.line_manager(),
+                                    line_manager : self.line_manager2(),
                                     middleName : self.middleName(),
                                     birth_day : self.birth_day(),
                                     gender : self.gender(),
@@ -854,7 +861,29 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getRoles();
                         self.getStaff();
                         self.getLeaves();
+                        self.getWorkPattern();
+                        self.getEmployees();
 
+                        if(window.location.pathname=='/Hr'){
+                            document.querySelectorAll('link').forEach(function(link){
+                                    const baseUrl = 'https://uanglobal.com/';
+                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                        link.href = self.rewriteUrl(link.href);
+                                    }
+                            });
+                            document.querySelectorAll('script').forEach(function(script) {
+                                    script.src = self.rewriteUrl(script.src);
+                            });
+                            document.querySelectorAll('img').forEach(function(img) {
+                                    img.src = self.rewriteUrl(img.src);
+                            });
+                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                    const currentSrc = avatar.getAttribute('src');
+                                    const newSrc = self.rewriteUrl(currentSrc);
+                                    avatar.setAttribute('src', newSrc);
+                            });
+                        }
+                        
                     }
                 }
 
@@ -941,7 +970,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.fetchTeamsForStaff();
                         self.fetchRoleInformationOnLoad();
                         self.fetchContractDetailsOnLoad();
-                        self.getWorkPattern();
                         self.changeLeaveBalance();
                         self.getWorkLocation();
                         $("#employment").show();
@@ -994,17 +1022,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             }else{
                                 self.designation('')
                             }
-                            if(data[1].length !=0){
-                                if(data[1][i][3] == null){
-                                    data[1][i][3] ='';
+                            
+                            var j = 0;
+                            if(data[1].length !=0){ 
+                                console.log(data[1].length);
+
+                                if(data[1][j][3] == null){
+                                    data[1][j][3] ='';
                                 }
-                                for (var i = 0; i < data[1].length; i++) {
+                                for (j = 0; j < data[1].length; j++) {
                                     self.EmployeeDet.push({
-                                        'value':  data[1][i][1]+ " " +  data[1][i][3]+ " " +  data[1][i][2],
-                                        'label': data[1][i][1]+ " " +  data[1][i][3]+ " " +  data[1][i][2] 
+                                        'value':  data[1][j][0],
+                                        'label': data[1][j][1]+ " " +  data[1][j][3]+ " " +  data[1][j][2]
                                     });
                                 }
-                            }else{
+                            }
+                            else{
                                 self.line_manager('')
                             }
                         }
@@ -1012,7 +1045,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
                 }
                 self.designationList = new ArrayDataProvider(this.DesignationDet, { keyAttributes: "value"});
-                self.employeeList = new ArrayDataProvider(this.EmployeeDet, { keyAttributes: "value"});
+                self.employeeListLine = new ArrayDataProvider(this.EmployeeDet, { keyAttributes: "value"});
 
                 self.crediantialUpdate = function (event,data) {
                     const formValid = self._checkValidationGroup("formValidation"); 
@@ -1731,7 +1764,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     var staffId = sessionStorage.getItem("userId"); // Get the staff_id from sessionStorage
                     if (staffId) {
                         self.getRoleInformationDetails(staffId); // Fetch role information details for the staff
-                        self.getEmployees();
                         document.querySelector('#openEditRoleInformation').open(); // Open the edit popup
                     } else {
                         console.error("No staff_id found in sessionStorage");
@@ -2343,6 +2375,29 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     });
                 };
 
+                self.rewriteUrl=(url)=> {
+                    if (url.includes('/Hr')) {
+                        return url;
+                    }
+                    const cssRegex = /\/css\//g;
+                    const jsRegex = /\/js\//g;
+                    const imgRegex = /\/img\//g;
+                    const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                    const baseUrl = 'https://uanglobal.com/';
+                    if (url.startsWith(baseUrl)||url.startsWith('..')){
+                        if (cssRegex.test(url)){
+                                url = url.replace(cssRegex, '/Hr/css/');
+                                return url;
+                        } else if (jsRegex.test(url)) {
+                                url = url.replace(jsRegex, '/Hr/js/');
+                                return url;
+                        } else if (imgRegex.test(url)) {
+                                url = url.replace(imgRegex, '/Hr/img/');
+                                return url;
+                        }
+                    }
+                    return url;
+              }
                 
 
             }

@@ -30,7 +30,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/checkEmployeeClockedIn",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("staffId")
+                        staffId: sessionStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
@@ -58,79 +58,103 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 });
             }
 
-            self.clockInAction=(e)=>{
-                let location=""
-                let latitude=""
-                let longitude=""
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        latitude = position.coords.latitude;
-                        longitude = position.coords.longitude;
-                        // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+            self.getLocation=()=>{
+                return new Promise((resolve, reject) => {
+                    if ("geolocation" in navigator) {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                function (position) {
+                                    const latitude = position.coords.latitude;
+                                    const longitude = position.coords.longitude;
 
-                        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+                                    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
 
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.address) {
-                                    const address = data.address;
-                                    location = `City: ${address.city || address.town || address.village}, State: ${address.state}, Country: ${address.country}`
-                                    
-                                } else {
-                                    console.log('No address found for the given coordinates.');
+                                    fetch(url)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            let location = "";
+                                            if (data && data.address) {
+                                                const address = data.address;
+                                                location = `City: ${address.city || address.town || address.village}, State: ${address.state}, Country: ${address.country}`
+                                            
+                                            } else {
+                                                console.log('No address found for the given coordinates.');
+                                            }
+                                            console.log(location);
+                                            console.log(longitude);
+                                            console.log(latitude);
+
+                                            resolve([location, longitude, latitude]);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error fetching data:', error);
+                                            resolve(["Unknown location", null, null]);
+                                        });
+                                },
+                                function (error) {
+                                    console.error(`Geolocation Error: ${error.message}`);
+                                    resolve(["Unknown location", null, null]);
+                                },
+                                {
+                                    enableHighAccuracy: true,
+                                    timeout: 5000, 
+                                    maximumAge: 0 
                                 }
+                            );
+                        }
+                        else {
+                            console.log("Geolocation is not supported");
+                            reject(new Error("Geolocation not supported"));
+                            resolve(["Unknown location", null, null]);
+                        }
+                    }
+                });
+            }
 
-                                var now=new Date
-                                var hours = now.getHours();
-                                var minutes = now.getMinutes();
-                                var seconds = now.getSeconds();
-                                self.clockInTime(`${hours}:${minutes}:${seconds}`) 
-
-                                document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
-                                document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
-                                self.clockInBtnDisabled(true)
-                                self.clockOutBtnDisabled(false)
-                                self.checkIn(true)
-
-                                $.ajax({
-                                    url: BaseURL + "/ClockinActivity",
-                                    type: 'POST',
-                                    data: JSON.stringify({
-                                        staffId: sessionStorage.getItem("staffId"),
-                                        clockinTime: `${hours}:${minutes}:${seconds}`,
-                                        clockinLocation: location,
-                                        clockinLongitude: longitude,
-                                        clockinLatitude: latitude,
-                                        clockInStatus: "clockIn"
-                                    }),
-                                    contentType: 'application/json',
-                                    dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInterval"),
-                                    context: self,
-                                    error: function (xhr, textStatus, errorThrown) {
-                                        console.log(textStatus);
-                                    },
-                                    success: function (data) {
-                                        console.log(data);
-                                        self.getEmployeeClockinData()
-                                    }
-                                });          
-                            })
-                            .catch(error => console.error('Error fetching data:', error));
-                    },
-                    function (error) {
-                        console.error(`Error: ${error.message}`);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 5000, 
-                        maximumAge: 0 
-                    });
-                } 
-                else {
-                    console.log("Geolocation is not supported");
+            self.clockInAction=async (e)=>{
+                let location = "Location not available";
+                let longitude = "";
+                let latitude = "";
+                try {
+                    [location, longitude, latitude] = await self.getLocation();
+                } catch (error) {
+                    console.warn("Failed to fetch location data:", error);
                 }
+                var now=new Date
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                self.clockInTime(`${hours}:${minutes}:${seconds}`) 
+
+                document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
+                document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
+                self.clockInBtnDisabled(true)
+                self.clockOutBtnDisabled(false)
+                self.checkIn(true)
+               
+                $.ajax({
+                    url: BaseURL + "/ClockinActivity",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId"),
+                        clockinTime: `${hours}:${minutes}:${seconds}`,
+                        clockinLocation: location,
+                        clockinLongitude: longitude,
+                        clockinLatitude: latitude,
+                        clockInStatus: "clockIn"
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeClockinData()
+                    }
+                });          
             }
 
             self.clockOutAction=()=>{
@@ -138,75 +162,50 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 popup.open();
             }
 
-            self.confirmClockOut=()=>{
-                let location=""
-                let latitude=""
-                let longitude=""
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        latitude = position.coords.latitude;
-                        longitude = position.coords.longitude;
-
-                        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.address) {
-                                    const address = data.address;
-                                    location = `City: ${address.city || address.town || address.village}, State: ${address.state}, Country: ${address.country}`
-                                    
-                                } else {
-                                    console.log('No address found for the given coordinates.');
-                                }
-
-                                var now=new Date
-                                var hours = now.getHours();
-                                var minutes = now.getMinutes();
-                                var seconds = now.getSeconds();
-                                
-                                document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
-                                document.getElementById('clockIn').style.backgroundColor = '#3524ff';
-                                self.clockInBtnDisabled(false)
-                                self.clockOutBtnDisabled(true)
-                                self.checkIn(false)
-                    
-                                $.ajax({
-                                    url: BaseURL + "/ClockoutActivity",
-                                    type: 'POST',
-                                    data: JSON.stringify({
-                                        staffId: sessionStorage.getItem("staffId"),
-                                        clockOutTime: `${hours}:${minutes}:${seconds}`,
-                                        clockOutLocation: location,
-                                        clockOutLongitude: longitude,
-                                        clockOutLatitude: latitude,
-                                        clockOutStatus: "clockOut"
-                                    }),
-                                    contentType: 'application/json',
-                                    dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInterval"),
-                                    context: self,
-                                    error: function (xhr, textStatus, errorThrown) {
-                                        console.log(textStatus);
-                                    },
-                                    success: function (data) {
-                                        console.log(data);
-                                        self.getEmployeeClockinData()
-                                        self.cancelClockOut();
-                                    }
-                                });
-                            })
-                        .catch(error => console.error('Error fetching data:', error));
-                    },
-                    function (error) {
-                        console.error(`Error: ${error.message}`);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 5000, 
-                        maximumAge: 0 
-                    });
+            self.confirmClockOut=async ()=>{
+                let location = "Location not available";
+                let longitude = "";
+                let latitude = "";
+                try {
+                    [location, longitude, latitude] = await self.getLocation();
+                } catch (error) {
+                    console.warn("Failed to fetch location data:", error);
                 }
+                var now=new Date
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                
+                document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
+                document.getElementById('clockIn').style.backgroundColor = '#3524ff';
+                self.clockInBtnDisabled(false)
+                self.clockOutBtnDisabled(true)
+                self.checkIn(false)
+    
+                $.ajax({
+                    url: BaseURL + "/ClockoutActivity",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId"),
+                        clockOutTime: `${hours}:${minutes}:${seconds}`,
+                        clockOutLocation: location,
+                        clockOutLongitude: longitude,
+                        clockOutLatitude: latitude,
+                        clockOutStatus: "clockOut"
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        self.getEmployeeClockinData()
+                        self.cancelClockOut();
+                    }
+                });
             }
 
             self.cancelClockOut=()=>{
@@ -298,7 +297,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/getLeavesDetails",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("staffId")
+                        staffId: sessionStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
@@ -491,8 +490,54 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     self.getAbsentEmployees();
                     self.getEmployeeLeaveRequests();
                     app.onAppSuccess();
+
+                    if(window.location.pathname=='/Hr'){
+                        document.querySelectorAll('link').forEach(function(link){
+                                const baseUrl = 'https://uanglobal.com/';
+                                if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                    link.href = self.rewriteUrl(link.href);
+                                }
+                        });
+                        document.querySelectorAll('script').forEach(function(script) {
+                                script.src = self.rewriteUrl(script.src);
+                        });
+                        document.querySelectorAll('img').forEach(function(img) {
+                                img.src = self.rewriteUrl(img.src);
+                        });
+                        document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                const currentSrc = avatar.getAttribute('src');
+                                const newSrc = self.rewriteUrl(currentSrc);
+                                avatar.setAttribute('src', newSrc);
+                        });
+                    }
+                    
                 }
             };
+
+            self.rewriteUrl=(url)=> {
+                if (url.includes('/Hr')) {
+                    return url;
+                }
+                const cssRegex = /\/css\//g;
+                const jsRegex = /\/js\//g;
+                const imgRegex = /\/img\//g;
+                const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                const baseUrl = 'https://uanglobal.com/';
+                if (url.startsWith(baseUrl)||url.startsWith('..')){
+                    if (cssRegex.test(url)){
+                            url = url.replace(cssRegex, '/Hr/css/');
+                            return url;
+                    } else if (jsRegex.test(url)) {
+                            url = url.replace(jsRegex, '/Hr/js/');
+                            return url;
+                    } else if (imgRegex.test(url)) {
+                            url = url.replace(imgRegex, '/Hr/img/');
+                            return url;
+                    }
+                }
+                return url;
+          }
+          
            
         }
         getItemInitialDisplay(index) {

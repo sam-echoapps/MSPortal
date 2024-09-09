@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="../../css/addStaff.css">
 
+<oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' 
+&& userrole() != 'junior hr' && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
 <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
     <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
         <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
@@ -15,7 +17,44 @@
     </oj-buttonset-one>
     </div>
 </div>
+</oj-bind-if>
 
+<oj-bind-if test="[[userrole() == 'employee' || userrole() == 'junior manager'
+|| userrole() == 'junior accounts' || userrole() == 'intern' || userrole() == 'external']]">
+    <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+            <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+            <oj-bind-for-each data="[[tabData1]]">
+            <template>
+                <oj-option value="[[$current.data.id]]">
+                <span>
+                    <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+                </span>
+                </oj-option>
+            </template>
+            </oj-bind-for-each>
+        </oj-buttonset-one>
+        </div>
+    </div>
+</oj-bind-if>
+
+<oj-bind-if test="[[userrole() == 'junior hr']]">
+    <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+            <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+            <oj-bind-for-each data="[[tabData2]]">
+            <template>
+                <oj-option value="[[$current.data.id]]">
+                <span>
+                    <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+                </span>
+                </oj-option>
+            </template>
+            </oj-bind-for-each>
+        </oj-buttonset-one>
+        </div>
+    </div>
+</oj-bind-if>
 
 <div id="calender" class="oj-panel oj-xl-margin-4x" style="background-color: #F8F8FB;">
     
@@ -28,7 +67,7 @@
 
         <div class="oj-md-9">
             <div id="leavesview" style="margin-top: 20px; background-color: #ffffff;">
-                <p style="color: #213446;"><strong>Employee Leaves</strong></p>
+                <p style="color: #213446;"><strong>Employee Leaves - Today</strong></p>
                 <oj-table id='leaveTable3' aria-label='All Table' data='[[CalenderLeave]]' display='list'
                 selection-mode='{"row": "single"}'  columns='[
                 { "headerClassName" : "table-header-style",
@@ -42,7 +81,7 @@
             </div>
 
             <div id="leavesview" style="margin-top: 20px; background-color: #ffffff;">
-                <p style="color: #213446;"><strong>This Month</strong></p>
+                <p style="color: #213446;"><strong>Holidays This Month</strong></p>
                 <oj-table id='leaveTable3' aria-label='All Table' data='[[HolidayLeave]]' display='list'
                 selection-mode='{"row": "single"}'  columns='[
                 { "headerClassName" : "table-header-style",
@@ -130,6 +169,92 @@
 
 </div>
 
+<div id="my_requests" style="display:none;">
+
+    <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad; border-radius: 10px;">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-combobox-one id="yearFilterLeave" label-hint="Select Year" class="oj-sm-padding-2x-vertical"
+            label-edge="inside" options="[[MyYearList]]" value="{{MyYearFilter}}" on-value-changed="[[MyfilterYear]]">
+            </oj-combobox-one>
+
+            <oj-button id="save" chroming="solid"  class="oj-sm-padding-3x-vertical oj-md-padding-4x-horizontal">            
+            <h9 class="oj-xl-margin-4x"><i class="fa-solid fa">
+            </i>&nbsp;Leave Taken : <oj-bind-text value="[[leaveTaken]]"></oj-bind-text></h9></oj-button>
+
+            <oj-button id="save" chroming="solid"  class="oj-sm-padding-3x-vertical">            
+            <h9 class="oj-xl-margin-4x"><i class="fa-solid fa">
+            </i>&nbsp;Leave Remaining : <oj-bind-text value="[[leaveRemaining]]"></oj-bind-text></h9></oj-button>
+        </div>
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+                <oj-input-text id="MysearchFilter" label-hint="Search" class="oj-sm-padding-2x-vertical"
+                label-edge="inside" placeholder="Search.." on-raw-value-changed="[[MyhandleValue]]"
+                value="{{Myfilter}}" clear-icon="always">
+                </oj-input-text>
+            </div>
+        </div>
+    </div>
+
+    <div class="oj-panel oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 25px;">
+        <oj-table id='leaveTable' aria-label='All Table' data='[[MyLeaveData]]' display='list'
+            selection-mode='{"row": "single"}'  columns='[
+            { "headerClassName" : "table-header-style",
+            "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Start Date", "field": "start_date", "id": "start_date" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "End Date", "field": "end_date", "id": "end_date" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Leave reason", "field": "leave_type", "id": "leave_type" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Leave Type", "field": "leave_reason", "id": "leave_reason" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Action",
+            "maxWidth" : "15rem",
+            "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+            "template": "actionTemplate", "id": "action","sortable": "disabled" } ]' style='width: 100%;' class="demo-table-container">
+            <template slot="actionTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' && userrole() != 'senior manager'
+                && userrole() != 'junior hr' && userrole() != 'senior hr' && userrole() != 'senior accounts'
+                && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
+                    <oj-button
+                    chroming="borderless"
+                    display="icons"
+                    on-oj-action="[[reviewLeave]]">
+                    <span slot="startIcon" class="fa-solid fa-eye delete-btn"></span>
+                    View
+                    </oj-button>
+                </oj-bind-if>
+                <oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' && userrole() != 'senior manager'
+                && userrole() != 'junior hr' && userrole() != 'senior hr' && userrole() != 'senior accounts'
+                && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
+                <oj-button
+                chroming="borderless"
+                display="icons"
+                on-oj-action="[[deleteLeave]]">
+                <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+                Delete
+                </oj-button>
+                </oj-bind-if>
+            </template>
+            <template slot="bgTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+                    <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.status == 'Reject' ]]">
+                    <div class="oj-table-element-reject"><oj-bind-text value="Rejected"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.status == 'Approve' ]]">
+                    <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+                </oj-bind-if>
+            </template>
+        </oj-table>
+    </div>
+
+</div>
+
 <div id="leave_approval" class="oj-xl-margin-4x" style="display:none;">
 
     <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
@@ -137,6 +262,11 @@
             <oj-combobox-one id="yearFilterLeave" label-hint="Select Year" class="oj-sm-padding-2x-vertical"
             label-edge="inside" options="[[yearList]]" value="{{yearFilter}}" on-value-changed="[[filterYear]]">
             </oj-combobox-one>
+        </div>
+        <div class="oj-md-padding-2x-horizontal oj-sm-padding-5x-vertical">
+            <oj-button chroming="solid" on-oj-action="[[leaveReport]]">
+                <i class="fa-solid"></i>&nbsp;Get Report
+            </oj-button>
         </div>
         <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
             <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
@@ -148,8 +278,8 @@
         </div>
     </div>
 
-    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 30px;">
-        <oj-table class="oj-panel" id='leaveTable' aria-label='All Table' data='[[LeaveData]]' display='list'
+    <div class="oj-panel oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 30px;">
+        <oj-table id='leaveTable' aria-label='All Table' data='[[LeaveData]]' display='list'
             selection-mode='{"row": "single"}'  columns='[
             { "headerClassName" : "table-header-style",
             "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
@@ -171,18 +301,14 @@
               "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
               "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
             <template slot="actionTemplate" data-oj-as="cell">
-                <oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' && userrole() != 'junior hr' 
-                && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
-                    <oj-button
-                    chroming="borderless"
-                    display="icons"
-                    on-oj-action="[[reviewLeave]]">
-                    <span slot="startIcon" class="fa-solid fa-eye delete-btn"></span>
-                    View
-                  </oj-button>
-               </oj-bind-if>
-              <oj-bind-if test="[[cell.row.status === 'Pending' && userrole() != 'employee' && userrole() != 'junior manager' 
-              && userrole() != 'junior hr' && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
+                <oj-button
+                chroming="borderless"
+                display="icons"
+                on-oj-action="[[reviewLeave]]">
+                <span slot="startIcon" class="fa-solid fa-eye delete-btn"></span>
+                View
+                </oj-button>
+              <oj-bind-if test="[[cell.row.status === 'Pending']]">
                 <oj-button
                 chroming="borderless"
                 display="icons"
@@ -227,7 +353,6 @@
                             label-hint="Select the Employee"
                             style="width: 300px; margin-left: -200px;">      
                             </oj-select-single>
-
                         </div>
                     </div>
                     <div style="margin-left: -330px; margin-top: 5px;">
@@ -238,13 +363,21 @@
                     </oj-form-layout>
                 </div>
             </oj-validation-group>
+
+            <!-- <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+                <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+                <oj-button chroming="solid" on-oj-action="[[leaveReport]]" style="margin-top: -150px;" class="oj-sm-padding-2x-vertical">
+                    <i class="fa-solid"></i>&nbsp;Get Leave Report
+                  </oj-button>
+                </div>
+            </div> -->
+
         </div>
     </div>
     </oj-bind-if>
 
-
-    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 30px;">
-        <oj-table class="oj-panel" id='leaveTable2' aria-label='All Table' data='[[LeaveData2]]' display='list'
+    <div class="oj-panel oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 30px;">
+        <oj-table id='leaveTable2' aria-label='All Table' data='[[LeaveData2]]' display='list'
             selection-mode='{"row": "single"}'  columns='[
             { "headerClassName" : "table-header-style",
             "headerText": "Name", "field": "name", "id": "name" },
@@ -253,68 +386,6 @@
             { "headerClassName" : "table-header-style",
             "headerText": "Remaining", "field": "remaining", "id": "remaining" }
             ]' style='width: 100%;' class="demo-table-container">
-        </oj-table>
-    </div>
-
-</div>
-
-<div id="leave_report" style="display:none;">
-
-    <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-combobox-one id="yearFilterLeave2" label-hint="Select Year" class="oj-sm-padding-2x-vertical"
-            label-edge="inside" options="[[yearList3]]" value="{{yearFilter3}}" on-value-changed="[[filterYear3]]">
-            </oj-combobox-one>
-        </div>
-        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
-            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-                <oj-input-text id="searchFilter3" label-hint="Search" class="oj-sm-padding-2x-vertical"
-                label-edge="inside" placeholder="Search.." on-raw-value-changed="[[handleValue3]]"
-                value="{{filter3}}" clear-icon="always">
-                </oj-input-text>
-            </div>
-        </div>
-    </div>
-
-    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center" style="margin-top: 30px;">
-        <oj-table class="oj-panel" id='leaveTable4' aria-label='All Table' data='[[LeaveData3]]' display='list'
-            selection-mode='{"row": "single"}'  columns='[
-            { "headerClassName" : "table-header-style",
-            "headerText": "SL.No", "field": "no", "id": "no", "maxWidth" : "8rem" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "Name", "field": "name", "id": "name" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "Start Date", "field": "start_date", "id": "start_date" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "End Date", "field": "end_date", "id": "end_date" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "Leave reason", "field": "leave_type", "id": "leave_type" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "Leave Type", "field": "leave_reason", "id": "leave_reason" },
-            { "headerClassName" : "table-header-style",
-            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate" },
-            { "headerClassName" : "table-header-style",
-              "headerText": "Action",
-              "maxWidth" : "15rem",
-              "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-              "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
-            <template slot="actionTemplate" data-oj-as="cell">
-                <oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' && userrole() != 'junior hr' 
-                && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
-                    <oj-button
-                    chroming="borderless"
-                    display="icons"
-                    on-oj-action="[[reviewLeave]]">
-                    <span slot="startIcon" class="fa-solid fa-eye delete-btn"></span>
-                    View
-                  </oj-button>
-               </oj-bind-if>
-            </template>
-            <template slot="bgTemplate" data-oj-as="cell">
-                <oj-bind-if test="[[cell.row.status == 'Approve' ]]">
-                    <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
-                </oj-bind-if>
-            </template>
         </oj-table>
     </div>
 

@@ -7,7 +7,7 @@
     </div> -->
 </div>
 
-
+<oj-bind-if test="[[userrole() != 'junior hr' && userrole() != 'junior accounts']]">
 <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
     <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
         <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
@@ -23,7 +23,25 @@
     </oj-buttonset-one>
     </div>
 </div>
+</oj-bind-if>
 
+<oj-bind-if test="[[userrole() == 'junior hr' || userrole() == 'junior accounts']]">
+    <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+            <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+            <oj-bind-for-each data="[[tabData1]]">
+            <template>
+                <oj-option value="[[$current.data.id]]">
+                <span>
+                    <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+                </span>
+                </oj-option>
+            </template>
+            </oj-bind-for-each>
+        </oj-buttonset-one>
+        </div>
+    </div>
+</oj-bind-if>
 
 <div id="documents">
     <div class="oj-flex oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
@@ -32,14 +50,14 @@
                 <div id="form-container" class="">
                     <oj-form-layout id="document" class="form" direction="row" max-columns="4">
                         <oj-input-text id="document"  label-hint="Document Name" required="true" value="{{documentName}}"></oj-input-text>
-                        <oj-select-single
+                        <oj-select-many
                             id="select2"
                             value="{{Roles}}"
-                            data="{{RolesList}}"
+                            options="{{RolesList}}"
                             label-edge="inside"
                             label-hint="Who can access"
                             required="true">      
-                        </oj-select-single>
+                        </oj-select-many>
                         <div class="">
                             <div class="oj-flex-item">
                                 <oj-file-picker  id="documentUpload" style="margin-top: -10px;" class="demo-max-width custom-input" primary-text="Upload"
@@ -48,12 +66,12 @@
                                 <div class="oj-text-color-danger"><oj-bind-text value='[[typeError2]]'></oj-bind-text></div></br>                  
                             </div>
                         </div> 
-                    
-                    <div class="">
-                        <div class="oj-flex-item">
-                            <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit2]]"><i class="fas fa-save"></i> Submit</oj-button>
+                        <div class="">
+                            <div class="oj-flex-item">
+                                <oj-button id="save" chroming="solid" class="oj-sm-padding-2x-vertical"
+                                on-oj-action="[[formSubmit2]]"><i class="fas fa-save"></i> Submit</oj-button>
+                            </div>
                         </div>
-                    </div>
                 </oj-form-layout>
                 </div>
             </oj-validation-group>
@@ -70,7 +88,8 @@
             </div>
         </div>
 
-        <oj-table class="oj-panel" id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData]]"
+        <div class="oj-panel">
+        <oj-table id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData]]"
             columns-default.sortable="enabled" layout="fixed"
             columns='[
                 {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
@@ -78,7 +97,6 @@
                 {"headerClassName" : "table-header-style","headerText": "View", "id": "document_link"},
                 {"headerClassName" : "table-header-style","headerText": "Uploaded Date", "id": "uploaded_date"},
                 {"headerClassName" : "table-header-style","headerText": "Uploaded By", "id": "uploaded_by"},
-                {"headerClassName" : "table-header-style","headerText": "Role", "id": "user_role"},
                 {"headerClassName" : "table-header-style","headerText": "Uploaded For", "id": "uploaded_for"},
                 {"headerClassName" : "table-header-style","headerText": "Action", "id": "action","sortable": "disabled"}
             ]'
@@ -95,7 +113,6 @@
                     </td>
                     <td><oj-bind-text value="[[row.data.uploaded_date]]"></oj-bind-text></td>
                     <td><oj-bind-text value="[[row.data.uploaded_by]]"></oj-bind-text></td>
-                    <td><oj-bind-text value="[[row.data.user_role]]"></oj-bind-text></td>
                     <td><oj-bind-text value="[[row.data.uploaded_for]]"></oj-bind-text></td>
                     <td>  
                         <oj-bind-if test="[[userrole() != 'junior hr' && userrole() != 'junior accounts']]">
@@ -108,6 +125,7 @@
                 </tr>
             </template>
         </oj-table>
+        </div>
       
     </div>
 </div>
@@ -151,7 +169,8 @@
             </div>
         </div>
 
-        <oj-table class="oj-panel" id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData2]]"
+        <div class="oj-panel">
+        <oj-table id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData2]]"
             columns-default.sortable="enabled" layout="fixed"
             columns='[
                 {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
@@ -184,7 +203,8 @@
                     </td>
                 </tr>
             </template>
-        </oj-table> 
+        </oj-table>
+        </div>
 
     </div>
 

@@ -24,6 +24,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                         let popup = document.getElementById("popup1");
                         popup.open();
                         $.ajax({
+                            // url: "/Hr/HRModuleLogin", 
                             //url: "/HRModuleLogin", 
                             url: "http://65.0.111.226:8050/HRModuleLogin",
                             type: 'POST',
@@ -45,6 +46,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                             success: function (data) {
                                 console.log(data);
                                 if (data[1]== 'Y') {
+                                    // sessionStorage.setItem("BaseURL", "/Hr");
                                     //sessionStorage.setItem("BaseURL", "");
                                     sessionStorage.setItem("BaseURL", "http://65.0.111.226:8050");
                                     sessionStorage.setItem("userId", data[2]);
@@ -87,11 +89,33 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
 
                 self.connected = function () {
                     self.getCompanyDetails();
+                    
+                    if(window.location.pathname=='/Hr'){
+                        document.querySelectorAll('link').forEach(function(link){
+                                const baseUrl = 'https://uanglobal.com/';
+                                if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                    link.href = self.rewriteUrl(link.href);
+                                }
+                        });
+                        document.querySelectorAll('script').forEach(function(script) {
+                                script.src = self.rewriteUrl(script.src);
+                        });
+                        document.querySelectorAll('img').forEach(function(img) {
+                                img.src = self.rewriteUrl(img.src);
+                        });
+                        document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                const currentSrc = avatar.getAttribute('src');
+                                const newSrc = self.rewriteUrl(currentSrc);
+                                avatar.setAttribute('src', newSrc);
+                        });
+                    }
+
                 };
 
                 self.getCompanyDetails = ()=>{
                     $.ajax({
-                        //url: "/HRModuleGetCompanyInfo", 
+                        // url: "/Hr/HRModuleGetCompanyInfo",
+                        //url: "/HRModuleGetCompanyInfo",
                         url: "http://65.0.111.226:8050//HRModuleGetCompanyInfo",
                         type: 'GET',
                         timeout: sessionStorage.getItem("timeInetrval"),
@@ -111,6 +135,32 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                         }
                     })
                 }
+
+                self.rewriteUrl=(url)=> {
+                    if (url.includes('/Hr')) {
+                        return url;
+                    }
+                    const cssRegex = /\/css\//g;
+                    const jsRegex = /\/js\//g;
+                    const imgRegex = /\/img\//g;
+                    const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                    const baseUrl = 'https://uanglobal.com/';
+                    if (url.startsWith(baseUrl)||url.startsWith('..')){
+                        if (cssRegex.test(url)){
+                                url = url.replace(cssRegex, '/Hr/css/');
+                                return url;
+                        } else if (jsRegex.test(url)) {
+                                url = url.replace(jsRegex, '/Hr/js/');
+                                return url;
+                        } else if (imgRegex.test(url)) {
+                                url = url.replace(imgRegex, '/Hr/img/');
+                                return url;
+                        }
+                    }
+                    return url;
+              }
+
+
             }
         }
         return  SignIn;

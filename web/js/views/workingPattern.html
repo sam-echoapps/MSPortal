@@ -39,7 +39,8 @@
 <div id="working">
   
     <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="table_view">
-      <oj-table class="oj-panel" id='workingTable' aria-label='All Table' data='[[patternData]]' display='list'
+      <div class="oj-panel">
+      <oj-table id='workingTable' aria-label='All Table' data='[[patternData]]' display='list'
           selection-mode='{"row": "single"}' columns='[
           { "headerClassName" : "table-header-style",
           "headerText": "SL.No", "field": "no", "id": "no" },
@@ -71,6 +72,7 @@
           </oj-button>
         </template>
       </oj-table>
+      </div>
     </div>
 
 </div>
