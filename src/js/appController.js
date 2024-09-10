@@ -314,6 +314,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskReport', detail : {label: 'Tasks Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
         ];
       }
 
@@ -494,6 +495,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},

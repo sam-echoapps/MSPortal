@@ -110,6 +110,24 @@
               </div>
           </oj-action-card>
           <oj-action-card id="1" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-sm-4 oj-md-4">
+                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                        <i class="fa-solid fa-clock-rotate-left fa-2x" style="color: #745ffc;"></i>
+                    </div>
+                </div>
+                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="Task Pending"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 30px;">
+                        <oj-bind-text value="[[pendingCount]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+          <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
           <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
               <div class="oj-sm-4 oj-md-4">
                   <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
@@ -127,7 +145,7 @@
               </div>
           </div>
       </oj-action-card>
-      <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+      <oj-action-card id="3" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
               <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
                   <div class="oj-sm-4 oj-md-4">
                       <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
@@ -141,24 +159,6 @@
                       </span>
                       <span style="font-weight: 600;font-size: 30px;">
                           <oj-bind-text value="[[doneCount]]"></oj-bind-text>
-                      </span>
-                  </div>
-              </div>
-          </oj-action-card>
-          <oj-action-card id="3" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
-              <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
-                  <div class="oj-sm-4 oj-md-4">
-                      <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
-                          style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
-                          <i class="fa-solid fa-clock-rotate-left fa-2x" style="color: #745ffc;"></i>
-                      </div>
-                  </div>
-                  <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
-                      <span style="font-weight: 600;font-size: 15px;color: #878a99;">
-                          <oj-bind-text value="Task Pending"></oj-bind-text>
-                      </span>
-                      <span style="font-weight: 600;font-size: 30px;">
-                          <oj-bind-text value="[[pendingCount]]"></oj-bind-text>
                       </span>
                   </div>
               </div>
@@ -211,7 +211,7 @@
             { "headerClassName" : "table-header-style",
             "headerText": "Created Date", "field": "created_date", "id": "created_date" },
             { "headerClassName" : "table-header-style",
-            "headerText": "Priority", "field": "priority", "id": "priority" },
+            "headerText": "Priority", "field": "priority", "id": "priority", "template": "statusTemplate" },
             { "headerClassName" : "table-header-style",
             "headerText": "Due Date", "field": "due_date", "id": "due_date" },
             { "headerClassName" : "table-header-style",
@@ -246,6 +246,17 @@
                 <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
             </oj-bind-if>
             </template>
+            <template slot="statusTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[cell.row.priority == 'High' ]]">
+                    <div class="oj-table-element-high"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.priority == 'Medium' ]]">
+                    <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.priority == 'Low' ]]">
+                    <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+              </template>
             </oj-table>
         </div>
         </div>
@@ -281,7 +292,7 @@
     
     <oj-dialog id="successView">
         <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
             <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
                 <span slot="startIcon" class="oj-ux-ico-close"></span>
                 Cancel

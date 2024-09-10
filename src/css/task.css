@@ -1,5 +1,7 @@
+
 .card-custom{
   border-radius: 10px;
-  box-shadow: 0 0 10px #b9adad;
+  box-shadow: 0 0 5px #dddddd;
   width: 232px;
+  background-color: #fff;
 }

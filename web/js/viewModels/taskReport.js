@@ -174,7 +174,19 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
                                     console.log(data[0][i][1])
-                                    self.DesignationDet.push({'value': data[0][i][1],'label': data[0][i][1]  });
+                                    //self.DesignationDet.push({'value': data[0][i][1],'label': data[0][i][1]  });
+                                    
+                                    var newValue = data[0][i][1]; 
+                                    var exists = self.DesignationDet().some(function (designation) {
+                                        return designation.value === newValue;
+                                    });
+
+                                    if (!exists) {
+                                        self.DesignationDet.push({
+                                            'value': newValue,
+                                            'label': data[0][i][1]
+                                        });
+                                    }
                                 }
                                 self.DesignationDet.unshift({ value: 'All', label: 'All' });
                             }
@@ -206,7 +218,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.StaffDet([])
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
-                                    self.StaffDet.push({'value': data[0][i][0],'label': data[0][i][1] + " " +  data[0][i][2] + " " +  data[0][i][3]  });
+                                    //self.StaffDet.push({'value': data[0][i][0],'label': data[0][i][1] + " " +  data[0][i][2] + " " +  data[0][i][3]  });
+                                    var newValue = data[0][i][0]; 
+                                    var exists = self.StaffDet().some(function (staff) {
+                                        return staff.value === newValue;
+                                    });
+
+                                    if (!exists) {
+                                        self.StaffDet.push({
+                                            'value': newValue,
+                                            'label': data[0][i][1] + " " + data[0][i][2] + " " + data[0][i][3]
+                                        });
+                                    }
                                 }
                                 self.StaffDet.unshift({ value: 'All', label: 'All' });
                             }

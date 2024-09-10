@@ -230,24 +230,49 @@ hr {
   background-color: grey;
   border-radius: 10px; 
   padding: 5px;
+  color: #fff;
 }
 
 .oj-table-element-review {
-  background-color: yellow;
+  background-color: rgb(217, 217, 24);
   border-radius: 10px; 
   padding: 5px;
+  color: #fff;
 }
 
 .oj-table-element-reject {
   background-color: #c70000;
   border-radius: 10px; 
   padding: 5px;
+  color: #fff;
+}
+
+.oj-table-element-high {
+  background-color: #f8d7da;
+  border-radius: 10px; 
+  padding: 5px;
+  color: black;
+}
+
+.oj-table-element-medium {
+  background-color: #fff3cd;
+  border-radius: 10px; 
+  padding: 5px;
+  color: black;
+}
+
+.oj-table-element-low {
+  background-color: #cff4fc;
+  border-radius: 10px; 
+  padding: 5px;
+  color: black;
 }
 
 .oj-table-element-approve {
   background-color: green;
   border-radius: 10px; 
   padding: 5px;
+  color: #fff;
 }
 
 .calendar-btn{

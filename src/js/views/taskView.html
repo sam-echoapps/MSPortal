@@ -24,42 +24,6 @@
             </div>
         </oj-action-card>
         <oj-action-card id="1" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
-        <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
-            <div class="oj-sm-4 oj-md-4">
-                <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
-                    style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
-                    <i class="fa-solid fa-spinner fa-2x" style="color: #745ffc;"></i>
-                </div>
-            </div>
-            <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
-                <span style="font-weight: 600;font-size: 15px;color: #878a99;">
-                    <oj-bind-text value="Task In Progress"></oj-bind-text>
-                </span>
-                <span style="font-weight: 600;font-size: 30px;">
-                    <oj-bind-text value="[[progressCount]]"></oj-bind-text>
-                </span>
-            </div>
-        </div>
-    </oj-action-card>
-    <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
-            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
-                <div class="oj-sm-4 oj-md-4">
-                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
-                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
-                        <i class="fa-solid fa-list-check fa-2x" style="color: #745ffc;"></i>
-                    </div>
-                </div>
-                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
-                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
-                        <oj-bind-text value="Tasks completed"></oj-bind-text>
-                    </span>
-                    <span style="font-weight: 600;font-size: 30px;">
-                        <oj-bind-text value="[[doneCount]]"></oj-bind-text>
-                    </span>
-                </div>
-            </div>
-        </oj-action-card>
-        <oj-action-card id="3" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
             <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
                 <div class="oj-sm-4 oj-md-4">
                     <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
@@ -77,27 +41,81 @@
                 </div>
             </div>
         </oj-action-card>
-        <oj-action-card id="4" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
-        <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
-            <div class="oj-sm-4 oj-md-4">
-                <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
-                    style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
-                    <i class="fa-solid fa-thumbs-down fa-2x" style="color: #745ffc;"></i>
-                </div>
-            </div>
-            <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
-                <span style="font-weight: 600;font-size: 15px;color: #878a99;">
-                    <oj-bind-text value="Tasks Dropped"></oj-bind-text>
-                </span>
-                <span style="font-weight: 600;font-size: 30px;">
-                    <oj-bind-text value="[[droppedCount]]"></oj-bind-text>
-                </span>
-            </div>
-        </div>
-    </oj-action-card>
-        
+          <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+          <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+              <div class="oj-sm-4 oj-md-4">
+                  <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                      style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                      <i class="fa-solid fa-spinner fa-2x" style="color: #745ffc;"></i>
+                  </div>
+              </div>
+              <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                  <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                      <oj-bind-text value="Task In Progress"></oj-bind-text>
+                  </span>
+                  <span style="font-weight: 600;font-size: 30px;">
+                      <oj-bind-text value="[[progressCount]]"></oj-bind-text>
+                  </span>
+              </div>
+          </div>
+      </oj-action-card>
+      <oj-action-card id="3" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+              <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                  <div class="oj-sm-4 oj-md-4">
+                      <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                          style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                          <i class="fa-solid fa-list-check fa-2x" style="color: #745ffc;"></i>
+                      </div>
+                  </div>
+                  <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                      <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                          <oj-bind-text value="Tasks completed"></oj-bind-text>
+                      </span>
+                      <span style="font-weight: 600;font-size: 30px;">
+                          <oj-bind-text value="[[doneCount]]"></oj-bind-text>
+                      </span>
+                  </div>
+              </div>
+          </oj-action-card>
+          <oj-action-card id="4" class="oj-sm-margin-2x oj-sm-padding-4x card-custom">
+          <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+              <div class="oj-sm-4 oj-md-4">
+                  <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                      style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                      <i class="fa-solid fa-thumbs-down fa-2x" style="color: #745ffc;"></i>
+                  </div>
+              </div>
+              <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                  <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                      <oj-bind-text value="Tasks Dropped"></oj-bind-text>
+                  </span>
+                  <span style="font-weight: 600;font-size: 30px;">
+                      <oj-bind-text value="[[droppedCount]]"></oj-bind-text>
+                  </span>
+              </div>
+          </div>
+      </oj-action-card> 
         </div>        
         </div>
+
+        <div class="oj-flex-item oj-sm-padding-2x-horizontal oj-sm-margin-4x">
+            <div class="oj-flex oj-xl-margin-4x oj-md-flex-items-initial oj-md-justify-content-space-between">
+                <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
+                style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:20px;">
+                <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Task List</span>
+            </oj-button>
+            <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+                <oj-button chroming="solid"  on-oj-action="[[addTask]]" class="oj-sm-padding-3x-vertical">
+                    <i class="fa-solid fa-plus"></i>&nbsp;Add Task
+                  </oj-button>
+                <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+                    <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+                    placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
+                    </oj-input-text>
+                </div>
+              </div> 
+            </div> 
+
     </div>
 
 <oj-dialog id="openAddTask" class="popupTask" dialog-title="Add Task" modality="modeless" drag-affordance="title-bar"
@@ -115,24 +133,6 @@
     </div>
 </oj-validation-group>
 </oj-dialog>
-
-<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
-    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
-        <oj-button chroming="solid"  on-oj-action="[[addTask]]" class="oj-sm-padding-3x-vertical">
-            <i class="fa-solid fa-plus"></i>&nbsp;Add Task
-          </oj-button>
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
-            placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
-            </oj-input-text>
-        </div>
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
-            style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
-            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Task List</span>
-        </oj-button>
-        </div>
-      </div> 
         
 
 <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
@@ -148,7 +148,7 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
-    "headerText": "Priority", "field": "priority", "id": "priority" },
+    "headerText": "Priority", "field": "priority", "id": "priority", "template": "statusTemplate" },
     { "headerClassName" : "table-header-style",
     "headerText": "Due Date", "field": "due_date", "id": "due_date" },
     { "headerClassName" : "table-header-style",
@@ -182,6 +182,17 @@
         <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
           <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
       </oj-bind-if>
+      </template>
+      <template slot="statusTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.priority == 'High' ]]">
+            <div class="oj-table-element-high"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.priority == 'Medium' ]]">
+            <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.priority == 'Low' ]]">
+            <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+        </oj-bind-if>
       </template>
     </oj-table>
 </div>
@@ -234,7 +245,7 @@
 
     <oj-dialog id="updateSuccessView">
         <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
             <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
                 <span slot="startIcon" class="oj-ux-ico-close"></span>
                 Cancel

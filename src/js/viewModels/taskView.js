@@ -104,10 +104,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             var resultData=data[2];
                             var statusCount=data[3];
                             console.log(statusCount)
-                            self.pendingCount(statusCount[2][1])
-                            self.progressCount(statusCount[1][1])
-                            self.doneCount(statusCount[3][1])
-                            self.droppedCount(statusCount[0][1])
+                            self.pendingCount(statusCount[0][0])
+                            self.progressCount(statusCount[0][1])
+                            self.doneCount(statusCount[0][2])
+                            self.droppedCount(statusCount[0][3])
                             self.employeeName(resultData[0][1] +" "+ resultData[0][3])
                             self.employeeDesignation(resultData[0][4])
                             if(result != ''){
