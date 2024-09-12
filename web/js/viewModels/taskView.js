@@ -54,6 +54,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.doneCount = ko.observable('');
                 self.droppedCount = ko.observable('');
                 self.editReminderDate = ko.observable('');
+                let userrole = sessionStorage.getItem("userRole")
+                self.userrole = ko.observable(userrole);
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -198,6 +200,41 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                     }
+
+                    self.formSubmitWithMail = ()=>{
+                        const formValid = self._checkValidationGroup("formValidation"); 
+                        if (formValid) {
+                                let popup = document.getElementById("loaderPopup");
+                                popup.open();
+                                
+                                $.ajax({
+                                    url: BaseURL+"/HRModuleAddTaskWithMail",
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        staffId: sessionStorage.getItem("staffId"),
+                                        task_name : self.taskName(),
+                                        due_date : self.dueDate(),
+                                        reminder_date : self.reminderDate(),
+                                        priority : self.priority(),
+                                        userId: sessionStorage.getItem("userId"),
+                                    }),
+                                    dataType: 'json',
+                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    context: self,
+                                    error: function (xhr, textStatus, errorThrown) {
+                                        console.log(textStatus);
+                                    },
+                                    success: function (data) {
+                                        console.log(data)
+                                        document.querySelector('#openAddTask').close();
+                                        let popup = document.getElementById("loaderPopup");
+                                        popup.close();
+                                        let popup1 = document.getElementById("successView");
+                                        popup1.open();
+                                    }
+                                })
+                            }
+                        }
 
                 self.messageClose = ()=>{
                     location.reload();
