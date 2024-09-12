@@ -113,7 +113,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         var documentName = self.documentName(); 
                         var selectedFile = self.selectedFile();
                         var selectedRole = self.Roles();
-                        alert(selectedRole)
                 
                         if (!selectedFile) {
                             self.uploadError('No file selected');

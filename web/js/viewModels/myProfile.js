@@ -943,12 +943,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#employment").hide();
                         $("#documents").hide();
                         $("#absence").hide();
+                        $("#clock-in").hide();
+                        $("#overtime").hide();
                     }else if(self.selectedTab() == 'password'){
                         $("#basic-info").hide();
                         $("#update-password").show();
                         $("#employment").hide();
                         $("#documents").hide();
                         $("#absence").hide();
+                        $("#clock-in").hide();
+                        $("#overtime").hide();
                     }
                     else if(self.selectedTab() == 'absence'){
                         $("#basic-info").hide();
@@ -959,10 +963,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getLeaveBalance();
                         self.changeLeaveBalance();
                         $("#absence").show();
+                        $("#clock-in").hide();
+                        $("#overtime").hide();
                     }
                     else if(self.selectedTab() == 'employment'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
+                        $("#clock-in").hide();
                         self.fetchSalaryDetailsOnLoad();
                         self.fetchBankDetailsOnLoad();
                         self.fetchPayrollDetailsOnLoad();
@@ -975,18 +982,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#employment").show();
                         $("#documents").hide();
                         $("#absence").hide();
+                        $("#overtime").hide();
                     }else if(self.selectedTab() == 'clock-in'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
                         $("#employment").hide();
                         $("#documents").hide();
                         $("#absence").hide();
+                        self.getClockinDetails();
+                        $("#clock-in").show();
+                        $("#overtime").hide();
                     }else if(self.selectedTab() == 'overtime'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
                         $("#employment").hide();
                         $("#documents").hide();
                         $("#absence").hide();
+                        $("#clock-in").hide();
+                        $("#overtime").show();
                     }else if(self.selectedTab() == 'documents'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
@@ -994,6 +1007,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getDocuments();
                         $("#documents").show();
                         $("#absence").hide();
+                        $("#clock-in").hide();
+                        $("#overtime").hide();
                     }
                 });
 
@@ -1027,9 +1042,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data[1].length !=0){ 
                                 console.log(data[1].length);
 
-                                if(data[1][j][3] == null){
-                                    data[1][j][3] ='';
-                                }
                                 for (j = 0; j < data[1].length; j++) {
                                     self.EmployeeDet.push({
                                         'value':  data[1][j][0],
@@ -2375,6 +2387,51 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     });
                 };
 
+
+                self.clockinData=ko.observableArray([])
+
+                self.getClockinDetails=()=>{
+                    $.ajax({
+                        url: BaseURL + "/getClockinDetails",
+                        type: 'POST',
+                        data: JSON.stringify({ 
+                            staffId: sessionStorage.getItem("userId"),
+                        }),
+                        contentType: "application/json", // Specify the content type as JSON
+                        timeout: sessionStorage.getItem("timeInterval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            
+                            if(data.length!=0){
+                                self.clockinData([]);
+                                for(var i=0;i<data.length;i++){
+                                    let date = new Date(data[i].clockin_date);
+                                    let day = date.getDate();
+                                    let month = date.getMonth() + 1;
+                                    let year = date.getFullYear();
+                                    let formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+                                    self.clockinData.push({
+                                        "slno":i+1,
+                                        "date":formattedDate,
+                                        "clockInTime": data[i].clockin_time,
+                                        "clockInLocation": data[i].clockin_location,
+                                        "breakTime": data[i].breaktime,
+                                        "clockoutTime": data[i].clockout_time,
+                                        "clockOutLocation": data[i].clockout_location
+                                    })
+                                }
+                            }
+                        }
+                    });
+                }
+
+                self.clockInDataProvider = new ArrayDataProvider(self.clockinData, { keyAttributes: "id" });
+                
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {
                         return url;

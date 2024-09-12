@@ -605,6 +605,39 @@
 
 </div>
 
+<div id="clock-in" class="oj-sm-margin-4x" style="display: none;">
+    <div class="oj-panel oj-flex oj-xl-margin-4x" style="border-radius: 10px;">
+        <oj-table id="table" aria-label="Task Table" accessibility.row-header="name" data="[[clockInDataProvider]]"
+            columns-default.sortable="enabled"
+            columns='[{"headerClassName" : "table-header-style","headerText": "Sl No", "id": "slno"},
+                      {"headerClassName" : "table-header-style","headerText": "Date", "id": "date"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockin Time", "id": "clockInTime", "minWidth":"8rem"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockin Location", "id": "clockInLocation"},
+                      {"headerClassName" : "table-header-style","headerText": "Break Time", "id": "breakTime"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockout Time", "id": "clockoutTime"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockout Location", "id": "clockOutLocation"}]'
+            class="demo-table-container" style="width: 100%;">
+            <template slot="rowTemplate" data-oj-as="row">
+              <tr>
+                <td><oj-bind-text value="[[row.data.slno]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.date]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockInTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockInLocation]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.breakTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockoutTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockOutLocation]]"></oj-bind-text></td>
+              </tr>
+            </template>
+          </oj-table>
+    </div>
+</div>
+
+<div id="overtime" class="oj-sm-margin-4x">
+    <!-- <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad; border-radius: 10px;">
+        Over Time Data
+    </div> -->
+</div>
+
 <oj-dialog id="openEditSalary" class="popupGoal" dialog-title="Edit Salary" modality="modeless" drag-affordance="title-bar"
     cancel-behavior="[[CancelBehaviorOpt]]">
     <oj-validation-group id="formValidation3" class="form-container" role="group" style="padding-bottom: 50px;">
@@ -723,7 +756,7 @@
     
 <oj-dialog id="popup2">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -738,7 +771,7 @@
 
 <oj-dialog id="popup3">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -746,14 +779,14 @@
     </div>
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Document Updated successfully</p>
+            <p style="font-weight: 500;text-align: left">Document updated successfully</p>
         </div>
     </div>
 </oj-dialog>
 
 <oj-dialog id="popupMail">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Sent</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully sent</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -761,13 +794,13 @@
     </div>
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Staff Credentials sent via mail successfully</p>
+            <p style="font-weight: 500;text-align: left">Staff credentials sent via mail successfully</p>
         </div>
     </div>
 </oj-dialog>
 <oj-dialog id="popupPassword">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -775,14 +808,14 @@
     </div>
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Password Updated Successfully</p>
+            <p style="font-weight: 500;text-align: left">Password updated successfully</p>
         </div>
     </div>
 </oj-dialog>
 
 <oj-dialog id="successView">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Document Delete</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Document delete</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -797,7 +830,7 @@
 
 <oj-dialog id="successView2">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Details Updated</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Details updated</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel

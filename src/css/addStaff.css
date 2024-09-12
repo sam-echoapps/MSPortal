@@ -277,13 +277,14 @@
     padding: 10px 20px;         /* Adjust padding as needed */
     font-size: 14px;            /* Set font size */
     border-radius: 4px;         /* Optional: Add border radius for rounded corners */
-    cursor: pointer;            /* Change cursor to pointer on hover */
+    cursor: default;            /* Change cursor to default */
     align-items: center;        /* Center the icon and text vertically */
+    pointer-events: none;       /* Disable pointer events to make it non-clickable */
 }
 
-/* Hover and Focus Styles */
+/* Remove Hover and Focus Styles */
 .custom-button:hover {
-    background-color: #2E9A32;  /* Darken background on hover */
+    background-color: #34B53A;  /* Keep the original background color */
 }
 
 .custom-button:focus {
@@ -298,13 +299,14 @@
     padding: 10px 20px;         /* Adjust padding as needed */
     font-size: 14px;            /* Set font size */
     border-radius: 4px;         /* Optional: Add border radius for rounded corners */
-    cursor: pointer;            /* Change cursor to pointer on hover */
+    cursor: default;            /* Change cursor to default */
     align-items: center;        /* Center the icon and text vertically */
+    pointer-events: none;       /* Disable pointer events to make it non-clickable */
 }
 
-/* Hover and Focus Styles */
+/* Remove Hover and Focus Styles */
 .custom-button2:hover {
-    background-color: #D83224;  /* Darken background on hover */
+    background-color: #FF3A29;  /* Keep the original background color */
 }
 
 .custom-button2:focus {

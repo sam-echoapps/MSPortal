@@ -133,10 +133,10 @@
                 <oj-input-date id="start_date" label-hint="Start Date" required="true" value="{{start_date}}"></oj-input-date>
                 <oj-input-date id="end_date" label-hint="End Date" required="true" value="{{end_date}}"></oj-input-date>
                 <oj-select-single required id="leave_reason" label-hint="Leave Type" label-edge="inside"
-                data="[[LeaveReasonList]]" value="{{leave_reason}}" on-oj-value-action="[[isForTimeOffSelected1]]"></oj-select-single>
-                <div id="hour_View1" style="display:none;">
+                data="[[LeaveReasonList]]" value="{{leave_reason}}"></oj-select-single>
+                <!-- <div id="hour_View1" style="display:none;">
                     <oj-input-text id="hour" label-hint="Hour" value="{{hour}}" required></oj-input-text>
-                </div>                    
+                </div> -->
             </oj-form-layout>
             <oj-bind-if test="[[userrole() != 'employee' && userrole() != 'junior manager' && userrole() != 'junior hr' 
             && userrole() != 'junior accounts' && userrole() != 'intern' && userrole() != 'external']]">
@@ -401,7 +401,7 @@ cancel-behavior="[[CancelBehaviorOpt]]">
         <oj-input-date id="endDate" label-hint="End Date" required="true" value="{{endDate}}" readonly="true"></oj-input-date>
         <oj-input-text id="leave_type3" label-hint="Leave Reason" value="{{leaveType}}" readonly="true"></oj-input-text>
         <oj-input-text id="leave_reason3" label-hint="Leave Type" value="{{leave_reason}}" readonly="true"></oj-input-text>
-        <oj-input-text id="hour" label-hint="Hour" value="{{hour}}" readonly="true"></oj-input-text>
+        <!-- <oj-input-text id="hour" label-hint="Hour" value="{{hour}}" readonly="true"></oj-input-text> -->
         <oj-select-single label-hint="Status" class="oj-sm-padding-2x-vertical"
             label-edge="inside" data="[[statusList]]" value="{{status}}">
         </oj-select-single>
@@ -422,7 +422,7 @@ position.my.vertical="center" position.at.horizontal="center" position.at.vertic
 
 <oj-dialog id="successView">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -437,7 +437,7 @@ position.my.vertical="center" position.at.horizontal="center" position.at.vertic
 
 <oj-dialog id="successView2">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel

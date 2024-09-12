@@ -353,7 +353,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     } 
                     $.ajax({
                         // url: '/Hr/HRModuleStaffEmailExist',
-                        //url: '/HRModuleStaffEmailExist',
+                        // url: '/HRModuleStaffEmailExist',
                         url: 'http://65.0.111.226:8050/HRModuleStaffEmailExist',
                         method: 'POST',
                         data: JSON.stringify({ email: email }),

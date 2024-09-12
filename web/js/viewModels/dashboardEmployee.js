@@ -12,48 +12,10 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             let BaseURL = sessionStorage.getItem("BaseURL")
 
             var routerLength = args.parentRouter._routes.length;
-          
             if(routerLength!=17){
                 location.reload();
             }
 
-            self.connected = function () {
-                if (sessionStorage.getItem("userName") == null) {
-                    self.router.go({ path: 'signin' });
-                }
-                else {
-                    self.getTaskCount();
-                    self.getEmployeeClockinData();
-                    self.checkEmployeClockedIn();
-                    self.getLeaveDetails();
-                    self.changeLeaveBalance();
-                    self.monthHolidays();
-                    self.getAbsentEmployees();
-                    app.onAppSuccess();
-
-                    if(window.location.pathname=='/Hr'){
-                        document.querySelectorAll('link').forEach(function(link){
-                                const baseUrl = 'https://uanglobal.com/';
-                                if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
-                                    link.href = self.rewriteUrl(link.href);
-                                }
-                        });
-                        document.querySelectorAll('script').forEach(function(script) {
-                                script.src = self.rewriteUrl(script.src);
-                        });
-                        document.querySelectorAll('img').forEach(function(img) {
-                                img.src = self.rewriteUrl(img.src);
-                        });
-                        document.querySelectorAll('oj-avatar').forEach(function(avatar) {
-                                const currentSrc = avatar.getAttribute('src');
-                                const newSrc = self.rewriteUrl(currentSrc);
-                                avatar.setAttribute('src', newSrc);
-                        });
-                    }
-                    
-                }
-            };
-            
             self.totalTasks=ko.observable(0)
             self.progressTasks=ko.observable(0)
             self.completedTasks=ko.observable(0)
@@ -96,6 +58,42 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             self.clockInBtnDisabled=ko.observable(false)
             self.clockOutBtnDisabled=ko.observable(true)
             
+            self.workingTimePattern=ko.observable()
+            self.convertTo12HourFormat=(time)=> {
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                const suffix = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;  // Convert 0 to 12 for midnight/noon
+                return `${hours}:${minutes} ${suffix}`;
+            }
+
+            self.getWorkingPattern=()=>{
+                $.ajax({
+                    url: BaseURL + "/getEmployeeWorkingPattern",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if(data.length!=0){
+                            let startTime=data[0].start_time
+                            let finishTime=data[0].finish_time
+                            startTime=self.convertTo12HourFormat(startTime)
+                            finishTime=self.convertTo12HourFormat(finishTime)
+                            self.workingTimePattern(`${startTime} to ${finishTime}`)
+                        }
+                    }
+                });
+            }
+
             self.checkEmployeClockedIn=()=>{
                 $.ajax({
                     url: BaseURL + "/checkEmployeeClockedIn",
@@ -111,13 +109,20 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         console.log(textStatus);
                     },
                     success: function (data) {
-                        if(data==1){
+                        if(data[0]==1 && data[1]=="clockIn"){
                             self.clockInBtnDisabled(true);
                             self.clockOutBtnDisabled(false);
                             self.checkIn(true)
                             document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
                             document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
                         } 
+                        else if(data[0]==1 && data[1]=="clockOut"){
+                            self.clockInBtnDisabled(true);
+                            self.clockOutBtnDisabled(true);
+                            self.checkIn(false)
+                            document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
+                            document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
+                        }
                         else {
                             self.clockInBtnDisabled(false);
                             self.clockOutBtnDisabled(true);
@@ -471,7 +476,45 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }
                 }
                 return url;
-          }
+            }
+
+            self.connected = function () {
+                if (sessionStorage.getItem("userName") == null) {
+                    self.router.go({ path: 'signin' });
+                }
+                else {
+                    self.getTaskCount();
+                    self.getWorkingPattern();
+                    self.getEmployeeClockinData();
+                    self.checkEmployeClockedIn();
+                    self.getLeaveDetails();
+                    self.changeLeaveBalance();
+                    self.monthHolidays();
+                    self.getAbsentEmployees();
+                    app.onAppSuccess();
+
+                    if(window.location.pathname=='/Hr'){
+                        document.querySelectorAll('link').forEach(function(link){
+                                const baseUrl = 'https://uanglobal.com/';
+                                if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                    link.href = self.rewriteUrl(link.href);
+                                }
+                        });
+                        document.querySelectorAll('script').forEach(function(script) {
+                                script.src = self.rewriteUrl(script.src);
+                        });
+                        document.querySelectorAll('img').forEach(function(img) {
+                                img.src = self.rewriteUrl(img.src);
+                        });
+                        document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                const currentSrc = avatar.getAttribute('src');
+                                const newSrc = self.rewriteUrl(currentSrc);
+                                avatar.setAttribute('src', newSrc);
+                        });
+                    }
+                    
+                }
+            };
           
            
         }

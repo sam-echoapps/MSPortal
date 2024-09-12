@@ -319,7 +319,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.start_date = ko.observable();
                 self.end_date = ko.observable();
-                self.hour = ko.observable();
+                // self.hour = ko.observable();
                 self.leave_type = ko.observable();
                 self.start_date = ko.observable();
                 self.LeaveTypeDet = ko.observableArray([]); 
@@ -357,27 +357,27 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     {"label":"Morning half","value":"Morning half"},
                     {"label":"Evening half","value":"Evening half"},
                     {"label":"Full day","value":"Full day"},
-                    {"label":"Time off","value":"Time off"}
+                    //{"label":"Time off","value":"Time off"}
                 );
                 self.LeaveReasonList = new ArrayDataProvider(self.leaveReasonDet, {
                     keyAttributes: 'value'
                 });
 
-                self.isForTimeOffSelected1 = () => {
-                    if (self.leave_reason() == 'Time off'){
-                        $('#hour_View1').show();
-                    }
-                    else if (self.leave_reason() != 'Time off'){
-                        $('#hour_View1').hide();
-                    }
-                }
+                // self.isForTimeOffSelected1 = () => {
+                //     if (self.leave_reason() == 'Time off'){
+                //         $('#hour_View1').show();
+                //     }
+                //     else if (self.leave_reason() != 'Time off'){
+                //         $('#hour_View1').hide();
+                //     }
+                // }
 
                 self.formSubmit = () => {
                     const formValid = self._checkValidationGroup("formValidation2"); 
                     if (formValid) {
-                        if (self.leave_reason() === 'Time off' && !self.hour()) {
-                            return;
-                        }
+                        // if (self.leave_reason() === 'Time off' && !self.hour()) {
+                        //     return;
+                        // }
                 
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
@@ -391,7 +391,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
-                                hour: self.hour(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -417,9 +416,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             return;
                         }
                 
-                        if (self.leave_reason() === 'Time off' && !self.hour()) {
-                            return;
-                        }
+                        // if (self.leave_reason() === 'Time off' && !self.hour()) {
+                        //     return;
+                        // }
                 
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
@@ -433,7 +432,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
-                                hour: self.hour(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -455,9 +453,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.formSubmitStaff = () => {
                     const formValid = self._checkValidationGroup("formValidation2"); 
                     if (formValid) {
-                        if (self.leave_reason() === 'Time off' && !self.hour()) {
-                            return;
-                        }
+                        // if (self.leave_reason() === 'Time off' && !self.hour()) {
+                        //     return;
+                        // }
                 
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
@@ -471,7 +469,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
-                                hour: self.hour(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -656,7 +653,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.endDate = ko.observable('');
                 self.leaveType = ko.observable('');
                 self.leave_reason = ko.observable('');
-                self.hour = ko.observable('');
+                //self.hour = ko.observable('');
                 self.leaveId = ko.observable();
 
                 self.reviewLeave = (event, data) => {
@@ -687,7 +684,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.leaveType(data[0][4]);
                                 self.leave_reason(data[0][5]);
                                 self.status(data[0][6]);
-                                self.hour(data[0][7]);
                             }
                         }
                     });

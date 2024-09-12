@@ -25,7 +25,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                         popup.open();
                         $.ajax({
                             // url: "/Hr/HRModuleLogin", 
-                            //url: "/HRModuleLogin", 
+                            // url: "/HRModuleLogin", 
                             url: "http://65.0.111.226:8050/HRModuleLogin",
                             type: 'POST',
                             data: JSON.stringify({
@@ -47,7 +47,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                                 console.log(data);
                                 if (data[1]== 'Y') {
                                     // sessionStorage.setItem("BaseURL", "/Hr");
-                                    //sessionStorage.setItem("BaseURL", "");
+                                    // sessionStorage.setItem("BaseURL", "");
                                     sessionStorage.setItem("BaseURL", "http://65.0.111.226:8050");
                                     sessionStorage.setItem("userId", data[2]);
                                     sessionStorage.setItem("staffId", data[2]);
@@ -115,7 +115,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                 self.getCompanyDetails = ()=>{
                     $.ajax({
                         // url: "/Hr/HRModuleGetCompanyInfo",
-                        //url: "/HRModuleGetCompanyInfo",
+                        // url: "/HRModuleGetCompanyInfo",
                         url: "http://65.0.111.226:8050//HRModuleGetCompanyInfo",
                         type: 'GET',
                         timeout: sessionStorage.getItem("timeInetrval"),

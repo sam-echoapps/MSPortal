@@ -90,6 +90,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             document.getElementById('loaderView').style.display='none';
+                            document.getElementById('addemployee').style.display='none';
+                            document.getElementById('manage').style.display='none';
                             console.log(data)
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
@@ -127,7 +129,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.StaffDet = ko.observableArray([]);
 
                 self.getStaff = (status) => {
-                    $('#loaderView').css('display', 'block');
+                    // $('#loaderView').css('display', 'block');
                     self.status(status);
                     self.StaffDet([]);
                     $.ajax({
@@ -141,14 +143,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
                             document.getElementById('loaderView').style.display = 'none';
                             document.getElementById('contentView').style.display = 'block';
                             document.getElementById('actionView').style.display = 'block';
                             document.getElementById('tableView').style.display = 'block';
-                            document.getElementById('addemployee').style.display='none';
-                            document.getElementById('manage').style.display='none';
                             console.log(data);
 
                             if (data[0].length != 0) {
@@ -958,7 +959,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     } 
                     $.ajax({
                         // url: '/Hr/HRModuleStaffEmailExist',
-                        //url: '/HRModuleStaffEmailExist',
+                        // url: '/HRModuleStaffEmailExist',
                         url: 'http://65.0.111.226:8050/HRModuleStaffEmailExist',
                         method: 'POST',
                         data: JSON.stringify({ email: email }),
@@ -1313,8 +1314,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             document.getElementById('table_view').style.display = 'block';
-                            console.log(data);
                             document.getElementById('loaderView').style.display = 'none';
+                            console.log(data);
+
                             if (data[0].length != 0) {
                                 for (var i = 0; i < data[0].length; i++) {
                                     self.TeamsDet.push({
