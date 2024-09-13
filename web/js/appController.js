@@ -65,6 +65,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardIntern', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'dashboardExternal', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior manager'){
@@ -88,6 +89,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'editStaff', detail : {label: 'Edit Staff',iconClass: 'oj-navigationlist-item-icon fa fa-id-card'} },
           { path: 'myProfile', detail : {label :'My Profile',iconClass: 'oj-navigationlist-item-icon fa fa-id-card'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='senior manager'){
@@ -122,6 +124,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskReport', detail : {label: 'Tasks Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='senior hr'){
@@ -156,6 +159,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskReport', detail : {label: 'Tasks Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior hr'){
@@ -179,6 +183,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardExternal', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior accounts'){
@@ -202,6 +207,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardExternal', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='senior accounts'){
@@ -236,6 +242,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskReport', detail : {label: 'Tasks Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='intern'){
@@ -257,6 +264,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardExternal', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='external'){
@@ -278,6 +286,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardIntern', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else{
@@ -314,6 +323,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskReport', detail : {label: 'Tasks Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
         ];
       }
 
@@ -324,6 +334,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "publicHoliday","icons": "fa-solid fa fa-file", "path":"documentview"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -339,6 +350,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "publicHoliday","icons": "fa-solid fa fa-file", "path":"documentview"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -361,6 +373,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},
@@ -386,6 +399,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},
@@ -403,6 +417,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Employees","id": "employees","icons": "fa-solid fa fa-id-card", "path":"employees"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance Review", "id": "performanceReview", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -418,6 +433,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Employees","id": "employees","icons": "fa-solid fa fa-id-card", "path":"employees"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance Review", "id": "performanceReview", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -441,6 +457,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},
@@ -458,6 +475,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "publicHoliday","icons": "fa-solid fa fa-file", "path":"documentview"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -472,6 +490,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "publicHoliday","icons": "fa-solid fa fa-file", "path":"documentview"},
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -494,6 +513,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
+          {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},

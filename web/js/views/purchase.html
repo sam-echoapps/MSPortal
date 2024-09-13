@@ -1,0 +1,123 @@
+<link rel="stylesheet" href="../../css/purchase.css">
+
+<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <oj-button chroming="solid"  on-oj-action="[[addPurchase]]" class="oj-sm-padding-3x-vertical">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add Purchase
+          </oj-button>
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
+            </oj-input-text>
+        </div>
+      </div> 
+
+      <oj-dialog id="openAddPurchase" class="popupPurchase" dialog-title="Add Purchase" modality="modeless" drag-affordance="title-bar"
+      cancel-behavior="[[CancelBehaviorOpt]]">
+      <oj-validation-group id="formValidation" class="form-container" role="group">
+        <div id="form-container">
+            <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+                <oj-input-text id="itemName" label-hint="Item Name" required="true" value="{{itemName}}"></oj-input-text>
+                <oj-input-text id="purpose" label-hint="Purpose" required="true" value="{{purpose}}"></oj-input-text>
+                <oj-input-text id="vendorPONo" label-hint="Vendor PO Number" value="{{vendorPONo}}"></oj-input-text>
+                <oj-file-picker  id="vendorFile" class="demo-max-width" primary-text="Vendor PO Attatchment"
+                        secondary-text="[[secondaryText]]" on-oj-select="[[uploadVendorPO]]">
+                </oj-file-picker>
+                <div class="oj-text-color-danger"><oj-bind-text value='[[typeError]]'></oj-bind-text></div>
+                <oj-input-text id="estimatedPrice" label-hint="Estimated Price" required="true" value="{{estimatedPrice}}"></oj-input-text>
+            </oj-form-layout>
+            <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+        </div>
+    </oj-validation-group>
+    </oj-dialog>
+        
+
+<div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table id='purchaseTable' aria-label='All Table' data='[[PurchaseList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerText": "SL.No", "field": "slno", "id": "slno",
+    "headerClassName" : "table-header-style"	 },
+    { "headerText": "PO.No", "field": "pono", "id": "pono",
+    "headerClassName" : "table-header-style"	 },
+    { "headerText": "Item Name", "field": "item_name", "id": "item_name",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Purpose", "field": "purpose", "id": "purpose" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Vendor PO Document", "id": "vendor_po_doc",  "field": "vendor_po_doc","template": "documentTemplate"},
+    { "headerClassName" : "table-header-style",
+      "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+    { "headerClassName" : "table-header-style",
+            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"},
+    { "headerClassName" : "table-header-style",
+      "headerText": "Action",
+      "maxWidth" : "10rem",
+      "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+      "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+     <template slot="actionTemplate" data-oj-as="cell">
+         <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="">
+          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+          Edit
+        </oj-button>
+     </template>
+     <template slot="bgTemplate" data-oj-as="cell">
+      <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+      </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+          <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+      </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+      </oj-bind-if>
+    </template>
+    <template slot="documentTemplate" data-oj-as="cell">
+      <oj-bind-if test="[[cell.row.vendor_po_doc]]">
+        <a :data-document-link="[[cell.row.vendor_po_doc]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+          <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+        </a>
+      </oj-bind-if>
+        <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
+          <span>N/A</span>
+        </oj-bind-if>
+    </template>
+    </oj-table>
+</div>
+</div>
+</div>
+
+    
+
+     <oj-dialog id="successView">
+      <div slot="header" style="display: contents;">
+          <p id="dialogTitleId" class="oj-dialog-title">Successfully Ordered</p>
+          <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+              <span slot="startIcon" class="oj-ux-ico-close"></span>
+              Cancel
+          </oj-button>
+      </div>
+      <div slot="body">
+          <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+              <p style="font-weight: 500;text-align: left">Purchase order requested successfully</p>
+          </div>
+      </div>
+  </oj-dialog>
+
+  <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+  position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+  <div class="demo-popup-body">
+      <div class="demo-popup-content oj-sm-padding-2x">
+          <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+      </div>
+  </div>
+</oj-popup>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 
