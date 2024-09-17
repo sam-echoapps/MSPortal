@@ -22,7 +22,29 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.estimatedPrice = ko.observable('');
                 self.fileContent = ko.observable('');
                 self.PurchaseDet = ko.observableArray([]);
+                self.editItemName = ko.observable('');
+                self.editPurpose = ko.observable('');
+                self.editVendorPONo = ko.observable('');
+                self.editEstimatedPrice = ko.observable('');  
+                self.editSecondaryText = ko.observable('Please Upload(Optional)')
+                self.editTypeError = ko.observable('');
+                self.offerFileMessage = ko.observable('');
+                self.editFile = ko.observable('');
+                self.editFileContent = ko.observable('');
+                self.editVendorPOFile = ko.observable('');
 
+                self.editStatus = ko.observable('');
+                self.statusOption = [
+                    {"label":"Requested","value":"Requested"},
+                    {"label":"Approved","value":"Approved"},
+                    {"label":"Denied","value":"Denied"}
+                ]
+                self.statusList = new ArrayDataProvider(self.statusOption, {
+                    keyAttributes: 'value'
+                });
+
+                let userrole = sessionStorage.getItem("userRole")
+                self.userrole = ko.observable(userrole);
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -78,6 +100,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'slno': i+1,
                                         'id': data[i][0],
                                         'pono': "PO"+data[i][0], 
+                                        'staff_id': data[i][1],
                                         'item_name': data[i][2],
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
@@ -85,7 +108,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'estimated_price': data[i][6],
                                         'status': data[i][7],
                                         'created_date': data[i][8],
-                                        'updated_at': data[i][9],                                    
+                                        'updated_at': data[i][9], 
+                                        'ordered_by': data[i][10],                                   
                                     });
                                     
                                 }
@@ -140,6 +164,25 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.typeError('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
                 }
               }
+
+              self.updateUploadVendorPO = function (event) {
+                var file = event.detail.files[0];
+                const result = event.detail.files;
+                const files = result[0];
+                var fileName= files.name;
+                console.log(files)
+                self.editVendorPOFile(fileName)
+                self.editFile(files)
+                self.editSecondaryText(fileName)
+                var fileFormat =files.name.split(".");
+                var checkFormat =fileFormat[1];
+                if(checkFormat == 'png' || checkFormat =="jpeg" || checkFormat =="jpg" || checkFormat =="pdf"){
+                self.editTypeError('')
+            }
+            else{
+                self.editTypeError('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
+            }
+          }
 
               self.handleValueTask = () => {
                 self.filter(document.getElementById('filter').rawValue);
@@ -197,7 +240,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                     }else{
-                        alert('yes')
                         $.ajax({
                             url: BaseURL+"/HRModuleAddPurchase",
                             type: 'POST',
@@ -280,7 +322,113 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             }
                         }
                     });
-                };              
+                };  
+                
+                self.editPurchase = (event,data)=>{
+                    var clickedPurchaseId = data.item.data.id
+                    sessionStorage.setItem("purchaseId", clickedPurchaseId);
+                    document.querySelector('#openEditPurchase').open();
+                    self.getPurchaseInfo();
+                }
+
+                self.getPurchaseInfo = () => {
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetPurchaseInfo",
+                        type: 'POST',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        data: JSON.stringify({
+                            purchaseId: sessionStorage.getItem("purchaseId")
+                        }),
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data[0]);
+                            console.log(data);
+                            self.editItemName(data[2])
+                            self.editPurpose(data[3])
+                            self.editVendorPONo(data[4])
+                            self.editSecondaryText(data[5])
+                            self.editEstimatedPrice(data[6])
+                            self.editStatus(data[7])
+                        }
+                    });
+                };
+
+                self.updateFormSubmit = ()=>{
+                    const formValid = self._checkValidationGroup("formValidation"); 
+                    if (formValid && self.editTypeError() == '') {
+                            let popup = document.getElementById("loaderPopup");
+                            popup.open();
+                            const reader = new FileReader();
+                            if(self.editFile() !=''){
+                                reader.readAsDataURL(self.editFile());
+                                reader.onload = ()=>{
+                                const fileContent = reader.result;
+                                $.ajax({
+                                    url: BaseURL+"/HRModuleUpdatePurchase",
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        purchaseId: sessionStorage.getItem("purchaseId"),
+                                        item_name : self.editItemName(),
+                                        purpose : self.editPurpose(),
+                                        vendor_po_no : self.editVendorPONo(),
+                                        vendor_po_doc : self.editVendorPOFile(),
+                                        estimated_price : self.editEstimatedPrice(),
+                                        file : fileContent,
+                                        status : self.editStatus()
+                                    }),
+                                    dataType: 'json',
+                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    context: self,
+                                    error: function (xhr, textStatus, errorThrown) {
+                                        console.log(textStatus);
+                                    },
+                                    success: function (data) {
+                                        console.log(data)
+                                        document.querySelector('#openAddPurchase').close();
+                                        let popup = document.getElementById("loaderPopup");
+                                        popup.close();
+                                        let popup1 = document.getElementById("updateSuccessView");
+                                        popup1.open();
+                                    }
+                                })
+                            }
+                        }else{
+                            $.ajax({
+                                url: BaseURL+"/HRModuleUpdatePurchase",
+                                type: 'POST',
+                                data: JSON.stringify({
+                                    purchaseId: sessionStorage.getItem("purchaseId"),
+                                    item_name : self.editItemName(),
+                                    purpose : self.editPurpose(),
+                                    vendor_po_no : self.editVendorPONo(),
+                                    vendor_po_doc : self.editVendorPOFile(),
+                                    estimated_price : self.editEstimatedPrice(),
+                                    file : self.editFileContent(),
+                                    status : self.editStatus()
+                                }),
+                                dataType: 'json',
+                                timeout: sessionStorage.getItem("timeInetrval"),
+                                context: self,
+                                error: function (xhr, textStatus, errorThrown) {
+                                    console.log(textStatus);
+                                },
+                                success: function (data) {
+                                    console.log(data)
+                                    document.querySelector('#openAddPurchase').close();
+                                    let popup = document.getElementById("loaderPopup");
+                                    popup.close();
+                                    let popup1 = document.getElementById("updateSuccessView");
+                                    popup1.open();
+                                }
+                            })
+                        }
+                        }
+                    }
+    
+
                     self.rewriteUrl=(url)=> {
                         if (url.includes('/Hr')) {
                             return url;

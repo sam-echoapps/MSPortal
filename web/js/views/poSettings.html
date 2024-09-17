@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Purchase Order Settings </span><span class="hint-note">(Enter the maximum purchase approval limits for Directors, Senior Managers, and Senior Accounts)</span></div> 
+    </div>
+</div>
+
+<div class="">
+<oj-validation-group id="formValidation" class="form-container" role="group">
+    <div id="form-container">
+        <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="seniorManager" label-hint="Senior Manager Limit" required="true" value="{{seniorManager}}"></oj-input-text>
+            <oj-input-text id="seniorAccountant" label-hint="Senior Accountant Limit" required="true" value="{{seniorAccountant}}"></oj-input-text>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</div>
+
+    
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+    
+<oj-dialog id="successView">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Successfully saved the purchase limit</p>
+        </div>
+    </div>
+</oj-dialog>
+
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div>  

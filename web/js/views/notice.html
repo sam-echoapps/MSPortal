@@ -1,0 +1,182 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-xl-margin-8x">
+</div>
+
+<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+      <oj-bind-for-each data="[[tabData]]">
+        <template>
+          <oj-option value="[[$current.data.id]]">
+            <span>
+              <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+            </span>
+          </oj-option>
+        </template>
+      </oj-bind-for-each>
+    </oj-buttonset-one>
+  </div>
+</div>
+
+
+<oj-dialog id="openAddNotice" class="popupNotice" dialog-title="Add Notice" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group">
+    <div id="form-container">
+        <oj-form-layout id="notice-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="subject" label-hint="Subject" required="true" value="{{subject}}"></oj-input-text>
+            <oj-text-area id="description" required="true" label-hint="Description (Max 350 Char)" raw-valuenewE="" rows="3" 
+               clear-icon="always" value="{{description}}" on-value-changed="[[getInputCount]]">
+            </oj-text-area>
+            <div style="color:red;margin-top:-40px">
+                <oj-bind-text value="[[lessCount]]"></oj-bind-text>
+            </div>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+<div id="companyNotice" style="display:none">
+<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between">
+        <oj-button chroming="solid"  on-oj-action="[[addNotice]]" class="oj-sm-padding-3x-vertical">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add Notice
+          </oj-button>
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueNotice]]" value="{{filter}}" clear-icon="always">
+            </oj-input-text>
+        </div>
+      </div> 
+        
+
+<div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-table id='NoticeTable' aria-label='All Table' data='[[NoticeList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerText": "SL.No", "field": "slno", "id": "slno",
+    "headerClassName" : "table-header-style"	 },
+    { "headerText": "Title", "field": "notice_name", "id": "notice_name",
+      "headerClassName" : "table-header-style"	 },  
+    { "headerText": "Description", "field": "notice_description", "id": "notice_description",
+      "className": "oj-helper-overflow-wrap-anywhere oj-helper-white-space-normal",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+    { "headerClassName" : "table-header-style",
+              "headerText": "Action",
+              "maxWidth" : "10rem",
+              "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+              "template": "actionTemplate", "id": "action","sortable": "disabled" }
+      ]' style='width: 100%;' class="demo-table-container">
+      <template slot="actionTemplate" data-oj-as="cell">
+        <oj-button
+        chroming="borderless"
+        display="icons"
+        on-oj-action="[[goToEditNotice]]">
+        <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
+        Edit
+      </oj-button>
+      <oj-button
+          chroming="borderless"
+          display="icons"
+          on-oj-action="[[deleteNotice]]">
+          <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
+          Delete
+        </oj-button>
+       </template>
+       <template slot="bgTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+            <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+            <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Notice Done' ]]">
+            <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+      </oj-bind-if>
+      </template>
+    </oj-table>
+</div>
+</div>
+</div>
+</div>
+
+<div id="allNotice">
+    <div>Coming Soon</div>
+</div>
+<oj-dialog id="openEditNotice" class="popupNotice" dialog-title="Edit Notice" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="notice-information" class="form" direction="row" max-columns="1">
+            <oj-input-text id="editSubject" label-hint="Subject" required="true" value="{{editNoticeName}}"></oj-input-text>
+            <oj-text-area id="editDescription"  required="true" label-hint="Description" raw-valuenewE="" rows="3" clear-icon="always" value="{{editNoticeDescription}}">
+            </oj-text-area>
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[formSubmitUpdate]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+</oj-validation-group>
+</oj-dialog>
+
+    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+    <oj-dialog id="successView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Notice added successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+
+    <oj-dialog id="successView3">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Notice Delete</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose5]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Notice deleted successfully</p>
+            </div>
+        </div>
+      </oj-dialog>
+    <oj-dialog id="updateSuccessView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Notice updated successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+</div> 
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 

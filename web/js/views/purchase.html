@@ -45,9 +45,13 @@
     { "headerClassName" : "table-header-style",
       "headerText": "Purpose", "field": "purpose", "id": "purpose" },
     { "headerClassName" : "table-header-style",
+      "headerText": "Vendor PO No.", "field": "vendor_po_no", "id": "vendor_po_no" },
+    { "headerClassName" : "table-header-style",
     "headerText": "Vendor PO Document", "id": "vendor_po_doc",  "field": "vendor_po_doc","template": "documentTemplate"},
     { "headerClassName" : "table-header-style",
       "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+    { "headerClassName" : "table-header-style",
+      "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
@@ -61,7 +65,7 @@
          <oj-button
           chroming="borderless"
           display="icons"
-          on-oj-action="">
+          on-oj-action="[[editPurchase]]">
           <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
           Edit
         </oj-button>
@@ -73,7 +77,7 @@
       <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
           <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
       </oj-bind-if>
-      <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+      <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
           <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
       </oj-bind-if>
     </template>
@@ -117,6 +121,45 @@
       </div>
   </div>
 </oj-popup>
+
+
+<oj-dialog id="openEditPurchase" class="popupPurchase" dialog-title="Edit Purchase" modality="modeless" drag-affordance="title-bar"
+cancel-behavior="[[CancelBehaviorOpt]]">
+<oj-validation-group id="formValidation" class="form-container" role="group">
+  <div id="form-container">
+      <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+          <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}"></oj-input-text>
+          <oj-input-text id="editPurpose" label-hint="Purpose" required="true" value="{{editPurpose}}"></oj-input-text>
+          <oj-input-text id="editVendorPONo" label-hint="Vendor PO Number" value="{{editVendorPONo}}"></oj-input-text>
+          <oj-file-picker  id="editVendorFile" class="demo-max-width" primary-text="Vendor PO Attatchment"
+                  secondary-text="[[editSecondaryText]]" on-oj-select="[[updateUploadVendorPO]]">
+          </oj-file-picker>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
+          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}"></oj-input-text>
+          <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+            <oj-select-single required id="status" label-hint="Status" label-edge="inside"
+            data="[[statusList]]" value="{{editStatus}}"></oj-select-single>        
+          </oj-bind-if>
+      </oj-form-layout>
+      <oj-button id="save" chroming="solid" on-oj-action="[[updateFormSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+  </div>
+</oj-validation-group>
+</oj-dialog>
+
+<oj-dialog id="updateSuccessView">
+  <div slot="header" style="display: contents;">
+      <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
+      <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+          <span slot="startIcon" class="oj-ux-ico-close"></span>
+          Cancel
+      </oj-button>
+  </div>
+  <div slot="body">
+      <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <p style="font-weight: 500;text-align: left">Purchase order updated successfully</p>
+      </div>
+  </div>
+</oj-dialog>
 
 <div class="centered-container" id="loaderView">
     <div class="loader"></div>
