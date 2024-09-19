@@ -1,16 +1,23 @@
-<link rel="stylesheet" href="../../css/addStaff.css">
+<link rel="stylesheet" href="../../css/purchase.css">
 <div class="oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;">
-        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Purchase Order Settings </span><span class="hint-note">(Enter the maximum purchase approval limits for Directors, Senior Managers, and Senior Accounts)</span></div> 
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Purchase/Expense Settings </span><span class="hint-note">(Enter the maximum purchase/expense approval limits for line managers.)</span></div> 
     </div>
 </div>
 
-<div class="">
+<div class="oj-panel">
+    <div class="value">0</div>
+<input type="range" min="0" max="50000" step="1" value="0">
 <oj-validation-group id="formValidation" class="form-container" role="group">
     <div id="form-container">
         <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
-            <oj-input-text id="seniorManager" label-hint="Senior Manager Limit" required="true" value="{{seniorManager}}"></oj-input-text>
-            <oj-input-text id="seniorAccountant" label-hint="Senior Accountant Limit" required="true" value="{{seniorAccountant}}"></oj-input-text>
+            <oj-input-text id="lineManager" label-hint="Line Manager Limit (Must not exceed 50,000.)" required="true" value="{{lineManager}}" on-value-changed="[[purchaseLimitFill]]"></oj-input-text>
+            <div style="color:red;margin-top:-40px">
+                <oj-bind-text value="[[limitError]]"></oj-bind-text>
+            </div>
+            <div style="color:red;margin-top:-50px">
+                <oj-bind-text value="[[numError]]"></oj-bind-text>
+            </div>
         </oj-form-layout>
         <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
     </div>
@@ -38,7 +45,7 @@
     </div>
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Successfully saved the purchase limit</p>
+            <p style="font-weight: 500;text-align: left">Successfully saved the purchase/expense limit</p>
         </div>
     </div>
 </oj-dialog>

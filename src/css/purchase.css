@@ -1,6 +1,5 @@
 #form-container{
     padding-top: 5px;
-   
     padding-bottom: 30px;
     display: flex;
     flex-direction: column;
@@ -9,4 +8,50 @@
     margin-top: 20px;
     background-color: #ffffff;
 }
+
+@import url(https://fonts.googleapis.com/css?family=Dosis:700);
+
+.value {
+    font-family: "Dosis", Helvetica, Arial, sans-serif; 
+    color: #34495e;
+    padding-top: 40px;
+    text-shadow: white 1px 1px 1px;
+    border-bottom: 4px dashed #bdc3c7;
+    text-align: center;
+    font-weight: bold;
+    font-size: 5em;
+    width: 300px; 
+    height: 100px;
+    line-height: 60px;
+    margin: 40px auto;
+    letter-spacing: -.07em;
+    text-shadow: white 2px 2px 2px;
+}
+input[type="range"] {
+  display: block;
+  -webkit-appearance: none;
+  background-color: #bdc3c7;
+  width: 300px;
+  height: 5px;
+  border-radius: 5px;
+  margin: 0 auto;
+  outline: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background-color: #048741;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: .3s ease-in-out;
+}​
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background-color: white;
+    border: 2px solid #e74c3c;
+  }
+  input[type="range"]::-webkit-slider-thumb:active {
+    transform: scale(1.6);
+  }
 

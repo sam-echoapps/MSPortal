@@ -42,6 +42,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusList = new ArrayDataProvider(self.statusOption, {
                     keyAttributes: 'value'
                 });
+                self.deniedNotes = ko.observable('');
+                self.userId = ko.observable(sessionStorage.getItem("userId"));
+                self.staffId = ko.observable();
+
+                
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -96,6 +101,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
+                                    console.log(data[i][1])
                                     self.PurchaseDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -286,7 +292,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     // popup.open();
                 
                     $.ajax({
-                        url: BaseURL + "/HRModulePdfView",
+                        url: BaseURL + "/HRModuleDocView",
                         type: 'POST',
                         data: JSON.stringify({
                             fileName: documentLink
@@ -314,6 +320,21 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                                 var blobUrl = URL.createObjectURL(blob);
                                 window.open(blobUrl, '_blank');
+                            } else if (fileType === "jpeg" || fileType === "png") {
+                                // Create a Blob for the image
+                                var byteCharacters = atob(base64Code);
+                                var byteNumbers = new Array(byteCharacters.length);
+                                for (var i = 0; i < byteCharacters.length; i++) {
+                                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                }
+                                var byteArray = new Uint8Array(byteNumbers);
+                                var blob = new Blob([byteArray], { type: 'image/' + fileType });
+                            
+                                // Generate a URL for the Blob
+                                var blobUrl = URL.createObjectURL(blob);
+                            
+                                // Open the image in a new tab
+                                window.open(blobUrl, '_blank');
                             } else {
                                 self.offerFileMessage("File not found");
                                 setTimeout(() => {
@@ -327,8 +348,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.editPurchase = (event,data)=>{
                     var clickedPurchaseId = data.item.data.id
                     sessionStorage.setItem("purchaseId", clickedPurchaseId);
-                    document.querySelector('#openEditPurchase').open();
                     self.getPurchaseInfo();
+                    document.querySelector('#openEditPurchase').open();
                 }
 
                 self.getPurchaseInfo = () => {
@@ -346,15 +367,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         success: function (data) {
                             data = JSON.parse(data[0]);
                             console.log(data);
+                            self.staffId(data[1])
                             self.editItemName(data[2])
                             self.editPurpose(data[3])
                             self.editVendorPONo(data[4])
                             self.editSecondaryText(data[5])
                             self.editEstimatedPrice(data[6])
                             self.editStatus(data[7])
+                            self.deniedNotes(data[8])
                         }
                     });
                 };
+
 
                 self.updateFormSubmit = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
@@ -377,7 +401,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         vendor_po_doc : self.editVendorPOFile(),
                                         estimated_price : self.editEstimatedPrice(),
                                         file : fileContent,
-                                        status : self.editStatus()
+                                        status : self.editStatus(),
+                                        deny_notes : self.deniedNotes(),
+                                        staffId : self.staffId()
                                     }),
                                     dataType: 'json',
                                     timeout: sessionStorage.getItem("timeInetrval"),
@@ -407,7 +433,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     vendor_po_doc : self.editVendorPOFile(),
                                     estimated_price : self.editEstimatedPrice(),
                                     file : self.editFileContent(),
-                                    status : self.editStatus()
+                                    status : self.editStatus(),
+                                    deny_notes : self.deniedNotes(),
+                                    staffId : self.staffId()
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),

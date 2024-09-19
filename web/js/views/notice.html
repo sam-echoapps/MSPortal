@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="../../css/addStaff.css">
-<div class="oj-xl-margin-8x">
+<div class="oj-xl-margin-2x">
 </div>
 
 <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
@@ -107,7 +107,46 @@
 </div>
 
 <div id="allNotice">
-    <div>Coming Soon</div>
+    <div class="oj-panel oj-xl-margin-4x" id="actionView"> 
+        <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+            <oj-table id='taskTable' aria-label='All Table' data='[[TaskList]]' display='list'
+            selection-mode='{"row": "single"}'  columns='[
+            { "headerText": "SL.No", "field": "slno", "id": "slno",
+            "headerClassName" : "table-header-style"	 },
+            { "headerText": "Category", "field": "category", "id": "category",
+              "headerClassName" : "table-header-style"	 },
+            { "headerClassName" : "table-header-style",
+              "headerText": "Subject", "field": "subject", "id": "subject" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Description", "field": "description", "id": "description"}]' style='width: 100%;' class="demo-table-container">
+             <template slot="bgTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+                    <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+                    <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
+                    <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+                  <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+              </oj-bind-if>
+              </template>
+              <template slot="statusTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[cell.row.priority == 'High' ]]">
+                    <div class="oj-table-element-high"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.priority == 'Medium' ]]">
+                    <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.priority == 'Low' ]]">
+                    <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.priority]]"></oj-bind-text></div>
+                </oj-bind-if>
+              </template>
+            </oj-table>
+        </div>
+        </div>
 </div>
 <oj-dialog id="openEditNotice" class="popupNotice" dialog-title="Edit Notice" modality="modeless" drag-affordance="title-bar"
   cancel-behavior="[[CancelBehaviorOpt]]">

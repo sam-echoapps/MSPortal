@@ -13,7 +13,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
 
             var routerLength = args.parentRouter._routes.length;
           
-            if(routerLength!=31){
+            if(routerLength!=32){
                 location.reload();
             }
 

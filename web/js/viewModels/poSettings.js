@@ -1,6 +1,6 @@
 define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
-     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable"], 
+     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable", "ojs/ojinputnumber"], 
     function (oj,ko,$, app, ArrayDataProvider, FilePickerUtils) {
 
         class POSettings {
@@ -10,8 +10,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.router = args.parentRouter;
                 let BaseURL = sessionStorage.getItem("BaseURL")
 
-                self.seniorManager = ko.observable('');
-                self.seniorAccountant = ko.observable('');
+                self.lineManager = ko.observable('');
+                self.limitError = ko.observable('');
+                self.numError = ko.observable('');
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -20,6 +21,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     else {
                         app.onAppSuccess();
                         self.getPurchaseOrderLimit();
+
+                        var elem = document.querySelector('input[type="range"]');
+
+                        var rangeValue = function(){
+                        var newValue = elem.value;
+                        var target = document.querySelector('.value');
+                        target.innerHTML = newValue;
+                        self.lineManager(newValue)
+                        }
+        
+                        elem.addEventListener("input", rangeValue);
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -47,6 +59,25 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.messageClose = ()=>{
                     location.reload();
                 }
+
+                self.purchaseLimitFill = (event)=>{
+                    var ASCIICode= event.detail.value
+                    var check =/^\d+$/.test(ASCIICode);
+                    console.log(check)
+                    if (check == true){
+                        self.numError('')
+                    }else{
+                        self.numError("Should be digits.");
+                    }
+                    var newValue = self.lineManager();
+                    var target = document.querySelector('.value');
+                    target.innerHTML = newValue;
+                    if(newValue>50000){
+                        self.limitError('Limit Exceeded');
+                    }else{
+                        self.limitError('')
+                    }
+                }
               
                 self._checkValidationGroup = (value) => {
                     const tracker = document.getElementById(value);
@@ -69,21 +100,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         timeout: sessionStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
-                            console.log("Error fetching Goal month:", textStatus); // Log any error
+                            console.log("Error:", textStatus); 
                             reject(textStatus);
                         },
                         success: function (data) {
                             document.getElementById('loaderView').style.display = 'none';
                             console.log(data);
-                            self.seniorManager(data[0][0][0]);
-                            self.seniorAccountant(data[0][0][1]);
+                            var elem = document.querySelector('input[type="range"]');
+                            elem.value= data[0][0][0];
+                            self.lineManager(data[0][0][0]);
                         }
                     });
             }; 
 
                 self.formSubmit = () => {
                     const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
+                    if (formValid && self.limitError() == '' && self.numError() == '') {
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
                 
@@ -91,8 +123,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleAddPurchaseLimit",
                             type: 'POST',
                             data: JSON.stringify({
-                                seniorManager: self.seniorManager(),
-                                seniorAccountant: self.seniorAccountant(),
+                                lineManager: self.lineManager(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),

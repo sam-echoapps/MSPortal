@@ -19,8 +19,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.selectedTab = ko.observable("allNotice"); 
 
+                self.TaskDet = ko.observableArray([]);
+
                 self.tabData = [
-                    { id: "allNotice", label: "All Notice" },
+                    { id: "allNotice", label: "All Notifications" },
                     { id: "companyNotice", label: "Company Notice" },
                 ];
 
@@ -31,6 +33,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     else {
                         app.onAppSuccess();
                         self.getStaffNoticeView();
+                        self.getStaffNoticeViewAllNoification();
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
                                     const baseUrl = 'https://uanglobal.com/';
@@ -64,7 +67,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     });
 
-                self.getStaffNoticeView = ()=>{
+                self.getStaffNoticeView = ()=>{    // for Company Notice table
                     self.NoticeDet([]);
                     document.getElementById('loaderView').style.display='block';
                     $.ajax({
@@ -94,7 +97,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             
                              }
                         }  
-                    })
+                    });
                 }
 
                 self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
@@ -285,6 +288,62 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                     }
+                    self.getStaffNoticeViewAllNoification = () => {  //for All notification table
+                        self.TaskDet([]);
+                        document.getElementById('loaderView').style.display = 'block';
+                        $.ajax({
+                            url: BaseURL + "/HRModuleGetStaffAllNotice",
+                            type: 'GET',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+
+                            success: function (data) {
+                                data = JSON.parse(data[0]);
+                                //console.log(data)
+                                console.log(data);
+                                document.getElementById('loaderView').style.display='none';
+                                document.getElementById('actionView').style.display='block';
+                                if(data.length!=0){
+                                 for (var i = 0; i < data.length; i++) {
+                                            self.TaskDet.push({
+                                                'slno': i + 1,
+                                                'id': data[i][1], 
+                                                'category': data[i][2],
+                                                'subject': data[i][3],
+                                                'description': data[i][4]
+                                            });
+                                        }
+                                    }
+                                    }  
+                                })
+                            }                    
+                    self.TaskList = new ArrayDataProvider(self.TaskDet, { keyAttributes: "id" });
+                    
+
+                    self.filter = ko.observable('');
+                    
+                    self.TaskList = ko.computed(function () {
+                        let filterCriterion = null;
+                        if (self.filter() && this.filter() != '') {
+                            filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
+                                filterDef: { text: self.filter() }
+                            });
+                        }
+                        const arrayDataProvider = new ArrayDataProvider(self.TaskDet, {
+                            keyAttributes: 'id',
+                            sortComparators: {
+                                comparators: new Map().set("dob", this.comparator),
+                            },
+                        });
+                    
+                        return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
+                    }, self);
+                    
+                    
 
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {
