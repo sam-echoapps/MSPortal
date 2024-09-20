@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+
+<div class="oj-flex oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+  <div class="oj-flex-item" style="margin-top:  -30px; margin-bottom: -50px;">
+      <oj-validation-group id="formValidation2" class="form-container" role="group">
+          <div id="form-container" class="">
+              <oj-form-layout id="document" class="form" direction="row" max-columns="4">
+                  <oj-input-text id="PO.No"  label-hint="PO Number" required="true" value="{{poid}}" readonly="true"></oj-input-text>
+                  <oj-input-text id="itemName" label-hint="Item Name" required="true" value="{{itemName}}" readonly="true"></oj-input-text>
+                  <oj-input-text id="owner"  label-hint="Owner" required="true" value="{{owner}}" readonly="true"></oj-input-text>
+                  <oj-input-text id="date_of_request"  label-hint="Date Of Request" required="true" value="{{requestDate}}" readonly="true"></oj-input-text>
+          </oj-form-layout>
+          </div>
+      </oj-validation-group>
+  </div>
+</div>
+
+  <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+  position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+  <div class="demo-popup-body">
+      <div class="demo-popup-content oj-sm-padding-2x">
+          <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+      </div>
+  </div>
+</oj-popup>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 

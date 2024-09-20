@@ -71,6 +71,15 @@
           Edit
         </oj-button>
       </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+        <oj-button
+         chroming="borderless"
+         display="icons"
+         on-oj-action="[[goToPOClosure]]">
+         <span slot="startIcon" class="fa-solid fa-check-circle edit-btn"></span>
+         PO closure
+       </oj-button>
+     </oj-bind-if>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.status == 'Requested' ]]">

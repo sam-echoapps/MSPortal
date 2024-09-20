@@ -9,6 +9,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.router = args.parentRouter;
                 let BaseURL = sessionStorage.getItem("BaseURL")
+                //let userId = sessionStorage.getItem("BaseURL")
                 
                 self.subject = ko.observable();
                 self.description = ko.observable();
@@ -288,12 +289,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                     }
+
                     self.getStaffNoticeViewAllNoification = () => {  //for All notification table
                         self.TaskDet([]);
                         document.getElementById('loaderView').style.display = 'block';
                         $.ajax({
                             url: BaseURL + "/HRModuleGetStaffAllNotice",
-                            type: 'GET',
+                            type: 'POST',
+                            data: JSON.stringify({
+                                userId: sessionStorage.getItem("userId"),
+                            }),
+                            dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
                             context: self,
 
@@ -304,7 +310,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             success: function (data) {
                                 data = JSON.parse(data[0]);
                                 //console.log(data)
-                                console.log(data);
+                                //console.log(data);
                                 document.getElementById('loaderView').style.display='none';
                                 document.getElementById('actionView').style.display='block';
                                 if(data.length!=0){

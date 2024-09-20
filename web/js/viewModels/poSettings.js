@@ -62,12 +62,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.purchaseLimitFill = (event)=>{
                     var ASCIICode= event.detail.value
-                    var check =/^\d+$/.test(ASCIICode);
+                    var check = /^\d+(\.\d+)?$/.test(ASCIICode);
                     console.log(check)
                     if (check == true){
                         self.numError('')
                     }else{
-                        self.numError("Should be digits.");
+                        self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
                     }
                     var newValue = self.lineManager();
                     var target = document.querySelector('.value');

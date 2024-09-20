@@ -170,6 +170,7 @@
       "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
       "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
      <template slot="actionTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.owner_id  == userId() || cell.row.employee_id == userId()]]">
          <oj-button
           chroming="borderless"
           display="icons"
@@ -177,6 +178,7 @@
           <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
           Edit
         </oj-button>
+        </oj-bind-if>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
         <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
@@ -213,11 +215,20 @@
   <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
     <div id="form-container">
         <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
-            <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{editTaskName}}"></oj-input-text>
-            <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}"></oj-input-date>
-            <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}"></oj-input-date>
-            <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
+            <oj-bind-if test="[[ownerId()  == userId()]]">
+                <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{editTaskName}}"></oj-input-text>
+                <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}"></oj-input-date>
+                <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}"></oj-input-date>
+                <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
                     data="[[priorityList]]" value="{{editPriority}}"></oj-select-single>
+            </oj-bind-if>
+            <oj-bind-if test="[[ownerId()  != userId()]]">
+                <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{editTaskName}}" readonly="true"></oj-input-text>
+                <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}" readonly="true"></oj-input-date>
+                <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}" readonly="true"></oj-input-date>
+                <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
+                    data="[[priorityList]]" value="{{editPriority}}"></oj-select-single>
+            </oj-bind-if>
             <oj-select-single required id="status" label-hint="Status" label-edge="inside"
             data="[[statusList]]" value="{{editStatus}}"></oj-select-single>
         </oj-form-layout>

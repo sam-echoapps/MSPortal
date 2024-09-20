@@ -56,6 +56,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.editReminderDate = ko.observable('');
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
+                self.userId = ko.observable(sessionStorage.getItem("userId"));
+                self.ownerId = ko.observable('');
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -116,6 +118,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.profilePhotoShow('data:image/jpeg;base64,'+result);
                             } 
                             data = JSON.parse(data[0]);
+                            console.log(data)
                             document.getElementById('loaderView').style.display='none';
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
@@ -127,6 +130,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'task_name': data[i][2],
                                     'due_date': data[i][3],
                                     'priority': data[i][4], 
+                                    'owner_id': data[i][5], 
                                     'owner': data[i][8] + " "+ data[i][9] +" "+ data[i][10],
                                     'status': data[i][6],
                                     'created_date': data[i][7],
@@ -283,6 +287,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.editTaskName(data[2])
                             self.editDueDate(data[3])
                             self.editPriority(data[4])
+                            self.ownerId(data[5])
                             self.editStatus(data[6])
                             self.editReminderDate(data[11])
                         }

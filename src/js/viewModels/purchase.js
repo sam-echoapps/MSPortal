@@ -413,7 +413,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     },
                                     success: function (data) {
                                         console.log(data)
-                                        document.querySelector('#openAddPurchase').close();
+                                        document.querySelector('#openEditPurchase').close();
                                         let popup = document.getElementById("loaderPopup");
                                         popup.close();
                                         let popup1 = document.getElementById("updateSuccessView");
@@ -445,7 +445,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 },
                                 success: function (data) {
                                     console.log(data)
-                                    document.querySelector('#openAddPurchase').close();
+                                    document.querySelector('#openEditPurchase').close();
                                     let popup = document.getElementById("loaderPopup");
                                     popup.close();
                                     let popup1 = document.getElementById("updateSuccessView");
@@ -454,6 +454,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                         }
+                    }
+
+                    self.goToPOClosure = (event,data)=>{
+                        var clickedRowId = data.item.data.id
+                        sessionStorage.setItem("purchaseId", clickedRowId);
+                        self.router.go({path:'purchaseClosure'})
                     }
     
 
