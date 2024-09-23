@@ -27,6 +27,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "companyNotice", label: "Company Notice" },
                 ];
 
+                let userrole = sessionStorage.getItem("userRole")
+                self.userrole = ko.observable(userrole);
+                
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});

@@ -33,6 +33,19 @@
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+  integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  
+  <style>
+    .demo-drawer-header {
+    display: flex;
+    padding: 0.3rem 1rem 0 1rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+</style>
+
 </head>
 
 <body class="oj-web-applayout-body">
@@ -63,6 +76,15 @@
           <div class="oj-flex-bar-end">
             <!-- Responsive Toolbar -->
             <oj-toolbar>
+              <oj-button id="notifyButton" display="icons" chroming="borderless" on-oj-action="[[endToggle]]" class="notify-button" style="position: relative; border: none;">
+                <span slot="startIcon" class="fa fa-bell"></span>
+                <oj-bind-if test="[[notificationCount]]">
+                    <span id="count" class="oj-badge oj-badge-sm" slot="endIcon" 
+                          style="position: absolute; top: 0px; right: 0px; background-color: red; color: white;">
+                        <oj-bind-text value="[[notificationCount]]"></oj-bind-text>
+                    </span>
+                </oj-bind-if>
+            </oj-button>
 <!--     This hide in mobile view          <oj-menu-button id="userMenu" display="[[smScreen() ? 'icons' : 'all']]">  -->
                 <oj-menu-button id="userMenu">
                     <span>
@@ -120,6 +142,41 @@
           </oj-module>
         </div>
       </div>
+       <!-- Popup Drawer -->
+<oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px;">
+  <div class="demo-drawer-header">
+    <div id="endHeader">
+      <h6>Notifications</h6>
+    </div>
+    <oj-button id="endButtonCloser" display="icons" chroming="borderless" on-oj-action="[[closeMenu]]">
+      <span slot="startIcon" class="oj-ux-ico-close"></span>
+      Close
+    </oj-button>
+  </div>
+  <div class="demo-padding demo-form-container">
+      <oj-list-view id="listviewimage" aria-label="Available products" data="[[NoticeList]]" gridlines.item="visible" class="demo-list-view oj-sm-padding-2x-vertical">
+        <template slot="itemTemplate" data-oj-as="item">
+          <li>
+            <oj-list-item-layout>
+              <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
+                <oj-bind-text id="notice_category" value="[[item.data.notice_category]]"></oj-bind-text>
+              </div>
+              <div class="oj-typography-body-md">
+                <oj-bind-text id="notice_name" value="[[item.data.notice_name]]"></oj-bind-text>
+              </div>
+              <div slot="tertiary" class="oj-typography-body-xs">
+                <oj-bind-text id="notice_description" value="[[item.data.notice_description]]"></oj-bind-text>
+              </div>
+            </oj-list-item-layout>
+          </li>
+        </template>
+      </oj-list-view>
+      <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
+         View More
+      </oj-button>
+    </div>
+
+</oj-drawer-popup>
 <!--   <footer class="oj-web-applayout-footer" role="contentinfo">
     <div class="oj-web-applayout-footer-item oj-web-applayout-max-width">
       <ul>

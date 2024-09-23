@@ -1,7 +1,7 @@
 define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 
          'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter', 'ojs/ojurlparamadapter', 
          'ojs/ojarraydataprovider', 'ojs/ojarraytreedataprovider','ojs/ojknockouttemplateutils', 'ojs/ojmodule-element','ojs/ojmodule-element-utils','ojs/ojknockout' ,'ojs/ojbutton',
-         'ojs/ojdialog','ojs/ojselectsingle'],
+         'ojs/ojdialog','ojs/ojselectsingle','ojs/ojdrawerpopup'],
   function( OffcanvasUtils , ko , moduleUtils, ResponsiveUtils, ResponsiveKnockoutUtils, CoreRouter, ModuleRouterAdapter,
     KnockoutRouterAdapter, UrlParamAdapter, ArrayDataProvider, ArrayTreeDataProvider,KnockoutTemplateUtils  ) {
      function ControllerViewModel() {
@@ -12,16 +12,116 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
       self.footerLinks = ko.observableArray([]);
       self.onepDepType = ko.observable();
         
-        self.drawer = {
-          displayMode: 'push',
-          selector: '#drawer',
-          content: '#main'
+      let BaseURL = sessionStorage.getItem("BaseURL")
+      self.notificationCount = ko.observable(0); 
+      
+      self.getAllNotificationCount = function() {
+      self.notificationCount(0);
+      $.ajax({
+      url: BaseURL+"/HRModuleGetStaffAllNotificationCount",
+      type: 'POST',
+      data: JSON.stringify({
+       userId: sessionStorage.getItem("userId"),
+      }),
+      dataType: 'json',
+      timeout: sessionStorage.getItem("timeInetrval"),
+      context: self,
+      
+      error: function (xhr, textStatus, errorThrown) {
+       console.log(textStatus);
+      },
+      success: function (data) {
+       count = JSON.parse(data);
+       if(count <=0){
+         document.getElementById('count').style.display='none';
+       } else{
+         self.notificationCount(count);
+       }        
+      }  
+      });
+      }
+      self.getAllNotificationCount();
+      setInterval(function() {
+      self.getAllNotificationCount();
+      }, 3000);
+      
+       self.drawer = {
+         displayMode: 'push',
+         selector: '#drawer',
+         content: '#main'
+       };
+      
+      
+       self.toggleDrawer = function () {
+         return OffcanvasUtils.toggle(self.drawer);
+       };
+       self.endOpened = ko.observable(false);
+      
+       self.endToggle = function () {
+           if (!self.endOpened()) { // Only fetch notifications if the drawer is being opened
+               self.getAllNotification();
+           }
+           self.endOpened(!self.endOpened());
+       };
+      
+       self.closeMenu = function () {
+         self.endOpened(false); 
+         self.getAllNotificationCount();
+       };
+       
+       
+        self.toggleMenu = function () {
+          var offcanvas = document.getElementById('rightMenu');
+          OffcanvasUtils.toggle(offcanvas);
         };
-  
-
-        self.toggleDrawer = function () {
-          return OffcanvasUtils.toggle(self.drawer);
-        };
+       
+       // Notifications
+       self.NoticeDet = ko.observableArray([]);
+       self.NoticeList = ko.computed(function() {
+         const arrayDataProvider = new ArrayDataProvider(self.NoticeDet, {
+           keyAttributes: 'id'
+         });
+         return new oj.ListDataProviderView(arrayDataProvider);
+       });
+       
+       self.getAllNotification = function() {
+         self.NoticeDet([]);
+         $.ajax({
+           url: BaseURL+"/HRModuleGetStaffAllNotification",
+           type: 'POST',
+           data: JSON.stringify({
+               userId: sessionStorage.getItem("userId"),
+           }),
+           dataType: 'json',
+           timeout: sessionStorage.getItem("timeInetrval"),
+           context: self,
+           
+           error: function (xhr, textStatus, errorThrown) {
+               console.log(textStatus);
+           },
+           success: function (data) {
+               data = JSON.parse(data[0]);
+               if(data.length!=0){
+                 for (var i = 0; i < data.length; i++) {
+                   self.NoticeDet.push({
+                       'slno': i + 1,
+                       //'id': data[i][1],
+                       'notice_category': data[i][1] || ' ',
+                       'notice_name': data[i][2],
+                       'notice_description': data[i][3],
+                   });
+               }
+           } 
+       }  
+       });
+       }
+       
+       self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
+       
+       self.viewMore = function (event, data) {
+         self.closeMenu(); 
+         router.go({ path: 'notice' }); 
+       };
       
         self.username = ko.observable();
         self.userrole = ko.observable();
@@ -66,6 +166,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardExternal', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior manager'){
@@ -90,6 +191,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'myProfile', detail : {label :'My Profile',iconClass: 'oj-navigationlist-item-icon fa fa-id-card'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='senior manager'){
@@ -246,6 +348,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'leaveReport', detail : {label: 'Leave Report',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
+          { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='intern'){
@@ -268,6 +371,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='external'){
@@ -290,6 +394,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'dashboardEmployee', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'taskView', detail : {label: 'Tasks View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else{
@@ -341,6 +446,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
+          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-shopping-cart ", "path":"notice"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -466,6 +572,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
+          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-shopping-cart ", "path":"notice"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},
@@ -485,6 +592,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
+          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-shopping-cart ", "path":"notice"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -500,6 +608,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Leaves","id": "leaves","icons": "fa-solid fa fa-person-walking-arrow-right", "path":"leaves"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
+          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-shopping-cart ", "path":"notice"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line", 
             "children": [
               {"name": "My Goals","id": "myGoals","icons": "fa-solid fa fa-bullseye", "path":"goals"},
@@ -523,7 +632,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
-          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-shopping-cart ", "path":"notice"},
+          {"name": "Notice","id": "notice","icons": "fa-solid fa fa-bullhorn ", "path":"notice"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},

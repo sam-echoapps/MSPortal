@@ -26,6 +26,12 @@
     <div id="form-container">
         <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
             <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{taskName}}"></oj-input-text>
+            <oj-text-area id="description" required="true" label-hint="Description (Max 350 Char)" raw-valuenewE="" rows="3" 
+               clear-icon="always" value="{{description}}" on-value-changed="[[getInputCount]]">
+            </oj-text-area>
+            <div style="color:red;margin-top:-40px">
+                <oj-bind-text value="[[lessCount]]"></oj-bind-text>
+            </div>
             <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{dueDate}}"></oj-input-date>
             <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{reminderDate}}"></oj-input-date>
             <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
@@ -210,6 +216,8 @@
             "headerClassName" : "table-header-style"	 },
             { "headerText": "Task Name", "field": "task_name", "id": "task_name",
               "headerClassName" : "table-header-style"	 },
+            { "headerText": "Description", "field": "description", "id": "description",
+              "headerClassName" : "table-header-style"	 },
             { "headerClassName" : "table-header-style",
               "headerText": "Owner", "field": "owner", "id": "owner" },
             { "headerClassName" : "table-header-style",
@@ -271,6 +279,12 @@
     <div id="form-container">
         <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
             <oj-input-text id="taskName" label-hint="Task Name" required="true" value="{{editTaskName}}"></oj-input-text>
+            <oj-text-area id="description" required="true" label-hint="Description (Max 350 Char)" raw-valuenewE="" rows="3" 
+            clear-icon="always" value="{{editDescription}}" on-value-changed="[[getInputCount]]">
+         </oj-text-area>
+         <div style="color:red;margin-top:-40px">
+             <oj-bind-text value="[[lessCount]]"></oj-bind-text>
+         </div>
             <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}"></oj-input-date>
             <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}"></oj-input-date>
             <oj-select-single required id="select" label-hint="Priority" label-edge="inside"

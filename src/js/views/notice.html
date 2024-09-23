@@ -40,6 +40,7 @@
 <div id="companyNotice" style="display:none">
 <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between">
+        <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
         <oj-button chroming="solid"  on-oj-action="[[addNotice]]" class="oj-sm-padding-3x-vertical">
             <i class="fa-solid fa-plus"></i>&nbsp;Add Notice
           </oj-button>
@@ -48,11 +49,23 @@
             placeholder="Search.." on-raw-value-changed="[[handleValueNotice]]" value="{{filter}}" clear-icon="always">
             </oj-input-text>
         </div>
+         </oj-bind-if>
       </div> 
+
+      <oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior hr' && userrole() != 'senior manager' && userrole() != 'senior accounts']]">
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueNotice]]" value="{{filter}}" clear-icon="always">
+            </oj-input-text>
+        </div>
+        </div>
+         </oj-bind-if>
         
 
 <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
 <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+    <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
     <oj-table id='NoticeTable' aria-label='All Table' data='[[NoticeList]]' display='list'
     selection-mode='{"row": "single"}'  columns='[
     { "headerText": "SL.No", "field": "slno", "id": "slno",
@@ -101,6 +114,36 @@
       </oj-bind-if>
       </template>
     </oj-table>
+</oj-bind-if>
+<oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior hr' && userrole() != 'senior manager' && userrole() != 'senior accounts']]">
+    <oj-table id='NoticeTable' aria-label='All Table' data='[[NoticeList]]' display='list'
+    selection-mode='{"row": "single"}'  columns='[
+    { "headerText": "SL.No", "field": "slno", "id": "slno",
+    "headerClassName" : "table-header-style"	 },
+    { "headerText": "Title", "field": "notice_name", "id": "notice_name",
+      "headerClassName" : "table-header-style"	 },  
+    { "headerText": "Description", "field": "notice_description", "id": "notice_description",
+      "className": "oj-helper-overflow-wrap-anywhere oj-helper-white-space-normal",
+      "headerClassName" : "table-header-style"	 },
+    { "headerClassName" : "table-header-style",
+    "headerText": "Created Date", "field": "created_date", "id": "created_date" }
+      ]' style='width: 100%;' class="demo-table-container">
+       <template slot="bgTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+            <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+            <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Notice Done' ]]">
+            <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+      </oj-bind-if>
+      </template>
+    </oj-table>
+</oj-bind-if>
 </div>
 </div>
 </div>

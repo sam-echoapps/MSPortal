@@ -58,6 +58,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userrole = ko.observable(userrole);
                 self.userId = ko.observable(sessionStorage.getItem("userId"));
                 self.ownerId = ko.observable('');
+                self.description = ko.observable();
+                self.editDescription = ko.observable();
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -135,6 +137,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'status': data[i][6],
                                     'created_date': data[i][7],
                                     'reminder_date': data[i][11], 
+                                    'description': data[i][12], 
                                 });
                                 
                             }
@@ -170,9 +173,32 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.filter(document.getElementById('filter').rawValue);
                 };
 
+                self.lessCount = ko.observable('');
+                self.inputLength = ko.observable('');
+                self.getInputCount = (event)=>{
+
+                    const inputValue = event.detail.value;
+
+                    // Calculate the length of the input value
+                    const length = inputValue ? inputValue.length : 0;
+            
+                    // Update the observable with the length
+                    self.inputLength(length);
+            
+                    // Optionally log the length to the console
+                    console.log(length);
+
+                    if (length > 350) {
+                        self.lessCount('Max. characters is 350');
+                    } else {
+                        self.lessCount(''); // Clear the warning if the length is 300 or more
+                    }
+                }
+
+
                 self.formSubmit = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
+                    if (formValid && self.lessCount()=='') {
                             let popup = document.getElementById("loaderPopup");
                             popup.open();
                             
@@ -186,6 +212,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     reminder_date : self.reminderDate(),
                                     priority : self.priority(),
                                     userId: sessionStorage.getItem("userId"),
+                                    description : self.description(),
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
@@ -290,13 +317,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.ownerId(data[5])
                             self.editStatus(data[6])
                             self.editReminderDate(data[11])
+                            self.editDescription(data[12])
                         }
                     });
                 };
 
                 self.formSubmitUpdate = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
+                    if (formValid && self.lessCount()=='') {
                             let popup = document.getElementById("loaderPopup");
                             popup.open();
                             
@@ -310,6 +338,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     priority : self.editPriority(),
                                     status : self.editStatus(),
                                     reminder_date : self.editReminderDate(),
+                                    description : self.editDescription(),
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
