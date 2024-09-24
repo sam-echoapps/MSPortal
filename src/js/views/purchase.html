@@ -39,7 +39,7 @@
     { "headerText": "SL.No", "field": "slno", "id": "slno",
     "headerClassName" : "table-header-style"	 },
     { "headerText": "PO.No", "field": "pono", "id": "pono",
-    "headerClassName" : "table-header-style"	 },
+    "headerClassName" : "table-header-style","template": "actionTemplate"	 },
     { "headerText": "Item Name", "field": "item_name", "id": "item_name",
       "headerClassName" : "table-header-style"	 },
     { "headerClassName" : "table-header-style",
@@ -55,30 +55,17 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
-            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"},
-    { "headerClassName" : "table-header-style",
-      "headerText": "Action",
-      "maxWidth" : "10rem",
-      "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-      "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
      <template slot="actionTemplate" data-oj-as="cell">
-      <oj-bind-if test="[[cell.row.status != 'Denied' ]]">
-         <oj-button
-          chroming="borderless"
-          display="icons"
-          on-oj-action="[[editPurchase]]">
-          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
-          Edit
-        </oj-button>
+      <oj-bind-if test="[[cell.row.status != 'Denied' && cell.row.status != 'Approved' ]]">
+        <a :id="[[cell.row.pono]]" on-click= "[[editPurchase]]">
+          <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
+      </a>
       </oj-bind-if>
       <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
-        <oj-button
-         chroming="borderless"
-         display="icons"
-         on-oj-action="[[goToPOClosure]]">
-         <span slot="startIcon" class="fa-solid fa-check-circle edit-btn"></span>
-         PO closure
-       </oj-button>
+          <a :id="[[cell.row.pono]]" on-click= "[[goToPOClosure]]">
+            <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
+        </a>
      </oj-bind-if>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
@@ -139,6 +126,7 @@ cancel-behavior="[[CancelBehaviorOpt]]">
 <oj-validation-group id="formValidation" class="form-container" role="group">
   <div id="form-container">
       <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+        <oj-bind-if test="[[staffId()  == userId()]]">
           <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}"></oj-input-text>
           <oj-input-text id="editPurpose" label-hint="Purpose" required="true" value="{{editPurpose}}"></oj-input-text>
           <oj-input-text id="editVendorPONo" label-hint="Vendor PO Number" value="{{editVendorPONo}}"></oj-input-text>
@@ -146,7 +134,26 @@ cancel-behavior="[[CancelBehaviorOpt]]">
                   secondary-text="[[editSecondaryText]]" on-oj-select="[[updateUploadVendorPO]]">
           </oj-file-picker>
           <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
+          <oj-bind-if test="[[editFileCheck()  != '']]">
+          <a :data-document-link="[[editFileCheck()]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+            <div style="margin-top:-20px">
+            <span>Click Here</span>
+            </div>
+          </a>
+          </oj-bind-if>
+
           <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}"></oj-input-text>
+        </oj-bind-if>
+        <oj-bind-if test="[[staffId()  != userId()]]">
+          <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editPurpose" label-hint="Purpose" required="true" value="{{editPurpose}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editVendorPONo" label-hint="Vendor PO Number" value="{{editVendorPONo}}" readonly="true"></oj-input-text>
+          <oj-file-picker  id="editVendorFile" class="demo-max-width" primary-text="Vendor PO Attatchment"
+                  secondary-text="[[editSecondaryText]]" on-oj-select="[[updateUploadVendorPO]]" disabled="true">
+          </oj-file-picker>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
+          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" readonly="true"></oj-input-text>
+        </oj-bind-if>
           <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
             <oj-bind-if test="[[staffId() != userId() || userrole() == 'director']]">
             <oj-select-single required id="status" label-hint="Status" label-edge="inside"

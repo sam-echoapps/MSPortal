@@ -9,7 +9,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.router = args.parentRouter;
                 let BaseURL = sessionStorage.getItem("BaseURL")
-                //let userId = sessionStorage.getItem("BaseURL")
                 
                 self.subject = ko.observable();
                 self.description = ko.observable();
@@ -29,6 +28,32 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
+
+                self.notificationCount = ko.observable(0); 
+
+                self.getNotificationCount = function() {
+                    self.notificationCount(0);
+                    $.ajax({
+                    url: BaseURL+"/HRModuleGetStaffAllNotificationCount",
+                    type: 'POST',
+                    data: JSON.stringify({
+                    userId: sessionStorage.getItem("userId"),
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    
+                    error: function (xhr, textStatus, errorThrown) {
+                    console.log(textStatus);
+                    },
+                    success: function (data) {
+                    count = JSON.parse(data);
+                    console.log('count from notice add', count);
+                    self.notificationCount(count);
+                    //sessionStorage.setItem("notificationCount", count);
+                    }  
+                    });
+                    }
                 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -85,7 +110,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             data = JSON.parse(data[0]);
-                            console.log(data)
+                            //console.log(data)
                             document.getElementById('loaderView').style.display='none';
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
@@ -103,6 +128,38 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }  
                     });
                 }
+                self.noticeCloseButtonLoadCompanyNotice = () => {  // for Company Notice table without read update
+                    self.NoticeDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetStaffNoticeCloseButtonLoadCompanyNotice",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data[0]);
+                            //console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            document.getElementById('actionView').style.display='block';
+                            if(data.length!=0){
+                            for (var i = 0; i < data.length; i++) {
+                                self.NoticeDet.push({
+                                    'slno': i+1,
+                                    'id': data[i][0],                                    
+                                    'notice_name': data[i][1],
+                                    'notice_description': data[i][2], 
+                                    'created_date': data[i][3],
+                                });
+                            }
+                            
+                             }
+                        }  
+                    });
+                } 
 
                 self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
                 self.filter = ko.observable('');
@@ -133,20 +190,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.getInputCount = (event)=>{
 
                     const inputValue = event.detail.value;
-
-                    // Calculate the length of the input value
-                    const length = inputValue ? inputValue.length : 0;
-            
-                    // Update the observable with the length
+                    const length = inputValue ? inputValue.length : 0;           
                     self.inputLength(length);
-            
-                    // Optionally log the length to the console
-                    console.log(length);
+                    //console.log(length);
 
                     if (length > 350) {
                         self.lessCount('Max. characters is 350');
                     } else {
-                        self.lessCount(''); // Clear the warning if the length is 300 or more
+                        self.lessCount(''); 
                     }
                 }
 
@@ -183,9 +234,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }
 
-                self.messageClose = ()=>{
-                    location.reload();
-                }
+                    self.messageClose = ()=>{
+                        //location.reload();
+                        self.noticeCloseButtonLoadCompanyNotice();
+                        self.getStaffNoticeCloseButtonLoadAllNoification();
+                        self.getNotificationCount();
+                        let successPopup = document.getElementById("successView");
+                        successPopup.close(); 
+                    } 
               
                 self._checkValidationGroup = (value) => {
                     const tracker = document.getElementById(value);
@@ -313,7 +369,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             success: function (data) {
                                 data = JSON.parse(data[0]);
                                 //console.log(data)
-                                //console.log(data);
                                 document.getElementById('loaderView').style.display='none';
                                 document.getElementById('actionView').style.display='block';
                                 if(data.length!=0){
@@ -329,17 +384,47 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     }
                                     }  
                                 })
-                            }                    
+                            }  
+                            self.getStaffNoticeCloseButtonLoadAllNoification = () => {  //for All notification table without read update
+                                self.TaskDet([]);
+                                document.getElementById('loaderView').style.display = 'block';
+                                $.ajax({
+                                    url: BaseURL + "/HRModuleGetStaffNoticeCloseButtonLoadAllNoification",
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        userId: sessionStorage.getItem("userId"),
+                                    }),
+                                    dataType: 'json',
+                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    context: self,     
+                                    error: function (xhr, textStatus, errorThrown) {
+                                        console.log(textStatus);
+                                    },     
+                                    success: function (data) {
+                                        data = JSON.parse(data[0]);
+                                        document.getElementById('loaderView').style.display='none';
+                                        document.getElementById('actionView').style.display='block';
+                                        if(data.length!=0){
+                                         for (var i = 0; i < data.length; i++) {
+                                                    self.TaskDet.push({
+                                                        'slno': i + 1,
+                                                        'id': data[i][1], 
+                                                        'category': data[i][2],
+                                                        'subject': data[i][3],
+                                                        'description': data[i][4]
+                                                    });
+                                                }}}  
+                                        })
+                                    }                         
                     self.TaskList = new ArrayDataProvider(self.TaskDet, { keyAttributes: "id" });
                     
-
-                    self.filter = ko.observable('');
+                    self.filter2 = ko.observable('');
                     
                     self.TaskList = ko.computed(function () {
                         let filterCriterion = null;
-                        if (self.filter() && this.filter() != '') {
+                        if (self.filter2() && this.filter2() != '') {
                             filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
-                                filterDef: { text: self.filter() }
+                                filterDef: { text: self.filter2() }
                             });
                         }
                         const arrayDataProvider = new ArrayDataProvider(self.TaskDet, {
@@ -347,10 +432,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             sortComparators: {
                                 comparators: new Map().set("dob", this.comparator),
                             },
-                        });
-                    
+                        });             
                         return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
-                    }, self);
+                        }, self);
                     
                     
 
@@ -382,3 +466,5 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
         return  Notice;
     }
 );
+
+// code after merging

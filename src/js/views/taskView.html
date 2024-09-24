@@ -264,7 +264,7 @@
                 <oj-input-date id="dueDate" label-hint="Due Date" required="true" value="{{editDueDate}}" readonly="true"></oj-input-date>
                 <oj-input-date id="reminderDate" label-hint="Reminder Date" value="{{editReminderDate}}" readonly="true"></oj-input-date>
                 <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
-                    data="[[priorityList]]" value="{{editPriority}}"></oj-select-single>
+                    data="[[priorityList]]" value="{{editPriority}}" readonly="true"></oj-select-single>
             </oj-bind-if>
             <oj-select-single required id="status" label-hint="Status" label-edge="inside"
             data="[[statusList]]" value="{{editStatus}}"></oj-select-single>

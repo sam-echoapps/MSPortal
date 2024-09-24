@@ -11,121 +11,127 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
       self.CancelBehaviorOpt = ko.observable('icon');
       self.footerLinks = ko.observableArray([]);
       self.onepDepType = ko.observable();
-        
-      let BaseURL = sessionStorage.getItem("BaseURL")
-      self.notificationCount = ko.observable(0); 
       
+      self.notificationCount = ko.observable('0'); 
+      let BaseURL = sessionStorage.getItem("BaseURL")
+
       self.getAllNotificationCount = function() {
       self.notificationCount(0);
       $.ajax({
       url: BaseURL+"/HRModuleGetStaffAllNotificationCount",
       type: 'POST',
       data: JSON.stringify({
-       userId: sessionStorage.getItem("userId"),
+      userId: sessionStorage.getItem("userId"),
       }),
       dataType: 'json',
       timeout: sessionStorage.getItem("timeInetrval"),
       context: self,
-      
+
       error: function (xhr, textStatus, errorThrown) {
-       console.log(textStatus);
+      console.log(textStatus);
       },
       success: function (data) {
-       count = JSON.parse(data);
-       if(count <=0){
-         document.getElementById('count').style.display='none';
-       } else{
-         self.notificationCount(count);
-       }        
+        var count = JSON.parse(data);
+        //console.log(count);
+
+        setTimeout(function() {
+            var countElement = document.getElementById('count');
+
+            if (countElement) {
+                if (count <= 0) {
+                    countElement.style.display = 'none';
+                } else {
+                    self.notificationCount(count);
+                }
+            } 
+        }, 100); 
+      }
+      });
+      }
+
+      self.getAllNotificationCount();
+      setInterval(function() {
+        self.getAllNotificationCount();
+        }, 3000);
+
+      self.drawer = {
+        displayMode: 'push',
+        selector: '#drawer',
+        content: '#main'
+      };
+
+      self.toggleDrawer = function () {
+        return OffcanvasUtils.toggle(self.drawer);
+      };
+      self.endOpened = ko.observable(false);
+
+      self.endToggle = function () {
+          if (!self.endOpened()) { // Only fetch notifications if the drawer is being opened
+              self.getAllNotification();
+          }
+          self.endOpened(!self.endOpened());
+      };
+
+      self.closeMenu = function () {
+        self.endOpened(false); 
+        self.getAllNotificationCount();
+        self.getAllNotificationCount();
+      };
+
+      // Notifications
+      self.NoticeDet = ko.observableArray([]);
+      self.NoticeList = ko.computed(function() {
+        const arrayDataProvider = new ArrayDataProvider(self.NoticeDet, {
+          keyAttributes: 'id'
+        });
+        return new oj.ListDataProviderView(arrayDataProvider);
+      });
+
+      self.getAllNotification = function() {
+        self.NoticeDet([]);
+        $.ajax({
+          url: BaseURL+"/HRModuleGetStaffAllNotification",
+          type: 'POST',
+          data: JSON.stringify({
+              userId: sessionStorage.getItem("userId"),
+          }),
+          dataType: 'json',
+          timeout: sessionStorage.getItem("timeInetrval"),
+          context: self,
+          
+          error: function (xhr, textStatus, errorThrown) {
+              console.log(textStatus);
+          },
+          success: function (data) {
+              data = JSON.parse(data[0]);
+              if(data.length!=0){
+                for (var i = 0; i < data.length; i++) {
+                  self.NoticeDet.push({
+                      'slno': i + 1,
+                      //'id': data[i][1],
+                      'notice_category': data[i][1] || ' ',
+                      'notice_name': data[i][2],
+                      'notice_description': data[i][3],
+                  });
+              }
+          } 
       }  
       });
       }
-      self.getAllNotificationCount();
-      setInterval(function() {
-      self.getAllNotificationCount();
-      }, 3000);
-      
-       self.drawer = {
-         displayMode: 'push',
-         selector: '#drawer',
-         content: '#main'
-       };
-      
-      
-       self.toggleDrawer = function () {
-         return OffcanvasUtils.toggle(self.drawer);
-       };
-       self.endOpened = ko.observable(false);
-      
-       self.endToggle = function () {
-           if (!self.endOpened()) { // Only fetch notifications if the drawer is being opened
-               self.getAllNotification();
-           }
-           self.endOpened(!self.endOpened());
-       };
-      
-       self.closeMenu = function () {
-         self.endOpened(false); 
-         self.getAllNotificationCount();
-       };
-       
-       
-        self.toggleMenu = function () {
-          var offcanvas = document.getElementById('rightMenu');
-          OffcanvasUtils.toggle(offcanvas);
-        };
-       
-       // Notifications
-       self.NoticeDet = ko.observableArray([]);
-       self.NoticeList = ko.computed(function() {
-         const arrayDataProvider = new ArrayDataProvider(self.NoticeDet, {
-           keyAttributes: 'id'
-         });
-         return new oj.ListDataProviderView(arrayDataProvider);
-       });
-       
-       self.getAllNotification = function() {
-         self.NoticeDet([]);
-         $.ajax({
-           url: BaseURL+"/HRModuleGetStaffAllNotification",
-           type: 'POST',
-           data: JSON.stringify({
-               userId: sessionStorage.getItem("userId"),
-           }),
-           dataType: 'json',
-           timeout: sessionStorage.getItem("timeInetrval"),
-           context: self,
-           
-           error: function (xhr, textStatus, errorThrown) {
-               console.log(textStatus);
-           },
-           success: function (data) {
-               data = JSON.parse(data[0]);
-               if(data.length!=0){
-                 for (var i = 0; i < data.length; i++) {
-                   self.NoticeDet.push({
-                       'slno': i + 1,
-                       //'id': data[i][1],
-                       'notice_category': data[i][1] || ' ',
-                       'notice_name': data[i][2],
-                       'notice_description': data[i][3],
-                   });
-               }
-           } 
-       }  
-       });
-       }
-       
-       self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
-       
-       self.viewMore = function (event, data) {
-         self.closeMenu(); 
-         router.go({ path: 'notice' }); 
-       };
-      
-        self.username = ko.observable();
-        self.userrole = ko.observable();
-        self.logineduser = ko.observable();
+
+      self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
+
+      self.viewMore = function (event, data) {
+        self.closeMenu(); 
+        router.go({ path: 'notice' }); 
+        //sessionStorage.clear();
+        //self.getAllNotificationCount();
+        //location.reload();
+      };
+
+      self.username = ko.observable();
+      self.userrole = ko.observable();
+      self.logineduser = ko.observable();
 
 
         self.manner = ko.observable('polite');

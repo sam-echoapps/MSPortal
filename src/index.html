@@ -78,12 +78,10 @@
             <oj-toolbar>
               <oj-button id="notifyButton" display="icons" chroming="borderless" on-oj-action="[[endToggle]]" class="notify-button" style="position: relative; border: none;">
                 <span slot="startIcon" class="fa fa-bell"></span>
-                <oj-bind-if test="[[notificationCount]]">
-                    <span id="count" class="oj-badge oj-badge-sm" slot="endIcon" 
-                          style="position: absolute; top: 0px; right: 0px; background-color: red; color: white;">
-                        <oj-bind-text value="[[notificationCount]]"></oj-bind-text>
-                    </span>
-                </oj-bind-if>
+                <span id="count" class="oj-badge oj-badge-sm" slot="endIcon" 
+                      style="position: absolute; top: 0px; right: 0px; background-color: red; color: white;">
+                    <oj-bind-text value="[[notificationCount]]"></oj-bind-text>
+                </span>
             </oj-button>
 <!--     This hide in mobile view          <oj-menu-button id="userMenu" display="[[smScreen() ? 'icons' : 'all']]">  -->
                 <oj-menu-button id="userMenu">
@@ -142,7 +140,7 @@
           </oj-module>
         </div>
       </div>
-       <!-- Popup Drawer -->
+      <!-- Popup Drawer -->
 <oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px;">
   <div class="demo-drawer-header">
     <div id="endHeader">
@@ -172,7 +170,7 @@
         </template>
       </oj-list-view>
       <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
-         View More
+         See all notifications ->
       </oj-button>
     </div>
 

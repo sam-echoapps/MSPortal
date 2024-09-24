@@ -32,6 +32,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.editFile = ko.observable('');
                 self.editFileContent = ko.observable('');
                 self.editVendorPOFile = ko.observable('');
+                self.editFileCheck= ko.observable('');  
 
                 self.editStatus = ko.observable('');
                 self.statusOption = [
@@ -372,6 +373,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.editPurpose(data[3])
                             self.editVendorPONo(data[4])
                             self.editSecondaryText(data[5])
+                            self.editFileCheck(data[5])
                             self.editEstimatedPrice(data[6])
                             self.editStatus(data[7])
                             self.deniedNotes(data[8])
