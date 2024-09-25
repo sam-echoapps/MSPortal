@@ -1,6 +1,6 @@
 define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider","ojs/ojlistdataproviderview","ojs/ojdataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
-     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojactioncard","ojs/ojavatar", "ojs/ojradioset"], 
+     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojactioncard","ojs/ojavatar", "ojs/ojradioset","ojs/ojcheckboxset"], 
     function (oj,ko,$, app, ArrayDataProvider,ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
 
         class PurchaseClosure {
@@ -27,6 +27,40 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.poid = ko.observable();
                 self.owner = ko.observable('');
                 self.requestDate = ko.observable('');
+                self.status = ko.observable('');
+                self.billNumber = ko.observable('');
+                self.guaranteeNumber = ko.observable('');
+                self.warrentyEndDate = ko.observable('');
+                self.totalAmount = ko.observable('');
+                self.numError = ko.observable('');
+                self.choiceList = ko.observableArray([]);  
+                self.choiceList.push(
+                    {'value' : 'Yes', 'label' : 'Yes'},
+                    {'value' : 'No', 'label' : 'No'},  
+                );
+                self.choiceListDP = new ArrayDataProvider(self.choiceList, {keyAttributes: 'value'});
+                self.have_guarantee = ko.observable('');
+                self.cardSecondaryText = ko.observable('Please Upload(Mandatory)')
+                self.billSecondaryText = ko.observable('Please Upload')
+                self.have_bill = ko.observable('');
+                self.notes = ko.observable('');
+                self.lessCount = ko.observable(''); 
+                self.inputLength = ko.observable('');
+                self.warrentyReminder = ko.observable('');
+                self.guaranteeFile = ko.observable('');
+                self.typeErrorBill = ko.observable('');
+                self.billFile = ko.observable('');
+                self.fileBill = ko.observable('');
+                self.billSecondaryText = ko.observable('');
+                self.typeErrorBill = ko.observable('');
+                self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
+                self.selectedOptions = ko.observable('Yes');
+                self.fileManadatory = ko.observable('');
+
+                // Observable array for dynamic checkbox options
+                self.checkboxOptions = ko.observableArray([
+                  { value: 'Yes', label: 'GST Included' },
+                ]);
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -79,11 +113,107 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.poid("PO"+data[0])
                             self.itemName(data[2])
                             self.owner(data[3])
-                            self.requestDate(data[4])
-
+                            let date = new Date(data[4]);
+                            // Get only the date part (YYYY-MM-DD)
+                            let dateOnly = date.toISOString().slice(0, 10);
+                            self.requestDate(dateOnly)
+                            self.status(data[5])
                         }
                     });
                 };
+
+                self.priceValidate = (event)=>{
+                    var ASCIICode= event.detail.value
+                    console.log(ASCIICode)
+                    var check = /^\d+(\.\d+)?$/.test(ASCIICode);
+                    console.log(check)
+                    if (check == true){
+                        self.numError('')
+                    }else{
+                        self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
+                    }
+                }
+
+                self.guaranteeSec = function (event,data) {
+                    if(self.have_guarantee()=='Yes'){ 
+                        document.getElementById('guaranteeCardSec').style.display='block';
+                    }else if(self.have_guarantee()=='No'){
+                        self.guaranteeFile('')
+                        self.file('')
+                        self.cardSecondaryText('')
+                        self.typeError('')
+                        document.getElementById('guaranteeCardSec').style.display='none';
+                    }
+                   
+                }
+
+                self.billFileSec = function (event,data) {
+                    if(self.have_bill()=='Yes'){ 
+                        document.getElementById('billSec').style.display='block';
+                    }else if(self.have_bill()=='No'){
+                        document.getElementById('billSec').style.display='none';
+                    }
+                   
+                }
+
+                self.getInputCount = (event)=>{
+
+                    const inputValue = event.detail.value;
+
+                    // Calculate the length of the input value
+                    const length = inputValue ? inputValue.length : 0;
+            
+                    // Update the observable with the length
+                    self.inputLength(length);
+            
+                    // Optionally log the length to the console
+                    console.log(length);
+
+                    if (length > 350) {
+                        self.lessCount('Max. characters is 350');
+                    } else {
+                        self.lessCount(''); // Clear the warning if the length is 300 or more
+                    }
+                }
+
+                self.uploadGuarantee = function (event) {
+                    var file = event.detail.files[0];
+                    const result = event.detail.files;
+                    const files = result[0];
+                    var fileName= files.name;
+                    //console.log(files)
+                    self.guaranteeFile(fileName)
+                    self.file(files)
+                    self.cardSecondaryText(fileName)
+                    var fileFormat =files.name.split(".");
+                    var checkFormat =fileFormat[1];
+                    if(checkFormat == 'png' || checkFormat =="jpeg" || checkFormat =="jpg" || checkFormat =="pdf"){
+                    self.typeError('')
+                }
+                else{
+                    self.typeError('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
+                }
+              }
+
+              self.uploadBill = function (event) {
+                var fileBill = event.detail.files[0];
+                const resultBill = event.detail.files;
+                const filesBill = resultBill[0];
+                var fileNameBill= filesBill.name;
+                //console.log(files)
+                self.billFile(fileNameBill)
+                self.fileBill(filesBill)
+                self.billSecondaryText(fileNameBill)
+                var fileFormatBill =filesBill.name.split(".");
+                var checkFormatBill =fileFormatBill[1];
+                if(checkFormatBill == 'png' || checkFormatBill =="jpeg" || checkFormatBill =="jpg" || checkFormatBill =="pdf"){
+                self.typeErrorBill('')
+            }
+            else{
+                self.typeErrorBill('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
+            }
+          }
+
     
 
                 self.PurchaseList = new ArrayDataProvider(this.PurchaseDet, { keyAttributes: "id"});
@@ -144,7 +274,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
             self.formSubmit = ()=>{
                 const formValid = self._checkValidationGroup("formValidation"); 
-                if (formValid && self.typeError() == '') {
+                if(self.have_guarantee() =='Yes' && self.guaranteeFile() == ''){
+                    self.fileManadatory('Upload')
+                }else{
+                    self.fileManadatory('')
+                }
+                if (formValid && self.typeError() == '' && self.typeErrorBill() == ''&& self.fileManadatory() == '') {
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
                         const reader = new FileReader();
@@ -153,17 +288,21 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             reader.onload = ()=>{
                             const fileContent = reader.result;
                             $.ajax({
-                                url: BaseURL+"/HRModuleAddPurchase",
+                                url: BaseURL+"/HRModuleSavePurchaseClosure",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId: sessionStorage.getItem("userId"),
-                                    item_name : self.itemName(),
-                                    purpose : self.purpose(),
-                                    vendor_po_no : self.vendorPONo(),
-                                    vendor_po_doc : self.vendorPOFile(),
-                                    estimated_price : self.estimatedPrice(),
-                                    file : fileContent,
-                                    status : 'Requested'
+                                    purchaseId: sessionStorage.getItem("purchaseId"),
+                                    bill_number : self.billNumber(),
+                                    guarantee_number : self.guaranteeNumber(),
+                                    warrenty_end_date : self.warrentyEndDate(),
+                                    guarantee_card : self.have_guarantee(),
+                                    guarantee_card_file : self.guaranteeFile(),
+                                    bill : self.have_bill(),
+                                    warrenty_reminder : self.warrentyReminder(),
+                                    total_amount : self.totalAmount(),
+                                    closure_note : self.notes(),
+                                    tax_included : self.selectedOptions(),
+                                    file : fileContent
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
@@ -173,7 +312,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 },
                                 success: function (data) {
                                     console.log(data)
-                                    document.querySelector('#openAddPurchase').close();
                                     let popup = document.getElementById("loaderPopup");
                                     popup.close();
                                     let popup1 = document.getElementById("successView");
@@ -183,17 +321,21 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }else{
                         $.ajax({
-                            url: BaseURL+"/HRModuleAddPurchase",
+                            url: BaseURL+"/HRModuleSavePurchaseClosure",
                             type: 'POST',
                             data: JSON.stringify({
-                                staffId: sessionStorage.getItem("userId"),
-                                item_name : self.itemName(),
-                                purpose : self.purpose(),
-                                vendor_po_no : self.vendorPONo(),
-                                vendor_po_doc : self.vendorPOFile(),
-                                estimated_price : self.estimatedPrice(),
-                                file : self.fileContent(),
-                                status : 'Requested'
+                                    purchaseId: sessionStorage.getItem("purchaseId"),
+                                    bill_number : self.billNumber(),
+                                    guarantee_number : self.guaranteeNumber(),
+                                    warrenty_end_date : self.warrentyEndDate(),
+                                    guarantee_card : self.have_guarantee(),
+                                    guarantee_card_file : self.guaranteeFile(),
+                                    bill : self.have_bill(),
+                                    warrenty_reminder : self.warrentyReminder(),
+                                    total_amount : self.totalAmount(),
+                                    closure_note : self.notes(),
+                                    tax_included : self.selectedOptions(),
+                                    file : self.fileContent()
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -203,7 +345,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                                 console.log(data)
-                                document.querySelector('#openAddPurchase').close();
                                 let popup = document.getElementById("loaderPopup");
                                 popup.close();
                                 let popup1 = document.getElementById("successView");

@@ -5,7 +5,15 @@
     </div>
 </div>
 
+
+
 <div class="oj-panel">
+    
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <oj-button chroming="solid"  on-oj-action="[[addCurrency]]" class="oj-sm-padding-3x-vertical">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add Currency
+          </oj-button>
+      </div> 
     <div class="value">0</div>
 <input type="range" min="0" max="50000" step="1" value="0">
 <oj-validation-group id="formValidation" class="form-container" role="group">
@@ -24,7 +32,23 @@
 </oj-validation-group>
 </div>
 
-    
+<oj-dialog id="openAddCurrency" class="popupTask" dialog-title="Add Currency" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
+    <div id="form-container">
+        <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
+            <oj-select-single required id="select" label-hint="Currenncy" label-edge="inside"
+                    data="[[currencyList]]" value="{{currency}}"></oj-select-single>
+        </oj-form-layout>
+        <div class="oj-flex oj-sm-justify-content-center" style="margin-top: 20px;">
+            <oj-button id="save" chroming="solid" on-oj-action="[[currencyFormSubmit]]">
+              <i class="fas fa-save"></i> Submit
+            </oj-button>
+          </div>
+        
+    </div>  
+</oj-validation-group>
+</oj-dialog>
 
 <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
     position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
@@ -46,6 +70,21 @@
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
             <p style="font-weight: 500;text-align: left">Successfully saved the purchase/expense limit</p>
+        </div>
+    </div>
+</oj-dialog>
+
+<oj-dialog id="successView2">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose2]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+            <p style="font-weight: 500;text-align: left">Successfully saved the currency</p>
         </div>
     </div>
 </oj-dialog>

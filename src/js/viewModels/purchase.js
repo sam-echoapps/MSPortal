@@ -45,9 +45,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
                 self.deniedNotes = ko.observable('');
                 self.userId = ko.observable(sessionStorage.getItem("userId"));
-                self.staffId = ko.observable();
+                self.staffId = ko.observable();  
+                self.numError = ko.observable('');
 
-                
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -209,7 +209,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
             self.formSubmit = ()=>{
                 const formValid = self._checkValidationGroup("formValidation"); 
-                if (formValid && self.typeError() == '') {
+                if (formValid && self.typeError() == '' && self.numError() == '') {
                         let popup = document.getElementById("loaderPopup");
                         popup.open();
                         const reader = new FileReader();
@@ -384,7 +384,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.updateFormSubmit = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid && self.editTypeError() == '') {
+                    if (formValid && self.editTypeError() == '' && self.numError() == '') {
                             let popup = document.getElementById("loaderPopup");
                             popup.open();
                             const reader = new FileReader();
@@ -463,6 +463,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         sessionStorage.setItem("purchaseId", clickedRowId);
                         self.router.go({path:'purchaseClosure'})
                     }
+
+                    self.priceValidate = (event)=>{
+                        var ASCIICode= event.detail.value
+                        var check = /^\d+(\.\d+)?$/.test(ASCIICode);
+                        //console.log(check)
+                        if (check == true){
+                            self.numError('')
+                        }else{
+                            self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
+                        }
+                    }
+                  
     
 
                     self.rewriteUrl=(url)=> {

@@ -14,6 +14,47 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.limitError = ko.observable('');
                 self.numError = ko.observable('');
 
+                self.currency = ko.observable('');
+                self.currencies = [
+                    {"label":"USD","value":"USD"},
+                    {"label":"INR","value":"INR"},
+                    {"label":"GBP","value":"GBP"}
+                ]
+
+                self.currencyList = new ArrayDataProvider(self.currencies, {
+                    keyAttributes: 'value'
+                });
+
+                self.CancelBehaviorOpt = ko.observable('icon'); 
+
+                self.currencyFormSubmit = ()=>{
+                    console.log('function called');
+                            let popup = document.getElementById("loaderPopup");
+                            popup.open();
+                            
+                            $.ajax({
+                                url: BaseURL+"/HRModuleAddCurrency",
+                                type: 'POST',
+                                data: JSON.stringify({
+                                    currency : self.currency(),
+                                }),
+                                dataType: 'json',
+                                timeout: sessionStorage.getItem("timeInetrval"),
+                                context: self,
+                                error: function (xhr, textStatus, errorThrown) {
+                                    console.log(textStatus);
+                                },
+                                success: function (data) {
+                                    console.log(data)
+                                    document.querySelector('#openAddCurrency').close();
+                                    let popup = document.getElementById("loaderPopup");
+                                    popup.close();
+                                    let popup1 = document.getElementById("successView2");
+                                    popup1.open();
+                                }
+                            })
+                    }
+
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
@@ -59,11 +100,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.messageClose = ()=>{
                     location.reload();
                 }
+                self.messageClose2 = ()=>{
+                    location.reload();
+                }
+                
+                self.addCurrency = ()=>{
+                    document.querySelector('#openAddCurrency').open();
+                }
 
                 self.purchaseLimitFill = (event)=>{
                     var ASCIICode= event.detail.value
                     var check = /^\d+(\.\d+)?$/.test(ASCIICode);
-                    console.log(check)
+                    //console.log(check)
                     if (check == true){
                         self.numError('')
                     }else{
@@ -105,7 +153,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             document.getElementById('loaderView').style.display = 'none';
-                            console.log(data);
+                            //console.log(data);
                             var elem = document.querySelector('input[type="range"]');
                             elem.value= data[0][0][0];
                             self.lineManager(data[0][0][0]);
@@ -172,3 +220,4 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
         return  POSettings;
     }
 );
+

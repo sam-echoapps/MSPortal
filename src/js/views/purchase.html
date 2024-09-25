@@ -24,7 +24,10 @@
                         secondary-text="[[secondaryText]]" on-oj-select="[[uploadVendorPO]]">
                 </oj-file-picker>
                 <div class="oj-text-color-danger"><oj-bind-text value='[[typeError]]'></oj-bind-text></div>
-                <oj-input-text id="estimatedPrice" label-hint="Estimated Price" required="true" value="{{estimatedPrice}}"></oj-input-text>
+                <oj-input-text id="estimatedPrice" label-hint="Estimated Price" required="true" value="{{estimatedPrice}}" on-value-changed="[[priceValidate]]"></oj-input-text>
+                <div style="color:red;margin-top:-40px">
+                  <oj-bind-text value="[[numError]]"></oj-bind-text>
+              </div>
             </oj-form-layout>
             <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
         </div>
@@ -67,6 +70,8 @@
             <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
         </a>
      </oj-bind-if>
+     <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
+      <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
@@ -142,7 +147,10 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           </a>
           </oj-bind-if>
 
-          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}"></oj-input-text>
+          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" on-value-changed="[[priceValidate]]"></oj-input-text>
+          <div style="color:red;margin-top:-40px">
+            <oj-bind-text value="[[numError]]"></oj-bind-text>
+        </div>
         </oj-bind-if>
         <oj-bind-if test="[[staffId()  != userId()]]">
           <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}" readonly="true"></oj-input-text>
