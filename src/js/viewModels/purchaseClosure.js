@@ -11,17 +11,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 let BaseURL = sessionStorage.getItem("BaseURL")
                
                 self.itemName = ko.observable('');
-                self.purpose = ko.observable('');
-                self.vendorPONo = ko.observable('');
-                self.vendorPOFile = ko.observable('');
-                self.secondaryText = ko.observable('Please Upload(Optional)')
+              
                 self.filter = ko.observable('');
                 self.CancelBehaviorOpt = ko.observable('icon'); 
-                self.typeError = ko.observable('');
-                self.file = ko.observable('');
-                self.estimatedPrice = ko.observable('');
-                self.fileContent = ko.observable('');
-                self.PurchaseDet = ko.observableArray([]);
                
                 self.userId = ko.observable(sessionStorage.getItem("userId"));
                 self.poid = ko.observable();
@@ -40,23 +32,34 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 );
                 self.choiceListDP = new ArrayDataProvider(self.choiceList, {keyAttributes: 'value'});
                 self.have_guarantee = ko.observable('');
+                self.have_guarantee_card = ko.observable('');
                 self.cardSecondaryText = ko.observable('Please Upload(Mandatory)')
-                self.billSecondaryText = ko.observable('Please Upload')
+                self.billSecondaryText = ko.observable('Please Upload(Mandatory)')
+                self.extraSecondaryText = ko.observable('Please Upload(Optional)')
                 self.have_bill = ko.observable('');
+                self.have_bill_attach = ko.observable('');
                 self.notes = ko.observable('');
                 self.lessCount = ko.observable(''); 
                 self.inputLength = ko.observable('');
+                self.have_warrenty = ko.observable('');
                 self.warrentyReminder = ko.observable('');
                 self.guaranteeFile = ko.observable('');
                 self.typeErrorBill = ko.observable('');
                 self.billFile = ko.observable('');
                 self.fileBill = ko.observable('');
-                self.billSecondaryText = ko.observable('');
-                self.typeErrorBill = ko.observable('');
+                self.typeErrorGuarantee = ko.observable('');
                 self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
                 self.selectedOptions = ko.observable('Yes');
-                self.fileManadatory = ko.observable('');
-
+                self.billManadatory = ko.observable('');
+                self.guaranteeManadatory = ko.observable('');
+                self.billCheck = ko.observable('');
+                self.guaranteeCheck = ko.observable('Yes');
+                self.warrentyCheck = ko.observable('Yes');
+                self.fileContentBill = ko.observable('');
+                self.fileGuarantee = ko.observable('');
+                self.fileExtra = ko.observable('');
+                self.extraFile = ko.observable('');
+                self.typeErrorExtra = ko.observable('');
                 // Observable array for dynamic checkbox options
                 self.checkboxOptions = ko.observableArray([
                   { value: 'Yes', label: 'GST Included' },
@@ -136,22 +139,73 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.guaranteeSec = function (event,data) {
                     if(self.have_guarantee()=='Yes'){ 
-                        document.getElementById('guaranteeCardSec').style.display='block';
+                        self.guaranteeCheck('Yes')
+                        document.getElementById('guaranteeSec').style.display='block';
+                        document.getElementById('guaranteeAttatchSec').style.display='block';
                     }else if(self.have_guarantee()=='No'){
+                        self.guaranteeCheck('')
+                        self.guaranteeNumber('')
+                        self.have_guarantee_card('')
                         self.guaranteeFile('')
-                        self.file('')
-                        self.cardSecondaryText('')
-                        self.typeError('')
-                        document.getElementById('guaranteeCardSec').style.display='none';
+                        self.fileGuarantee('')
+                        self.cardSecondaryText('Please Upload(Mandatory)')
+                        self.typeErrorGuarantee('')
+                        document.getElementById('guaranteeSec').style.display='none';
+                        document.getElementById('guaranteeAttatchSec').style.display='none';
+                        document.getElementById('guaranteeFileSec').style.display='none';
+                    }
+                   
+                }
+
+                self.guaranteeCardSec = function (event,data) {
+                    if(self.have_guarantee_card()=='Yes'){ 
+                        document.getElementById('guaranteeFileSec').style.display='block';
+                    }else if(self.have_guarantee_card()=='No'){
+                        self.guaranteeFile('')
+                        self.fileGuarentee('')
+                        self.cardSecondaryText('Please Upload(Mandatory)')
+                        self.typeErrorGuarantee('')
+                        document.getElementById('guaranteeFileSec').style.display='none';
+                    }
+                   
+                }
+
+                self.billNumSec = function (event,data) {
+                    if(self.have_bill()=='Yes'){ 
+                        self.billCheck('Yes')
+                        document.getElementById('billSec').style.display='block';
+                        document.getElementById('billAttatchSec').style.display='block';
+                    }else if(self.have_bill()=='No'){
+                        self.billNumber('')
+                        self.have_bill_attach('')
+                        self.billCheck('No')
+                        self.billSecondaryText('Please Upload(Mandatory)')
+                        document.getElementById('billSec').style.display='none';
+                        document.getElementById('billAttatchSec').style.display='none';
+                        document.getElementById('billAttatchFileSec').style.display='none';
                     }
                    
                 }
 
                 self.billFileSec = function (event,data) {
-                    if(self.have_bill()=='Yes'){ 
-                        document.getElementById('billSec').style.display='block';
-                    }else if(self.have_bill()=='No'){
-                        document.getElementById('billSec').style.display='none';
+                    if(self.have_bill_attach()=='Yes'){ 
+                        document.getElementById('billAttatchFileSec').style.display='block';
+                    }else if(self.have_bill_attach()=='No'){
+                        self.billSecondaryText('Please Upload(Mandatory)')
+                        document.getElementById('billAttatchFileSec').style.display='none';
+                    }
+                   
+                }
+
+                self.warrentySec = function (event,data) {
+                    if(self.have_warrenty()=='Yes'){ 
+                        self.warrentyCheck('Yes')
+                        document.getElementById('warrentyEndSec').style.display='block';
+                        document.getElementById('warrentyReminderSec').style.display='block';
+                    }else if(self.have_warrenty()=='No'){
+                        self.warrentyCheck('')
+                        document.getElementById('warrentyEndSec').style.display='none';
+                        document.getElementById('warrentyReminderSec').style.display='none';
                     }
                    
                 }
@@ -183,15 +237,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     var fileName= files.name;
                     //console.log(files)
                     self.guaranteeFile(fileName)
-                    self.file(files)
+                    self.fileGuarantee(files)
                     self.cardSecondaryText(fileName)
                     var fileFormat =files.name.split(".");
                     var checkFormat =fileFormat[1];
                     if(checkFormat == 'png' || checkFormat =="jpeg" || checkFormat =="jpg" || checkFormat =="pdf"){
-                    self.typeError('')
+                    self.typeErrorGuarantee('')
                 }
                 else{
-                    self.typeError('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
+                    self.typeErrorGuarantee('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
                 }
               }
 
@@ -202,7 +256,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var fileNameBill= filesBill.name;
                 //console.log(files)
                 self.billFile(fileNameBill)
-                self.fileBill(filesBill)
+                self.fileBill(fileExtra)
                 self.billSecondaryText(fileNameBill)
                 var fileFormatBill =filesBill.name.split(".");
                 var checkFormatBill =fileFormatBill[1];
@@ -214,51 +268,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             }
           }
 
-    
-
-                self.PurchaseList = new ArrayDataProvider(this.PurchaseDet, { keyAttributes: "id"});
-
-                self.PurchaseList = ko.computed(function () {
-                    let filterCriterion = null;
-                    if (self.filter() && self.filter() != '') {
-                        filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
-                            filterDef: { text: self.filter() }
-                        });
-                    }
-                    const arrayDataProvider = new ArrayDataProvider(self.PurchaseDet, { 
-                        keyAttributes: 'id',
-                        sortComparators: {
-                            comparators: new Map().set("dob", this.comparator),
-                        },
-                    });
-                    
-                    return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
-                }, self);
-    
-
-                self.uploadVendorPO = function (event) {
-                    var file = event.detail.files[0];
-                    const result = event.detail.files;
-                    const files = result[0];
-                    var fileName= files.name;
-                    //console.log(files)
-                    self.vendorPOFile(fileName)
-                    self.file(files)
-                    self.secondaryText(fileName)
-                    var fileFormat =files.name.split(".");
-                    var checkFormat =fileFormat[1];
-                    if(checkFormat == 'png' || checkFormat =="jpeg" || checkFormat =="jpg" || checkFormat =="pdf"){
-                    self.typeError('')
-                }
-                else{
-                    self.typeError('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
-                }
-              }
-
-        
-              self.handleValueTask = () => {
-                self.filter(document.getElementById('filter').rawValue);
-            };
+          self.uploadExtra = function (event) {
+            var fileExtra = event.detail.files[0];
+            const resultExtra = event.detail.files;
+            const filesExtra = resultExtra[0];
+            var fileNameExtra= filesExtra.name;
+            //console.log(files)
+            self.extraFile(fileNameExtra)
+            self.fileExtra(fileExtra)
+            self.extraSecondaryText(fileNameExtra)
+            var fileFormatExtra =fileExtra.name.split(".");
+            var checkFormatExtra =fileFormatExtra[1];
+            if(checkFormatExtra == 'png' || checkFormatExtra =="jpeg" || checkFormatExtra =="jpg" || checkFormatExtra =="pdf"){
+            self.typeErrorExtra('')
+        }
+        else{
+            self.typeErrorExtra('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
+        }
+      }
 
             self._checkValidationGroup = (value) => {
                 const tracker = document.getElementById(value);
@@ -272,37 +299,68 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
             };
 
-            self.formSubmit = ()=>{
-                const formValid = self._checkValidationGroup("formValidation"); 
-                if(self.have_guarantee() =='Yes' && self.guaranteeFile() == ''){
-                    self.fileManadatory('Upload')
-                }else{
-                    self.fileManadatory('')
+            self.formSubmit = () => {
+                const formValid = self._checkValidationGroup("formValidation");
+            
+                // Validation for guarantee file
+                if (self.have_guarantee() == 'Yes' && self.guaranteeFile() == '') {
+                    self.guaranteeManadatory('Upload');
+                } else {
+                    self.guaranteeManadatory('');
                 }
-                if (formValid && self.typeError() == '' && self.typeErrorBill() == ''&& self.fileManadatory() == '') {
-                        let popup = document.getElementById("loaderPopup");
-                        popup.open();
-                        const reader = new FileReader();
-                        if(self.file() !=''){
-                            reader.readAsDataURL(self.file());
-                            reader.onload = ()=>{
-                            const fileContent = reader.result;
+            
+                // Validation for bill file
+                if (self.have_bill_attach() == 'Yes' && self.billFile() == '') {
+                    self.billManadatory('Upload');
+                } else {
+                    self.billManadatory('');
+                }
+            
+                if (formValid && self.numError() == '' && self.typeErrorBill() == '' && self.typeErrorGuarantee() == '' && self.typeErrorExtra() == '' && self.billManadatory() == '' && self.guaranteeManadatory() == '') {
+                    let popup = document.getElementById("loaderPopup");
+                    popup.open();
+            
+                    const processFileUpload = (file, callback) => {
+                        if (file != '') {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onload = () => {
+                                callback(reader.result);  // This will pass the file content as base64
+                            };
+                        } else {
+                            callback(null);  // No file uploaded
+                        }
+                    };
+            
+                    // Process both files (bill and guarantee) asynchronously
+                    processFileUpload(self.fileBill(), (billFileContent) => {
+                        processFileUpload(self.fileGuarantee(), (guaranteeFileContent) => {
+                            processFileUpload(self.fileExtra(), (extraFileContent) => {
+            
+                            // Send AJAX request with both files
                             $.ajax({
-                                url: BaseURL+"/HRModuleSavePurchaseClosure",
+                                url: BaseURL + "/HRModuleSavePurchaseClosure",
                                 type: 'POST',
                                 data: JSON.stringify({
                                     purchaseId: sessionStorage.getItem("purchaseId"),
-                                    bill_number : self.billNumber(),
-                                    guarantee_number : self.guaranteeNumber(),
-                                    warrenty_end_date : self.warrentyEndDate(),
-                                    guarantee_card : self.have_guarantee(),
-                                    guarantee_card_file : self.guaranteeFile(),
-                                    bill : self.have_bill(),
-                                    warrenty_reminder : self.warrentyReminder(),
-                                    total_amount : self.totalAmount(),
-                                    closure_note : self.notes(),
-                                    tax_included : self.selectedOptions(),
-                                    file : fileContent
+                                    have_bill: self.have_bill(),
+                                    bill_number: self.billNumber(),
+                                    have_bill_attach: self.have_bill_attach(),
+                                    bill_file: self.billFile(),
+                                    have_guarantee: self.have_guarantee(),
+                                    guarantee_number: self.guaranteeNumber(),
+                                    have_guarantee_card: self.have_guarantee_card(),
+                                    guarantee_card_file: self.guaranteeFile(),
+                                    have_warrenty: self.have_warrenty(),
+                                    warrenty_end_date: self.warrentyEndDate(),
+                                    warrenty_reminder: self.warrentyReminder(),
+                                    total_amount: self.totalAmount(),
+                                    tax_included: self.selectedOptions(),
+                                    supporting_document : self.extraFile(),
+                                    closure_notes: self.notes(),
+                                    bill_file_content: billFileContent,
+                                    guarantee_file_content: guaranteeFileContent,
+                                    extra_file_content: extraFileContent  
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
@@ -311,49 +369,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     console.log(textStatus);
                                 },
                                 success: function (data) {
-                                    console.log(data)
-                                    let popup = document.getElementById("loaderPopup");
+                                    console.log(data);
                                     popup.close();
                                     let popup1 = document.getElementById("successView");
                                     popup1.open();
                                 }
-                            })
-                        }
-                    }else{
-                        $.ajax({
-                            url: BaseURL+"/HRModuleSavePurchaseClosure",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                    purchaseId: sessionStorage.getItem("purchaseId"),
-                                    bill_number : self.billNumber(),
-                                    guarantee_number : self.guaranteeNumber(),
-                                    warrenty_end_date : self.warrentyEndDate(),
-                                    guarantee_card : self.have_guarantee(),
-                                    guarantee_card_file : self.guaranteeFile(),
-                                    bill : self.have_bill(),
-                                    warrenty_reminder : self.warrentyReminder(),
-                                    total_amount : self.totalAmount(),
-                                    closure_note : self.notes(),
-                                    tax_included : self.selectedOptions(),
-                                    file : self.fileContent()
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function (xhr, textStatus, errorThrown) {
-                                console.log(textStatus);
-                            },
-                            success: function (data) {
-                                console.log(data)
-                                let popup = document.getElementById("loaderPopup");
-                                popup.close();
-                                let popup1 = document.getElementById("successView");
-                                popup1.open();
-                            }
-                        })
-                    }
-                    }
+                            });
+                        });
+                    });
+                });
                 }
+            };
+            
 
                 self.messageClose = ()=>{
                     location.reload();

@@ -108,10 +108,62 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
         <oj-validation-group id="formValidation" class="form-container" role="group">
             <div id="form-container-employee">
                 <oj-form-layout id="closure-information" class="form" direction="row" max-columns="2">
-                    <oj-input-text id="billNumber" label-hint="Bill Number" required="true" value=""></oj-input-text>
-                    <oj-input-text id="guaranteeNumber" label-hint="Guarantee Number" value="{{guaranteeNumber}}"></oj-input-text>
-                    <oj-input-date id="warrentyEndDate" label-hint="Warrenty End Date"  value="{{warrentyEndDate}}"></oj-input-date>
+                    <oj-select-single required id="bill" label-hint="Do you have bill?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill}}" on-value-changed="[[billNumSec]]">
+                    </oj-select-single>
+                    <div id="billSec" style="display:none">
+                        <oj-bind-if test="[[billCheck()  == 'Yes']]">
+                            <oj-input-text id="billNumber" label-hint="Bill Number" required="true" value="{{billNumber}}"></oj-input-text>
+                        </oj-bind-if>
+                    </div> 
+                    <div id="billAttatchSec" style="display:none">
+                        <oj-bind-if test="[[billCheck()  == 'Yes']]">
+                        <oj-select-single required id="bill" label-hint="Do you have bill to attatch?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill_attach}}" on-value-changed="[[billFileSec]]"></oj-select-single>
+                         </oj-select-single>   
+                        </oj-bind-if>                 
+                    </div> 
+                    <div id="billAttatchFileSec" style="display:none">
+                        <oj-file-picker  id="billFile" class="demo-max-width" primary-text="Bill"
+                        secondary-text="[[billSecondaryText]]" on-oj-select="[[uploadBill]]" required>
+                        </oj-file-picker>      
+                        <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorBill]]'></oj-bind-text></div>                              
+                    </div> 
+                    <oj-select-single required id="guarantee_card" label-hint="Do you have guarantee?" label-edge="inside" data="[[choiceListDP]]" value="{{have_guarantee}}" on-value-changed="[[guaranteeSec]]">
+                    </oj-select-single>
+                    <div id="guaranteeSec" style="display:none">
+                        <oj-bind-if test="[[guaranteeCheck()  == 'Yes']]">
+                        <oj-input-text id="guaranteeNumber" label-hint="Guarantee Number" value="{{guaranteeNumber}}"></oj-input-text>
+                    </oj-bind-if>
+                    </div> 
+                    <div id="guaranteeAttatchSec" style="display:none">
+                        <oj-bind-if test="[[guaranteeCheck()  == 'Yes']]">
+                        <oj-select-single required id="guarantee_card" label-hint="Do you have guarantee card?" label-edge="inside" data="[[choiceListDP]]" value="{{have_guarantee_card}}" on-value-changed="[[guaranteeCardSec]]">
+                        </oj-select-single> 
+                    </oj-bind-if>
+                    </div> 
+                    <div id="guaranteeFileSec" style="display:none">
+                        <oj-file-picker  id="guaranteeCard" class="demo-max-width" primary-text="Guarantee Card"
+                        secondary-text="[[cardSecondaryText]]" on-oj-select="[[uploadGuarantee]]">
+                        </oj-file-picker>  
+                        <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorGuarantee]]'></oj-bind-text></div>                 
+                    </div> 
+                    <oj-select-single required id="warrenty" label-hint="Do you have warrenty?" label-edge="inside" data="[[choiceListDP]]" value="{{have_warrenty}}" on-value-changed="[[warrentySec]]"></oj-select-single>
+                    </oj-select-single>
+                    <div id="warrentyEndSec" style="display:none">
+                    <oj-bind-if test="[[warrentyCheck()  == 'Yes']]">
+                        <oj-input-date id="warrentyEndDate" label-hint="Warrenty End Date"  value="{{warrentyEndDate}}" required></oj-input-date>
+                    </oj-bind-if>
+                    </div>
+                    <div id="warrentyReminderSec" style="display:none">
+                    <oj-bind-if test="[[warrentyCheck()  == 'Yes']]">
+                        <oj-select-single required id="warrenty_reminder" label-hint="Do you want warranty renewal reminder?" label-edge="inside" data="[[choiceListDP]]" value="{{warrentyReminder}}">
+                        </oj-select-single>   
+                    </oj-bind-if>      
+                    </div> 
+                    
 
+                    <div >
+                           
+                    </div>  
                      <div class="oj-flex">
                         <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
                             <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
@@ -131,25 +183,19 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
                           </oj-checkboxset>                  
                             </div>
                     </div>
-                    <oj-select-single required id="guarantee_card" label-hint="Do you have guarantee card?" label-edge="inside" data="[[choiceListDP]]" value="{{have_guarantee}}" on-value-changed="[[guaranteeSec]]">
-                    </oj-select-single>
-                    <div id="guaranteeCardSec" style="display:none">
-                        <oj-file-picker  id="guaranteeCard" class="demo-max-width" primary-text="Guarantee Card"
-                        secondary-text="[[cardSecondaryText]]" on-oj-select="[[uploadGuarantee]]">
-                        </oj-file-picker>  
-                        <div class="oj-text-color-danger"><oj-bind-text value='[[typeError]]'></oj-bind-text></div>                 
-                    </div> 
-                    <oj-select-single required id="bill" label-hint="Do you have bill to attatch?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill}}" on-value-changed="[[billFileSec]]">
-                    </oj-select-single>
-                    <div id="billSec" style="display:none">
-                        <oj-file-picker  id="billFile" class="demo-max-width" primary-text="Bill"
-                        secondary-text="[[billSecondaryText]]" on-oj-select="" required>
-                        </oj-file-picker>   
-                    </div> 
-                    <oj-select-single required id="warrenty_reminder" label-hint="Do you want warranty renewal reminder?" label-edge="inside" data="[[choiceListDP]]" value="{{warrenty_reminder}}">
-                    </oj-select-single>
+
+                    <div></div>
+                    --------------------------------------------------------------------------------------------------------------------------------------------
+                    <div></div>
+                    <br>
                     <div>
-                        <oj-text-area id="note" label-hint="Additional Notes (Max 350 Char)" raw-valuenewE="" rows="3" 
+                    <oj-file-picker  id="SupportingDocument" class="demo-max-width" primary-text="Supporting Documents"
+                    secondary-text="[[extraSecondaryText]]" on-oj-select="[[uploadExtra]]">
+                    </oj-file-picker> 
+                    <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorExtra]]'></oj-bind-text></div>
+                     </div>                  
+                    <div>
+                        <oj-text-area id="note" label-hint="Notes (Max 350 Char)" raw-valuenewE="" rows="3" 
                         clear-icon="always" value="{{notes}}" on-value-changed="[[getInputCount]]">
                         </oj-text-area>
                         <div style="color:red;">
@@ -164,7 +210,7 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
 
   <oj-dialog id="successView">
     <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully Ordered</p>
+        <p id="dialogTitleId" class="oj-dialog-title">Successfully Closed</p>
         <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
             <span slot="startIcon" class="oj-ux-ico-close"></span>
             Cancel
@@ -172,7 +218,7 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
     </div>
     <div slot="body">
         <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Purchase closure successfully</p>
+            <p style="font-weight: 500;text-align: left">Purchase closure completed successfully.</p>
         </div>
     </div>
 </oj-dialog>
