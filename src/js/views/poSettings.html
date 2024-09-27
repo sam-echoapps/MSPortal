@@ -9,7 +9,7 @@
 
 <div class="oj-panel">
     
-    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+    <div class="oj-xl-margin-4x oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
         <oj-button chroming="solid"  on-oj-action="[[addCurrency]]" class="oj-sm-padding-3x-vertical">
             <i class="fa-solid fa-plus"></i>&nbsp;Add Currency
           </oj-button>
@@ -37,14 +37,22 @@
   <oj-validation-group id="formValidation" class="form-container" role="group" style="padding-bottom: 50px;">
     <div id="form-container">
         <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
+            <oj-bind-if test="[[actionCheck()  == 'No']]">
             <oj-select-single required id="select" label-hint="Currenncy" label-edge="inside"
-                    data="[[currencyList]]" value="{{currency}}"></oj-select-single>
+                    data="[[currencyList]]" value="{{currency}}" readonly="true"></oj-select-single>
+            </oj-bind-if>
+            <oj-bind-if test="[[actionCheck()  != 'No']]">
+                <oj-select-single required id="select" label-hint="Currenncy" label-edge="inside"
+                        data="[[currencyList]]" value="{{currency}}"></oj-select-single>
+                </oj-bind-if>
         </oj-form-layout>
+        <oj-bind-if test="[[actionCheck()  != 'No']]">
         <div class="oj-flex oj-sm-justify-content-center" style="margin-top: 20px;">
             <oj-button id="save" chroming="solid" on-oj-action="[[currencyFormSubmit]]">
               <i class="fas fa-save"></i> Submit
             </oj-button>
           </div>
+        </oj-bind-if>
         
     </div>  
 </oj-validation-group>

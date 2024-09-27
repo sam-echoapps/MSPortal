@@ -47,7 +47,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userId = ko.observable(sessionStorage.getItem("userId"));
                 self.staffId = ko.observable();  
                 self.numError = ko.observable('');
-
+                self.currency = ko.observable('');
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -58,7 +58,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
-                        self.getPurchaseList()
+                        self.getPurchaseList();
+                        self.getCurrency();
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
                                     const baseUrl = 'https://uanglobal.com/';
@@ -80,6 +81,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }
                 }
+
+                self.getCurrency = ()=>{
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetCurrencyType",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error:", textStatus); 
+                            reject(textStatus);
+                        },
+                        success: function (data) {
+                            self.currency(data[0][0])
+                            sessionStorage.setItem("currency",self.currency())
+                        }
+                    });
+                }
+
 
                 self.getPurchaseList = ()=>{
                     self.PurchaseDet([]);
@@ -112,7 +131,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
                                         'vendor_po_doc': data[i][5], 
-                                        'estimated_price': data[i][6],
+                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
                                         'status': data[i][7],
                                         'created_date': data[i][8],
                                         'updated_at': data[i][9], 

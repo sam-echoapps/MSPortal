@@ -44,15 +44,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.have_warrenty = ko.observable('');
                 self.warrentyReminder = ko.observable('');
                 self.guaranteeFile = ko.observable('');
+                self.guaranteeExist = ko.observable('');
                 self.typeErrorBill = ko.observable('');
                 self.billFile = ko.observable('');
                 self.fileBill = ko.observable('');
                 self.typeErrorGuarantee = ko.observable('');
                 self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
-                self.selectedOptions = ko.observable('Yes');
+                self.selectedOptions = ko.observable('No');
                 self.billManadatory = ko.observable('');
                 self.guaranteeManadatory = ko.observable('');
-                self.billCheck = ko.observable('');
+                self.billCheck = ko.observable('Yes');
                 self.guaranteeCheck = ko.observable('Yes');
                 self.warrentyCheck = ko.observable('Yes');
                 self.fileContentBill = ko.observable('');
@@ -60,10 +61,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.fileExtra = ko.observable('');
                 self.extraFile = ko.observable('');
                 self.typeErrorExtra = ko.observable('');
+                self.offerFileMessage = ko.observable('');
                 // Observable array for dynamic checkbox options
                 self.checkboxOptions = ko.observableArray([
                   { value: 'Yes', label: 'GST Included' },
                 ]);
+                self.billExist = ko.observable('');
+                self.extraExist = ko.observable('');
+                self.updatedAt = ko.observable('');
+                self.currency = ko.observable('');
+
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -75,6 +82,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     else {
                         app.onAppSuccess();
                         self.getPurchaseClosureInfo();
+                        self.getCurrency();
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
                                     const baseUrl = 'https://uanglobal.com/';
@@ -109,9 +117,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
                         },
-                        success: function (data) {
-                            data = JSON.parse(data[0]);
-                            console.log(data)
+                        success: function (result) {
+                            var data,data2;
+                            data = JSON.parse(result[0]);
+                            //console.log(data)
                             document.getElementById('loaderView').style.display='none';
                             self.poid("PO"+data[0])
                             self.itemName(data[2])
@@ -121,9 +130,59 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             let dateOnly = date.toISOString().slice(0, 10);
                             self.requestDate(dateOnly)
                             self.status(data[5])
+                           
+                            data2 = JSON.parse(result[1]);
+                            console.log(data2)
+                            self.have_bill(data2[2])
+                            self.billNumber(data2[3])
+                            self.have_bill_attach(data2[4])
+                            self.billSecondaryText(data2[5])
+                            if(data2[5] !=''){
+                                self.billFile(data2[5])
+                                self.billExist('Yes')
+                            }
+                            self.have_guarantee(data2[6])
+                            self.guaranteeNumber(data2[7])
+                            self.have_guarantee_card(data2[8])
+                            self.cardSecondaryText(data2[9])
+                            if(data2[9] !=''){
+                                self.guaranteeFile(data2[9])
+                                self.guaranteeExist('Yes')
+                            }
+                            self.have_warrenty(data2[10])
+                            self.warrentyEndDate(data2[11])
+                            self.warrentyReminder(data2[12]),
+                            self.totalAmount(data2[13])
+                            self.selectedOptions(data2[14])
+                            self.extraSecondaryText(data2[15])
+                            if(data2[15] !=''){
+                                self.extraFile(data2[15])
+                                self.extraExist('Yes')
+                            }
+                            self.notes(data2[16])
+                            let dateUpdated = new Date(data2[18]);
+                            // Get only the date part (YYYY-MM-DD)
+                            let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
+                            self.updatedAt(dateUpdatedOnly)
                         }
                     });
                 };
+
+                self.getCurrency = ()=>{
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetCurrencyType",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error:", textStatus); 
+                            reject(textStatus);
+                        },
+                        success: function (data) {
+                            self.currency(data[0][0])
+                        }
+                    });
+                }
 
                 self.priceValidate = (event)=>{
                     var ASCIICode= event.detail.value
@@ -147,7 +206,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.guaranteeNumber('')
                         self.have_guarantee_card('')
                         self.guaranteeFile('')
-                        self.fileGuarantee('')
+                        self.fileGuarantee('') 
                         self.cardSecondaryText('Please Upload(Mandatory)')
                         self.typeErrorGuarantee('')
                         document.getElementById('guaranteeSec').style.display='none';
@@ -161,8 +220,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     if(self.have_guarantee_card()=='Yes'){ 
                         document.getElementById('guaranteeFileSec').style.display='block';
                     }else if(self.have_guarantee_card()=='No'){
-                        self.guaranteeFile('')
-                        self.fileGuarentee('')
+                        self.guaranteeFile('') 
+                        self.fileGuarantee('')
                         self.cardSecondaryText('Please Upload(Mandatory)')
                         self.typeErrorGuarantee('')
                         document.getElementById('guaranteeFileSec').style.display='none';
@@ -178,7 +237,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }else if(self.have_bill()=='No'){
                         self.billNumber('')
                         self.have_bill_attach('')
-                        self.billCheck('No')
+                        self.billCheck('')
+                        self.billFile('')
+                        self.fileBill('') 
                         self.billSecondaryText('Please Upload(Mandatory)')
                         document.getElementById('billSec').style.display='none';
                         document.getElementById('billAttatchSec').style.display='none';
@@ -256,7 +317,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var fileNameBill= filesBill.name;
                 //console.log(files)
                 self.billFile(fileNameBill)
-                self.fileBill(fileExtra)
+                self.fileBill(fileBill)
                 self.billSecondaryText(fileNameBill)
                 var fileFormatBill =filesBill.name.split(".");
                 var checkFormatBill =fileFormatBill[1];
@@ -315,7 +376,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 } else {
                     self.billManadatory('');
                 }
-            
+               
                 if (formValid && self.numError() == '' && self.typeErrorBill() == '' && self.typeErrorGuarantee() == '' && self.typeErrorExtra() == '' && self.billManadatory() == '' && self.guaranteeManadatory() == '') {
                     let popup = document.getElementById("loaderPopup");
                     popup.open();

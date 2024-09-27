@@ -26,6 +26,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
 
                 self.CancelBehaviorOpt = ko.observable('icon'); 
+                self.actionCheck = ko.observable(''); 
 
                 self.currencyFormSubmit = ()=>{
                     console.log('function called');
@@ -106,6 +107,26 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                 self.addCurrency = ()=>{
                     document.querySelector('#openAddCurrency').open();
+                    self.getCurrency()
+                }
+
+                self.getCurrency = ()=>{
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetCurrencyType",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error:", textStatus); 
+                            reject(textStatus);
+                        },
+                        success: function (data) {
+                            if(data[0][0] !=''){
+                                self.actionCheck('No')
+                            }
+                            self.currency(data[0][0])
+                        }
+                    });
                 }
 
                 self.purchaseLimitFill = (event)=>{
