@@ -174,13 +174,11 @@
     { "headerText": "SL.No", "field": "slno", "id": "slno",
     "headerClassName" : "table-header-style"	 },
     { "headerText": "Task Name", "field": "task_name", "id": "task_name",
-      "headerClassName" : "table-header-style"	 },
+      "headerClassName" : "table-header-style", "template": "actionTemplate"	 },
     { "headerText": "Description", "field": "description", "id": "description",
           "headerClassName" : "table-header-style"	 },
     { "headerClassName" : "table-header-style",
       "headerText": "Owner", "field": "owner", "id": "owner" },
-    { "headerClassName" : "table-header-style",
-    "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
     "headerText": "Priority", "field": "priority", "id": "priority", "template": "statusTemplate" },
     { "headerClassName" : "table-header-style",
@@ -188,36 +186,33 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Reminder Date", "field": "reminder_date", "id": "reminder_date" },
     { "headerClassName" : "table-header-style",
-    "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate" },
-    { "headerClassName" : "table-header-style",
-      "headerText": "Action",
-      "maxWidth" : "10rem",
-      "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-      "template": "actionTemplate", "id": "action","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
-     <template slot="actionTemplate" data-oj-as="cell">
+    "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate", "width" : "200px" }]' style='width: 100%;' class="demo-table-container">
+      <template slot="actionTemplate" data-oj-as="cell">
         <oj-bind-if test="[[cell.row.owner_id  == userId() || cell.row.employee_id == userId()]]">
-         <oj-button
-          chroming="borderless"
-          display="icons"
-          on-oj-action="[[goToEditTask]]">
-          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
-          Edit
-        </oj-button>
+            <a :id="[[cell.row.task_name]]" on-click= "[[goToEditTask]]">
+                <oj-bind-text value="[[cell.row.task_name]]"></oj-bind-text>
+            </a>
         </oj-bind-if>
+        <oj-bind-if test="[[cell.row.owner_id  != userId() && cell.row.employee_id != userId()]]">
+            <oj-bind-text value="[[cell.row.task_name]]"></oj-bind-text>
+           </oj-bind-if>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
         <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
-            <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+            <div class="oj-table-element-pending"> <oj-select-single required id="{{cell.row.id}}" 
+                data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single></div>
         </oj-bind-if>
-        <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
-            <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+          <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+              <div class="oj-table-element-review"><oj-select-single required id="{{cell.row.id}}" 
+                data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
+              <div class="oj-table-element-approve"><oj-select-single required id="{{cell.row.id}}" 
+                data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
         </oj-bind-if>
-        <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
-            <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
-        </oj-bind-if>
-        <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
-          <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
-      </oj-bind-if>
       </template>
       <template slot="statusTemplate" data-oj-as="cell">
         <oj-bind-if test="[[cell.row.priority == 'High' ]]">
@@ -266,6 +261,7 @@
                 <oj-select-single required id="select" label-hint="Priority" label-edge="inside"
                     data="[[priorityList]]" value="{{editPriority}}" readonly="true"></oj-select-single>
             </oj-bind-if>
+            <oj-input-date id="createdDate" label-hint="Created Date" required="true" value="{{editCreatedDate}}" readonly="true"></oj-input-date>
             <oj-select-single required id="status" label-hint="Status" label-edge="inside"
             data="[[statusList]]" value="{{editStatus}}"></oj-select-single>
         </oj-form-layout>

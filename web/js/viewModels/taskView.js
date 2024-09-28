@@ -46,6 +46,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.editDueDate = ko.observable();
                 self.editPriority = ko.observable('');
                 self.editStatus = ko.observable('');
+                self.editCreatedDate = ko.observable('');
                 self.employeeName = ko.observable('');
                 self.employeeDesignation = ko.observable('');
                 self.profilePhotoShow = ko.observable('');
@@ -316,6 +317,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.editPriority(data[4])
                             self.ownerId(data[5])
                             self.editStatus(data[6])
+                            let date = new Date(data[7]);
+                            // Get only the date part (YYYY-MM-DD)
+                            let dateOnly = date.toISOString().slice(0, 10);
+                            self.editCreatedDate(dateOnly)
                             self.editReminderDate(data[11])
                             self.editDescription(data[12])
                         }
@@ -357,6 +362,34 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             })
                         }
                     }
+
+                    self.statusUpdateList = (event,data)=>{
+                        let taskId =  data.item.data.id;
+                        let status = event.detail.value; 
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                        $.ajax({
+                            url: BaseURL+"/HRModuleUpdateTaskList",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                taskId: taskId,
+                                status : status
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                popup.close();
+                                getStaffTaskView();
+                            }
+                        })
+                          
+                    }
+
 
                     self.goToPage = (event)=>{
                         self.router.go({path:'tasks'})
