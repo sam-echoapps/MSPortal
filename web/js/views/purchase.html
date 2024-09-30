@@ -1,5 +1,22 @@
 <link rel="stylesheet" href="../../css/purchase.css">
 
+<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
+  <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+      <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+    <oj-bind-for-each data="[[tabData]]">
+      <template>
+        <oj-option value="[[$current.data.id]]">
+          <span>
+            <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+          </span>
+        </oj-option>
+      </template>
+    </oj-bind-for-each>
+  </oj-buttonset-one>
+</div>
+</div>
+
+<div id="open">
 <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between">
         <oj-button chroming="solid"  on-oj-action="[[addPurchase]]" class="oj-sm-padding-3x-vertical">
@@ -7,7 +24,7 @@
           </oj-button>
         <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
             <oj-input-text id="filter" label-hint="Search" label-edge="inside"
-            placeholder="Search.." on-raw-value-changed="[[handleValueTask]]" value="{{filter}}" clear-icon="always">
+            placeholder="Search.." on-raw-value-changed="[[handleValuePurchase]]" value="{{filter}}" clear-icon="always">
             </oj-input-text>
         </div>
       </div> 
@@ -83,6 +100,9 @@
       <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
           <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
       </oj-bind-if>
+      <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+        <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+    </oj-bind-if>
     </template>
     <template slot="documentTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.vendor_po_doc]]">
@@ -97,6 +117,71 @@
     </oj-table>
 </div>
 </div>
+</div>
+</div>
+
+<div id="closed">
+  <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="closeView"> 
+    <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+      <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+          <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filterPurchase" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValuePurchaseClose]]" value="{{filterPurchase}}" clear-icon="always">
+            </oj-input-text>
+          </div>
+        </div> 
+    </div>
+  
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-table id='purchaseTable' aria-label='All Table' data='[[PurchaseCloseList]]' display='list'
+        selection-mode='{"row": "single"}'  columns='[
+        { "headerText": "SL.No", "field": "slno", "id": "slno",
+        "headerClassName" : "table-header-style"	 },
+        { "headerText": "PO.No", "field": "pono", "id": "pono",
+        "headerClassName" : "table-header-style"	 },
+        { "headerText": "Item Name", "field": "item_name", "id": "item_name",
+          "headerClassName" : "table-header-style"	 },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Purpose", "field": "purpose", "id": "purpose" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Vendor PO No.", "field": "vendor_po_no", "id": "vendor_po_no" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Vendor PO Document", "id": "vendor_po_doc",  "field": "vendor_po_doc","template": "documentTemplate"},
+        { "headerClassName" : "table-header-style",
+          "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+        { "headerClassName" : "table-header-style",
+          "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+        { "headerClassName" : "table-header-style",
+                "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
+         <template slot="bgTemplate" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+              <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+              <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
+              <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+        </oj-bind-if>
+        </template>
+        <template slot="documentTemplate" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.vendor_po_doc]]">
+            <a :data-document-link="[[cell.row.vendor_po_doc]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+              <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+            </a>
+          </oj-bind-if>
+            <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
+              <span>N/A</span>
+            </oj-bind-if>
+        </template>
+        </oj-table>
+    </div>
+    </div>
 </div>
 
     

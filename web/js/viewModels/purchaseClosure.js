@@ -509,6 +509,34 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     });
                 };  
+
+                self.formSubmitClosure = ()=>{
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                        
+                        $.ajax({
+                            url: BaseURL+"/HRModuleUpdatePurchaseClosure",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                purchaseId: sessionStorage.getItem("purchaseId"),
+                                status : 'Closed'
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                let popup = document.getElementById("loaderPopup");
+                                popup.close();
+                                self.router.go({path:'purchase'})
+                                // let popup1 = document.getElementById("updateSuccessView");
+                                // popup1.open();
+                            }
+                        })
+                    }
                 
 
                     self.rewriteUrl=(url)=> {

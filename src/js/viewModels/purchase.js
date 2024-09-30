@@ -49,8 +49,27 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.numError = ko.observable('');
                 self.currency = ko.observable('');
 
+                self.tabData = [
+                    { id: "open", label: "Open PO" },
+                    { id: "closed", label: "Closed PO" },
+                ];
+                self.selectedTab = ko.observable("open"); 
+                self.PurchaseCloseDet = ko.observableArray([]);
+                self.filterPurchase = ko.observable('');
+
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
+
+                self.selectedTabAction1 = ko.computed(() => { 
+                    if(self.selectedTab() == 'open'){
+                        $("#open").show();
+                        $("#closed").hide();
+                    }else if(self.selectedTab() == 'closed'){
+                        $("#open").hide();
+                        self.getPurchaseCloseList()
+                        $("#closed").show();
+                    }
+                    });
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -146,6 +165,52 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     })
                 }
 
+                self.getPurchaseCloseList = ()=>{
+                    self.PurchaseCloseDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetPurchaseCloseList",
+                        type: 'POST',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId")
+                        }),
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data[0]);
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            document.getElementById('closeView').style.display='block';
+                            if(data.length!=0){
+                                for (var i = 0; i < data.length; i++) {
+                                    console.log(data[i][1])
+                                    self.PurchaseCloseDet.push({
+                                        'slno': i+1,
+                                        'id': data[i][0],
+                                        'pono': "PO"+data[i][0], 
+                                        'staff_id': data[i][1],
+                                        'item_name': data[i][2],
+                                        'purpose': data[i][3],
+                                        'vendor_po_no': data[i][4], 
+                                        'vendor_po_doc': data[i][5], 
+                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'status': data[i][7],
+                                        'created_date': data[i][8],
+                                        'updated_at': data[i][9], 
+                                        'ordered_by': data[i][10],                                   
+                                    });
+                                    
+                                }
+                                
+                                 }
+
+                        }
+                    })
+                }
+
                 self.PurchaseList = new ArrayDataProvider(this.PurchaseDet, { keyAttributes: "id"});
 
                 self.PurchaseList = ko.computed(function () {
@@ -165,7 +230,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
                 }, self);
     
-
+                self.PurchaseCloseList = new ArrayDataProvider(this.PurchaseCloseDet, { keyAttributes: "id"});
+                self.PurchaseCloseList = ko.computed(function () {
+                    let filterCriterion = null;
+                    if (self.filterPurchase() && self.filterPurchase() != '') {
+                        filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
+                            filterDef: { text: self.filterPurchase() }
+                        });
+                    }
+                    const arrayDataProvider = new ArrayDataProvider(self.PurchaseCloseDet, { 
+                        keyAttributes: 'id',
+                        sortComparators: {
+                            comparators: new Map().set("dob", this.comparator),
+                        },
+                    });
+                    
+                    return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
+                }, self);
+    
 
                 
                 self.addPurchase = ()=>{
@@ -210,8 +292,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             }
           }
 
-              self.handleValueTask = () => {
+            self.handleValuePurchase = () => {
                 self.filter(document.getElementById('filter').rawValue);
+            };
+
+            self.handleValuePurchaseClose = () => {
+                self.filterPurchase(document.getElementById('filterPurchase').rawValue);
             };
 
             self._checkValidationGroup = (value) => {

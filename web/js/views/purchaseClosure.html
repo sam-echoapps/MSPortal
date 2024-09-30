@@ -255,7 +255,18 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
                         </div> 
                      </div>         
                 </oj-form-layout>
-                <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+                <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
+                    <oj-button id="save" chroming="borderless" on-oj-action="[[formSubmit]]" 
+                        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+                        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-save"></i> Submit</span>
+                    </oj-button>
+                    <oj-bind-if test="[[updatedAt()  != '']]">
+                    <oj-button id="close" chroming="borderless" on-oj-action="[[formSubmitClosure]]" 
+                        style="background-color: #34b53a;color: #fff;border-radius: 10px;">
+                        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-circle-check"></i> Close Purchase</span>
+                    </oj-button>
+                    </oj-bind-if>
+                </div>
             </div>
         </oj-validation-group>
   </div>
