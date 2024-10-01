@@ -1,7 +1,7 @@
-define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider","ojs/ojlistdataproviderview","ojs/ojdataprovider", "ojs/ojfilepickerutils",
+define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider",  "ojs/ojconverterutils-i18n",  "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
-     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojactioncard","ojs/ojavatar", "ojs/ojradioset"], 
-    function (oj,ko,$, app, ArrayDataProvider,ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
+     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojavatar","ojs/ojradioset","ojs/ojinputsearch","ojs/ojselectcombobox"], 
+    function (oj,ko,$, app, ArrayDataProvider,  ojconverterutils_i18n_1, ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
 
         class Purchase {
             constructor(args) {
@@ -52,10 +52,47 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.tabData = [
                     { id: "open", label: "Open PO" },
                     { id: "closed", label: "Closed PO" },
+                    { id: "report", label: "Get Report" },
                 ];
                 self.selectedTab = ko.observable("open"); 
                 self.PurchaseCloseDet = ko.observableArray([]);
                 self.filterPurchase = ko.observable('');
+
+                self.status = ko.observable('');
+
+                self.statusOption = [
+                    {"label":"Requested","value":"Requested"},
+                    {"label":"Approved","value":"Approved"},
+                    {"label":"Denied","value":"Denied"},
+                ]
+
+                self.statusList = new ArrayDataProvider(self.statusOption, {
+                    keyAttributes: 'value'
+                });
+
+                self.filterReport = ko.observable('');
+                self.PurchaseReportDet = ko.observableArray([]);
+
+                self.statusMissing = ko.observable('');
+                self.blob = ko.observable()
+                self.fileName = ko.observable()
+
+                self.priceFilter = ko.observable(['All']);
+
+                self.priceFilterOptions = [
+                    {"label":"All","value":"All"},
+                    {"label":"Below 1000","value":"Below 1000"},
+                    {"label":"1000-10000","value":"1000-10000"},
+                    {"label":"Above 10000","value":"Above 10000"},
+                ]
+
+                self.priceFilterList = new ArrayDataProvider(self.priceFilterOptions, {
+                    keyAttributes: 'value'
+                });
+
+                self.priceMissing = ko.observable('');
+
+
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -64,12 +101,46 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     if(self.selectedTab() == 'open'){
                         $("#open").show();
                         $("#closed").hide();
+                        $("#report").hide();
                     }else if(self.selectedTab() == 'closed'){
                         $("#open").hide();
+                        $("#report").hide();
                         self.getPurchaseCloseList()
                         $("#closed").show();
+                    }else if(self.selectedTab() == 'report'){
+                        $("#open").hide();
+                        $("#closed").hide();
+                        $("#report").show();
                     }
                     });
+
+                self.statusFilter = ko.observable(['All']);
+
+                self.statusFilterOption = [
+                    {"label":"All","value":"All"},
+                    {"label":"Requested","value":"Requested"},
+                    {"label":"Approved","value":"Approved"},
+                    {"label":"Closed","value":"Closed"},
+                    {"label":"Denied","value":"Denied"},
+                ]
+
+                self.statusFilterList = new ArrayDataProvider(self.statusFilterOption, {
+                    keyAttributes: 'value'
+                });
+
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const day = currentDate.getDate();
+
+                self.fromDate = ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date(year, 0, 1)));
+                self.datePicker = {
+                    numberOfMonths: 1
+                };
+
+                self.toDate = ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date(year, month,day)));
+                self.fromDatePurchase = ko.observable('')
+                self.toDatePurchase = ko.observable('')
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -120,6 +191,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.getPurchaseList = ()=>{
+                    self.fromDatePurchase('')
+                    self.toDatePurchase('')
                     self.PurchaseDet([]);
                     document.getElementById('loaderView').style.display='block';
                     $.ajax({
@@ -458,6 +531,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.querySelector('#openEditPurchase').open();
                 }
 
+                self.viewPurchase = (event,data)=>{
+                    var clickedPurchaseId = data.item.data.id
+                    sessionStorage.setItem("purchaseId", clickedPurchaseId);
+                    self.getPurchaseInfo();
+                    document.querySelector('#openViewPurchase').open();
+                }
+
                 self.getPurchaseInfo = () => {
                     $.ajax({
                         url: BaseURL + "/HRModuleGetPurchaseInfo",
@@ -579,8 +659,266 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
                         }
                     }
+
+                    self.deniedNotesVal = ko.observable('')
+                    self.statusUpdateList = (event,data)=>{
+                        let purchaseIdVal =  data.item.data.id;
+                        let statusVal = event.detail.value;
+                        sessionStorage.setItem('purchaseIdVal',purchaseIdVal) 
+                        sessionStorage.setItem('statusVal',statusVal) 
+                        if(statusVal == 'Denied'){
+                            document.querySelector('#deniedNoteSec').open();                            
+                        }else{
+                            self.statusUpdatePurchaseList()
+                        }
+                    }
+
+                    self.noteSubmit = ()=>{
+                        self.statusUpdatePurchaseList()
+                    }
                   
+                    self.statusUpdatePurchaseList = ()=>{
+                        var formValidNote = self._checkValidationGroup("formValidationNote"); 
+                        if(sessionStorage.getItem('statusVal') == 'Denied'){
+                            sessionStorage.setItem('denyNote',self.deniedNotesVal()) 
+                        }else{
+                            formValidNote=true;
+                            sessionStorage.setItem('denyNote','') 
+                        }
+                        if (formValidNote) {
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                        $.ajax({
+                            url: BaseURL+"/HRModuleUpdatePurchaseList",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                purchaseId: sessionStorage.getItem('purchaseIdVal'),
+                                status : sessionStorage.getItem('statusVal'),
+                                deniedNote : sessionStorage.getItem('denyNote'),
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                popup.close();
+                                document.querySelector('#deniedNoteSec').close();                            
+                                self.getPurchaseList();
+                            }
+                        })
+                    }
+                          
+                    }
+
+                    self.showData = ()=>{
+                        self.PurchaseReportDet([]);
+                        document.getElementById('loaderView').style.display='block';
+                        let fromDate = self.fromDate()
+                        let toDate = self.toDate();
+                        let statusFilter = self.statusFilter();
+                        statusFilter = statusFilter.join(",");
+                        let priceRange = self.priceFilter();
+                        priceRange = priceRange.join(",");
+                        if(self.statusFilter() == ''){
+                            self.statusMissing("Please select a status");
+                            document.getElementById('loaderView').style.display='none';
+                        }
+                        else{
+                            self.statusMissing('');
+                        }
+                        if(self.priceFilter() == ''){
+                            self.priceMissing("Please select a price range");
+                            document.getElementById('loaderView').style.display='none';
+                        }
+                        else{
+                            self.priceMissing('');
+                        }
+                        if (self.statusMissing() == '' && self.priceMissing() == '') {
+                        $.ajax({
+                            url: BaseURL+"/getPurchaseReport",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                fromDate: fromDate,
+                                toDate: toDate,
+                                status : statusFilter,
+                                priceRange : priceRange
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            if(data[0]!="No data found"){
+                            data = JSON.parse(data);
+                            console.log(data)
+                            var csvContent = '';
+                                var headers = ['SL.NO', 'PO.No', 'Item Name', 'Owner', 'Estimated Price','Total Amount', 'Created Date',
+                                            'Status'];
+                                csvContent += headers.join(',') + '\n';
+                            if(data.length!=0){
+                                for (var i = 0; i < data.length; i++) {
+                                    console.log(data[i][1])
+                                    self.PurchaseReportDet.push({
+                                        'slno': i+1,
+                                        'id': data[i][0],
+                                        'pono': "PO"+data[i][0], 
+                                        'staff_id': data[i][1],
+                                        'item_name': data[i][2],
+                                        'purpose': data[i][3],
+                                        'vendor_po_no': data[i][4], 
+                                        'vendor_po_doc': data[i][5], 
+                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'status': data[i][7],
+                                        'created_date': data[i][8],
+                                        'updated_at': data[i][9], 
+                                        'ordered_by': data[i][10],
+                                        'total_amount': data[i][11],                                   
+                                    });
+
+                                    var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6] + " " +sessionStorage.getItem("currency"),data[i][11], data[i][8], data[i][7] ]; 
+                                    csvContent += rowData.join(',') + '\n';
+                                    
+                                }
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                self.blob(blob);
+                                self.fileName(fileName);
+                                
+                                 }
+                                 else{
+                                    var csvContent = '';
+                                    var headers = ['SL.NO', 'PO.No', 'Item Name', 'Owner', 'Estimated Price','Total Amount', 'Created Date',
+                                                'Status'];
+                                    csvContent += headers.join(',') + '\n';
+                                    var rowData = []; 
+                                    csvContent += rowData.join(',') + '\n';
+                                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                    var today = new Date();
+                                    var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                    self.blob(blob);
+                                    self.fileName(fileName);
+                                }
     
+
+                        }
+                    }
+                    })
+                }
+
+                        
+                    }
+
+                    self.PurchaseReportList = new ArrayDataProvider(this.PurchaseReportDet, { keyAttributes: "id"});
+
+                    self.PurchaseReportList = ko.computed(function () {
+                        let filterCriterion = null;
+                        if (self.filterReport() && self.filterReport() != '') {
+                            filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
+                                filterDef: { text: self.filterReport() }
+                            });
+                        }
+                        const arrayDataProvider = new ArrayDataProvider(self.PurchaseReportDet, { 
+                            keyAttributes: 'id',
+                            sortComparators: {
+                                comparators: new Map().set("dob", this.comparator),
+                            },
+                        });
+                        
+                        return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
+                    }, self);
+
+                    self.statusFilterCheck = ()=> {
+                        if(self.statusFilter() == ''){
+                            self.statusMissing("Please select a status");
+                        }else{
+                        self.statusMissing('');
+                        }
+                    }
+
+                    self.downloadExcel = ()=> {
+                        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                          // For Internet Explorer
+                          window.navigator.msSaveOrOpenBlob(self.blob(), self.fileName());
+                        } else {
+                          // For modern browsers
+                          var link = document.createElement('a');
+                          link.href = window.URL.createObjectURL(self.blob());
+                          link.download = self.fileName();
+                          link.style.display = 'none';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }
+                      }
+
+                      self.handleValuePurchaseReport = () => {
+                        self.filterReport(document.getElementById('filterReport').rawValue);
+                    };
+
+                    self.priceFilterCheck = ()=> {
+                        if(self.priceFilter() == ''){
+                            self.priceMissing("Please select a price range");
+                        }else{
+                        self.priceMissing('');
+                        }
+                    }
+
+                self.showPurchaseData = ()=>{
+                    self.PurchaseDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    let fromDate = self.fromDatePurchase()
+                    let toDate = self.toDatePurchase();
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetPurchaseListFilter",
+                        type: 'POST',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                            fromDate : fromDate,
+                            toDate : toDate
+                        }),
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data[0]);
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            if(data.length!=0){
+                                for (var i = 0; i < data.length; i++) {
+                                    console.log(data[i][1])
+                                    self.PurchaseDet.push({
+                                        'slno': i+1,
+                                        'id': data[i][0],
+                                        'pono': "PO"+data[i][0], 
+                                        'staff_id': data[i][1],
+                                        'item_name': data[i][2],
+                                        'purpose': data[i][3],
+                                        'vendor_po_no': data[i][4], 
+                                        'vendor_po_doc': data[i][5], 
+                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'status': data[i][7],
+                                        'created_date': data[i][8],
+                                        'updated_at': data[i][9], 
+                                        'ordered_by': data[i][10],                                   
+                                    });
+                                    
+                                }
+                                
+                                 }
+
+                        }
+                    })
+                }
 
                     self.rewriteUrl=(url)=> {
                         if (url.includes('/Hr')) {

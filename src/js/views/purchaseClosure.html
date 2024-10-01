@@ -180,7 +180,7 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
                     <div>
                         <oj-bind-if test="[[warrentyReminder()  == 'Yes']]">
                             <div style="color:green;margin-top:10px">
-                                Renewal reminder sends a notification before the warranty expires.
+                                Renewal reminder sends a notification 15 days before the warranty expires.
                             </div>                    
                         </oj-bind-if> 
                         </div>    
@@ -258,7 +258,7 @@ style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 250px;background-c
                 <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
                     <oj-button id="save" chroming="borderless" on-oj-action="[[formSubmit]]" 
                         style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
-                        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-save"></i> Submit</span>
+                        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-save"></i> Update</span>
                     </oj-button>
                     <oj-bind-if test="[[updatedAt()  != '']]">
                     <oj-button id="close" chroming="borderless" on-oj-action="[[formSubmitClosure]]" 

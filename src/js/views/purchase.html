@@ -22,7 +22,18 @@
         <oj-button chroming="solid"  on-oj-action="[[addPurchase]]" class="oj-sm-padding-3x-vertical">
             <i class="fa-solid fa-plus"></i>&nbsp;Add Purchase
           </oj-button>
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <div>
+          <oj-input-date id="from" label-hint="Select From date" value="{{fromDatePurchase}}" date-picker="[[datePicker]]"
+          class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
+          </oj-input-date>
+            <oj-input-date id="to" label-hint="Select To date" value="{{toDatePurchase}}" date-picker="[[datePicker]]"
+                class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>&nbsp;&nbsp;
+            <oj-button id="show" chroming="borderless" on-oj-action="[[showPurchaseData]]" 
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top: 9px;">
+        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+    </oj-button>
+            </div>
+          <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
             <oj-input-text id="filter" label-hint="Search" label-edge="inside"
             placeholder="Search.." on-raw-value-changed="[[handleValuePurchase]]" value="{{filter}}" clear-icon="always">
             </oj-input-text>
@@ -88,21 +99,29 @@
         </a>
      </oj-bind-if>
      <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
-      <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
+      <a :id="[[cell.row.pono]]" on-click= "[[viewPurchase]]">
+        <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
+    </a>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+          <div class="oj-table-element-review">
+          <oj-select-single required id="{{cell.row.id}}" 
+          data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
+          </div>
       </oj-bind-if>
       <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
-          <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+          <div class="oj-table-element-approve">
+            <oj-select-single required id="{{cell.row.id}}" 
+          data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
+          </div>
       </oj-bind-if>
       <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
-          <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
+          <div class="oj-table-element-reject">
+            <oj-select-single required id="{{cell.row.id}}" 
+          data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
+          </div>
       </oj-bind-if>
-      <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
-        <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
-    </oj-bind-if>
     </template>
     <template slot="documentTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.vendor_po_doc]]">
@@ -184,6 +203,110 @@
     </div>
 </div>
 
+<div id="report" class="oj-panel oj-xl-margin-4x" style="display:none;margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+  <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+    <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+      <oj-input-text id="filterReport" label-hint="Search" label-edge="inside"
+      placeholder="Search.." on-raw-value-changed="[[handleValuePurchaseReport]]" value="{{filterReport}}" clear-icon="always">
+      </oj-input-text>
+    </div>
+  </div> 
+  <div class="oj-flex oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-input-date id="from" label-hint="Select From date" value="{{fromDate}}" date-picker="[[datePicker]]"
+      class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
+      </oj-input-date>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-input-date id="to" label-hint="Select To date" value="{{toDate}}" date-picker="[[datePicker]]"
+            class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Status"
+        label-edge="inside" 
+        options="[[statusFilterList]]" 
+        value="{{statusFilter}}"
+        on-value-changed="[[statusFilterCheck]]">
+      </oj-select-many>
+      <div style="color:red;">
+        <oj-bind-text value="[[statusMissing]]"></oj-bind-text>
+    </div>
+    </div>
+    <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+      <oj-select-many 
+        label-hint="Select Price Range"
+        label-edge="inside" 
+        options="[[priceFilterList]]" 
+        value="{{priceFilter}}"
+        on-value-changed="[[priceFilterCheck]]">
+      </oj-select-many>
+      <div style="color:red;">
+        <oj-bind-text value="[[priceMissing]]"></oj-bind-text>
+    </div>
+    </div>
+</div>
+<br>
+  <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
+    <oj-button id="show" chroming="borderless" on-oj-action="[[showData]]" 
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+    </oj-button>
+    <oj-button id="export"chroming="borderless" on-oj-action="[[downloadExcel]]" 
+        style="background-color: #34b53a;color: #fff;border-radius: 10px;">
+        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-download"></i> Export</span>
+    </oj-button>
+</div>
+<br>
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+  <oj-table id='purchaseReportTable' aria-label='All Table' data='[[PurchaseReportList]]' display='list'
+  selection-mode='{"row": "single"}'  columns='[
+  { "headerText": "SL.No", "field": "slno", "id": "slno",
+  "headerClassName" : "table-header-style"	 },
+  { "headerText": "PO.No", "field": "pono", "id": "pono",
+  "headerClassName" : "table-header-style"	 },
+  { "headerText": "Item Name", "field": "item_name", "id": "item_name",
+    "headerClassName" : "table-header-style"	 },
+  { "headerClassName" : "table-header-style",
+    "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
+  { "headerClassName" : "table-header-style",
+    "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+  { "headerClassName" : "table-header-style",
+    "headerText": "Total Amount", "field": "total_amount", "id": "total_amount" },
+  { "headerClassName" : "table-header-style",
+  "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+  { "headerClassName" : "table-header-style",
+          "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
+   <template slot="bgTemplate" data-oj-as="cell">
+    <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+        <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+    </oj-bind-if>
+    <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+        <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+    </oj-bind-if>
+    <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
+        <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
+    </oj-bind-if>
+    <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+      <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+  </oj-bind-if>
+  </template>
+  <template slot="documentTemplate" data-oj-as="cell">
+    <oj-bind-if test="[[cell.row.vendor_po_doc]]">
+      <a :data-document-link="[[cell.row.vendor_po_doc]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+        <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
+      </a>
+    </oj-bind-if>
+      <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
+        <span>N/A</span>
+      </oj-bind-if>
+  </template>
+  </oj-table>
+</div>
+</div>
+
     
 
      <oj-dialog id="successView">
@@ -262,6 +385,58 @@ cancel-behavior="[[CancelBehaviorOpt]]">
 </oj-validation-group>
 </oj-dialog>
 
+
+<oj-dialog id="openViewPurchase" class="popupPurchase" dialog-title="View Purchase" modality="modeless" drag-affordance="title-bar"
+cancel-behavior="[[CancelBehaviorOpt]]">
+<oj-validation-group id="formValidation" class="form-container" role="group">
+  <div id="form-container">
+      <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+        <oj-bind-if test="[[staffId()  == userId()]]">
+          <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editPurpose" label-hint="Purpose" required="true" value="{{editPurpose}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editVendorPONo" label-hint="Vendor PO Number" value="{{editVendorPONo}}" readonly="true"></oj-input-text>
+          <oj-file-picker  id="editVendorFile" class="demo-max-width" primary-text="Vendor PO Attatchment"
+                  secondary-text="[[editSecondaryText]]" on-oj-select="[[updateUploadVendorPO]]" readonly="true">
+          </oj-file-picker>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
+          <oj-bind-if test="[[editFileCheck()  != '']]">
+          <a :data-document-link="[[editFileCheck()]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+            <div style="margin-top:-20px">
+            <span>Click here to view</span>
+            </div>
+          </a>
+          </oj-bind-if>
+
+          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" on-value-changed="[[priceValidate]]" readonly="true"></oj-input-text>
+          <div style="color:red;margin-top:-40px">
+            <oj-bind-text value="[[numError]]"></oj-bind-text>
+        </div>
+        </oj-bind-if>
+        <oj-bind-if test="[[staffId()  != userId()]]">
+          <oj-input-text id="editItemName" label-hint="Item Name" required="true" value="{{editItemName}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editPurpose" label-hint="Purpose" required="true" value="{{editPurpose}}" readonly="true"></oj-input-text>
+          <oj-input-text id="editVendorPONo" label-hint="Vendor PO Number" value="{{editVendorPONo}}" readonly="true"></oj-input-text>
+          <oj-file-picker  id="editVendorFile" class="demo-max-width" primary-text="Vendor PO Attatchment"
+                  secondary-text="[[editSecondaryText]]" on-oj-select="[[updateUploadVendorPO]]" disabled="true" readonly="true">
+          </oj-file-picker>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
+          <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" readonly="true"></oj-input-text>
+        </oj-bind-if>
+          <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+            <oj-bind-if test="[[staffId() != userId() || userrole() == 'director']]">
+            <oj-select-single required id="status" label-hint="Status" label-edge="inside"
+            data="[[statusList]]" value="{{editStatus}}" readonly="true"></oj-select-single>        
+          </oj-bind-if>
+          </oj-bind-if>
+          <oj-bind-if test="[[editStatus() == 'Denied']]">
+            <oj-input-text id="deniedNotes" label-hint="Denied Notes" value="{{deniedNotes}}" required="true" readonly="true"></oj-input-text>
+          </oj-bind-if>
+      </oj-form-layout>
+<!--       <oj-button id="save" chroming="solid" on-oj-action="[[updateFormSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+ -->  </div>
+</oj-validation-group>
+</oj-dialog>
+
 <oj-dialog id="updateSuccessView">
   <div slot="header" style="display: contents;">
       <p id="dialogTitleId" class="oj-dialog-title">Successfully Updated</p>
@@ -280,3 +455,16 @@ cancel-behavior="[[CancelBehaviorOpt]]">
 <div class="centered-container" id="loaderView">
     <div class="loader"></div>
   </div> 
+
+  
+  <oj-dialog id="deniedNoteSec" class="popupPurchase" dialog-title="Denied Note" modality="modeless" drag-affordance="title-bar"
+  cancel-behavior="[[CancelBehaviorOpt]]">
+  <oj-validation-group id="formValidationNote" class="form-container" role="group">
+    <div id="form-container">
+        <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+          <oj-input-text id="deniedNotes" label-hint="Denied Notes" value="{{deniedNotesVal}}" required="true"></oj-input-text> 
+        </oj-form-layout>
+        <oj-button id="save" chroming="solid" on-oj-action="[[noteSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+    </div>
+  </oj-validation-group>
+  </oj-dialog>
