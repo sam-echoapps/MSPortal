@@ -54,6 +54,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "closed", label: "Closed PO" },
                     { id: "report", label: "Get Report" },
                 ];
+
+                self.tabData1 = [
+                    { id: "open", label: "Open PO" },
+                    { id: "closed", label: "Closed PO" },
+                ];
                 self.selectedTab = ko.observable("open"); 
                 self.PurchaseCloseDet = ko.observableArray([]);
                 self.filterPurchase = ko.observable('');
@@ -83,7 +88,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     {"label":"All","value":"All"},
                     {"label":"Below 1000","value":"Below 1000"},
                     {"label":"1000-10000","value":"1000-10000"},
-                    {"label":"Above 10000","value":"Above 10000"},
+                    {"label":"10000-20000","value":"10000-20000"},
+                    {"label":"20000-30000","value":"20000-30000"},
+                    {"label":"30000-40000","value":"30000-40000"},
+                    {"label":"40000-50000","value":"40000-50000"},
+                    {"label":"Above 50000","value":"Above 50000"},
                 ]
 
                 self.priceFilterList = new ArrayDataProvider(self.priceFilterOptions, {
@@ -148,8 +157,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
-                        self.getPurchaseList();
                         self.getCurrency();
+                        self.getPurchaseList();
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
                                     const baseUrl = 'https://uanglobal.com/';
@@ -741,6 +750,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/getPurchaseReport",
                             type: 'POST',
                             data: JSON.stringify({
+                                staffId : sessionStorage.getItem("userId"),
                                 fromDate: fromDate,
                                 toDate: toDate,
                                 status : statusFilter,
@@ -765,6 +775,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     console.log(data[i][1])
+                                    let totalAmount = data[i][11] ? data[i][11] + " " + sessionStorage.getItem("currency") : '';
                                     self.PurchaseReportDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -779,7 +790,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'created_date': data[i][8],
                                         'updated_at': data[i][9], 
                                         'ordered_by': data[i][10],
-                                        'total_amount': data[i][11],                                   
+                                        'total_amount': totalAmount,                                   
                                     });
 
                                     var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6] + " " +sessionStorage.getItem("currency"),data[i][11], data[i][8], data[i][7] ]; 
@@ -919,6 +930,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     })
                 }
+
 
                     self.rewriteUrl=(url)=> {
                         if (url.includes('/Hr')) {

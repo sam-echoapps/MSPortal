@@ -241,6 +241,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getNotificationCount();
                         let successPopup = document.getElementById("successView");
                         successPopup.close(); 
+                        let updatePopup = document.getElementById("updateSuccessView");
+                        updatePopup.close(); 
                     } 
               
                 self._checkValidationGroup = (value) => {

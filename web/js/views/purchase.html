@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="../../css/purchase.css">
 
+<oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
 <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
   <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
       <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
@@ -15,6 +16,26 @@
   </oj-buttonset-one>
 </div>
 </div>
+</oj-bind-if>
+
+
+<oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior hr' && userrole() != 'senior manager' && userrole() != 'senior accounts']]">
+  <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+      <oj-bind-for-each data="[[tabData1]]">
+        <template>
+          <oj-option value="[[$current.data.id]]">
+            <span>
+              <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+            </span>
+          </oj-option>
+        </template>
+      </oj-bind-for-each>
+    </oj-buttonset-one>
+  </div>
+  </div>
+  </oj-bind-if>
 
 <div id="open">
 <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
@@ -86,25 +107,32 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
-            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
+            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate", "width" : "200px"}]' style='width: 100%;' class="demo-table-container">
      <template slot="actionTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.status != 'Denied' && cell.row.status != 'Approved' ]]">
         <a :id="[[cell.row.pono]]" on-click= "[[editPurchase]]">
           <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
       </a>
       </oj-bind-if>
-      <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+      <oj-bind-if test="[[cell.row.status == 'Approved'  && cell.row.staff_id  == userId()]]">
           <a :id="[[cell.row.pono]]" on-click= "[[goToPOClosure]]">
             <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
         </a>
      </oj-bind-if>
+     <oj-bind-if test="[[cell.row.status == 'Approved'  && cell.row.staff_id  != userId()]]">
+      <a :id="[[cell.row.pono]]" on-click= "[[editPurchase]]">
+        <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
+    </a>
+    </oj-bind-if>
      <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
       <a :id="[[cell.row.pono]]" on-click= "[[viewPurchase]]">
         <oj-bind-text value="[[cell.row.pono]]"></oj-bind-text>
     </a>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
-      <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+      <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+        <oj-bind-if test="[[cell.row.staff_id != userId() || userrole() == 'director']]">
+        <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
           <div class="oj-table-element-review">
           <oj-select-single required id="{{cell.row.id}}" 
           data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
@@ -117,11 +145,39 @@
           </div>
       </oj-bind-if>
       <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
-          <div class="oj-table-element-reject">
-            <oj-select-single required id="{{cell.row.id}}" 
-          data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
-          </div>
+        <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
       </oj-bind-if>
+        </oj-bind-if>
+      <oj-bind-if test="[[cell.row.staff_id == userId() && userrole() != 'director']]">
+         <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+      </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+            <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+      </oj-bind-if>
+      </oj-bind-if>
+        </oj-bind-if>
+    </oj-bind-if>
+      <oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior hr' && userrole() != 'senior manager' && userrole() != 'senior accounts']]">
+        <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
+          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+      </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
+            <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Denied' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="Denied"></oj-bind-text></div>
+        </oj-bind-if>
+        <oj-bind-if test="[[cell.row.status == 'Closed' ]]">
+          <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
+      </oj-bind-if>
+        </oj-bind-if>
     </template>
     <template slot="documentTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.vendor_po_doc]]">
@@ -377,7 +433,7 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           </oj-bind-if>
           </oj-bind-if>
           <oj-bind-if test="[[editStatus() == 'Denied']]">
-            <oj-input-text id="deniedNotes" label-hint="Denied Notes" value="{{deniedNotes}}" required="true"></oj-input-text>
+            <oj-input-text id="deniedNotes" label-hint="Specify Reason" value="{{deniedNotes}}" required="true"></oj-input-text>
           </oj-bind-if>
       </oj-form-layout>
       <oj-button id="save" chroming="solid" on-oj-action="[[updateFormSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
@@ -429,7 +485,7 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           </oj-bind-if>
           </oj-bind-if>
           <oj-bind-if test="[[editStatus() == 'Denied']]">
-            <oj-input-text id="deniedNotes" label-hint="Denied Notes" value="{{deniedNotes}}" required="true" readonly="true"></oj-input-text>
+            <oj-input-text id="deniedNotes" label-hint="Specify Reason" value="{{deniedNotes}}" required="true" readonly="true"></oj-input-text>
           </oj-bind-if>
       </oj-form-layout>
 <!--       <oj-button id="save" chroming="solid" on-oj-action="[[updateFormSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
@@ -456,15 +512,26 @@ cancel-behavior="[[CancelBehaviorOpt]]">
     <div class="loader"></div>
   </div> 
 
-  
-  <oj-dialog id="deniedNoteSec" class="popupPurchase" dialog-title="Denied Note" modality="modeless" drag-affordance="title-bar"
-  cancel-behavior="[[CancelBehaviorOpt]]">
-  <oj-validation-group id="formValidationNote" class="form-container" role="group">
-    <div id="form-container">
-        <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
-          <oj-input-text id="deniedNotes" label-hint="Denied Notes" value="{{deniedNotesVal}}" required="true"></oj-input-text> 
-        </oj-form-layout>
-        <oj-button id="save" chroming="solid" on-oj-action="[[noteSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+
+  <oj-dialog id="deniedNoteSec">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">Denied Note</p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
     </div>
-  </oj-validation-group>
+    <div slot="body">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+          <oj-validation-group id="formValidationNote" class="form-container" role="group">
+            <div id="form-container">
+                <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
+                  <oj-input-text id="deniedNotes" label-hint="Specify Reason" value="{{deniedNotesVal}}" required="true"></oj-input-text> 
+                </oj-form-layout>
+                <oj-button id="save" chroming="solid" on-oj-action="[[noteSubmit]]"><i class="fas fa-save"></i> Submit</oj-button>
+            </div>
+          </oj-validation-group>
+        </div>
+    </div>
   </oj-dialog>
+  
