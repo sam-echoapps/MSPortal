@@ -1,0 +1,145 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+
+
+<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+      <oj-bind-for-each data="[[tabData]]">
+        <template>
+          <oj-option value="[[$current.data.id]]">
+            <span>
+              <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+            </span>
+          </oj-option>
+        </template>
+      </oj-bind-for-each>
+    </oj-buttonset-one>
+  </div>
+</div>
+
+
+<div id="companyNotice" style="display:none">
+<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text  label-hint="Search" label-edge="inside"
+            placeholder="Search.."  clear-icon="always">
+            </oj-input-text>
+        </div>
+         </oj-bind-if>
+    </div> 
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between">
+      <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+         <div class="oj-flex oj-md-justify-content-space-between">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal " style="width: 200px;">
+                <oj-select-single required id="select" label-hint="Department" label-edge="inside"
+                    data="[[departmentList]]" value="{{department}}"></oj-select-single>
+            </div>
+            <div class="oj-flex-item oj-md-padding-2x-horizontal " style="width: 200px;">
+                <oj-input-date id="fromDate" label-hint="From" required="true" value="{{department}}"></oj-input-date>
+            </div>
+            <div class="oj-flex-item oj-md-padding-2x-horizontal " style="width: 200px;">
+                <oj-input-date id="toDate" label-hint="To" required="true" value="{{department}}"></oj-input-date>
+            </div>
+            <div class="oj-flex-item oj-md-padding-2x-horizontal " style="width: 200px;">
+                <oj-select-single required id="select" label-hint="Category" label-edge="inside"
+                    data="[[departmentList]]" value="{{department}}"></oj-select-single>
+            </div>
+            <div class="oj-flex-item oj-md-padding-2x-horizontal " style="width: 200px;">
+                <oj-select-single required id="select" label-hint="Amount" label-edge="inside"
+                    data="[[departmentList]]" value="{{department}}"></oj-select-single>
+            </div>
+            </div>
+            <div class="oj-flex oj-flex-item oj-md-justify-content-space-between">
+                <div class="oj-flex-item oj-md-padding-2x-horizontal ">
+                    <oj-button id="show" chroming="solid" on-oj-action=""> Show</oj-button>
+                </div>
+                <div class="oj-flex-item oj-md-padding-2x-horizontal ">
+                    <oj-button id="export" chroming="solid" on-oj-action="">Export</oj-button>
+                </div>
+                
+        </div>
+      </oj-bind-if>
+    </div> 
+
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text  label-hint="Search" label-edge="inside"
+            placeholder="Search.."   clear-icon="always">
+            </oj-input-text>
+        </div>
+        </div>
+        
+
+<div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+<div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+  jjj
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="allAsset">
+    <div class="oj-xl-margin-4x oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-initial">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+            <oj-input-text id="filter" label-hint="Search" label-edge="inside"
+            placeholder="Search.." on-raw-value-changed="[[handleValueAsset]]" value="{{filter}}" clear-icon="always">
+            </oj-input-text>
+        </div>
+        <div class="oj-flex-item oj-md-padding-2x-horizontal ">
+          <oj-button chroming="solid"  on-oj-action="" class="oj-sm-padding-3x-vertical">
+            Total Assets :
+          </oj-button>
+        </div>
+    </div>
+    <div class="oj-flex-item oj-md-padding-2x-horizontal ">
+        <oj-button chroming="solid"  on-oj-action="" class="oj-sm-padding-3x-vertical">
+          <i class="fa-solid "></i>&nbsp;Add Asset
+        </oj-button>
+      </div>
+    </div>
+    
+    <div class="oj-panel oj-xl-margin-4x" id="actionView"> 
+      <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+        <oj-table id='assetTable' aria-label='All Table' data='[[AssetList]]' display='list'
+            selection-mode='{"row": "single"}'  columns='[
+            { "headerText": "SL.No", "field": "slno", "id": "slno",
+            "headerClassName" : "table-header-style"	 },
+            { "headerText": "Asset No", "field": "asset_no", "id": "asset_no",
+              "headerClassName" : "table-header-style", "template": "actionTemplate"	 },
+            { "headerClassName" : "table-header-style",
+              "headerText": "Asset Name", "field": "asset_name", "id": "asset_name" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "PO No", "field": "po_no", "id": "po_no"},
+            { "headerClassName" : "table-header-style",
+            "headerText": "Product Name", "field": "product_name", "id": "product_name"}
+            ]' style='width: 100%;' class="demo-table-container">
+            <template slot="actionTemplate" data-oj-as="cell">
+                  <a :id="[[cell.row.asset_no]]" on-click= "[[goToAsset]]">
+                    <oj-bind-text value="[[cell.row.asset_no]]"></oj-bind-text>
+                </a>
+             </template>
+            </oj-table>
+        </div>
+        </div>
+</div>
+
+
+    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 
+
+

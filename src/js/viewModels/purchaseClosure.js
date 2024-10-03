@@ -531,7 +531,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(data)
                                 let popup = document.getElementById("loaderPopup");
                                 popup.close();
-                                self.router.go({path:'purchase'})
+                                self.router.go({path:'asset'})
                                 // let popup1 = document.getElementById("updateSuccessView");
                                 // popup1.open();
                             }
