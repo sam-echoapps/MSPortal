@@ -249,6 +249,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         reminder_date : self.reminderDate(),
                                         priority : self.priority(),
                                         userId: sessionStorage.getItem("userId"),
+                                        description : self.description(),
                                     }),
                                     dataType: 'json',
                                     timeout: sessionStorage.getItem("timeInetrval"),

@@ -174,6 +174,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior manager'){
@@ -236,6 +237,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='senior hr'){
@@ -273,6 +275,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
       else if(sessionStorage.getItem('userRole')=='junior hr'){
@@ -446,6 +449,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'asset', detail : {label: 'Asset Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
         ];
       }
 

@@ -1,0 +1,249 @@
+<!-- <link rel="stylesheet" href="../../Hr/css/addStaff.css"> -->
+
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="padding: 10px;"> 
+        <oj-action-card id="1" class="oj-sm-margin-2x oj-sm-padding-4x"
+        style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 232px;background-color: #fff;">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-sm-4 oj-md-4">
+                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                        <i class="fa-solid fa-wallet fa-2x" style="color: #745ffc;"></i>
+                    </div>
+                </div>
+                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="Asset Number"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 30px;">
+                        <oj-bind-text value="[[assetNumber]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+        <oj-action-card id="2" class="oj-sm-margin-2x oj-sm-padding-4x"
+        style="border-radius: 10px;box-shadow: 0 0 5px #dddddd;width: 232px;background-color: #fff;">
+            <div class="oj-flex oj-sm-justify-content-space-around" style="width: 100%;">
+                <div class="oj-sm-4 oj-md-4">
+                    <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" 
+                        style="width: 60px;height:60px;background-color: #f0efff;border-radius: 50%;">
+                        <i class="fa-solid fa-wallet fa-2x" style="color: #745ffc;"></i>
+                    </div>
+                </div>
+                <div class="oj-sm-7 oj-md-7 oj-flex oj-sm-flex-direction-column">
+                    <span style="font-weight: 600;font-size: 15px;color: #878a99;">
+                        <oj-bind-text value="Asset Name"></oj-bind-text>
+                    </span>
+                    <span style="font-weight: 600;font-size: 30px;">
+                        <oj-bind-text value="[[assetName]]"></oj-bind-text>
+                    </span>
+                </div>
+            </div>
+        </oj-action-card>
+        <oj-action-card>
+
+        </oj-action-card>
+        <oj-action-card>
+
+        </oj-action-card>
+        <oj-action-card>
+            
+        </oj-action-card>
+        <oj-button chroming="solid"  on-oj-action="[[assetRemove]]" class="oj-sm-padding-3x-vertical">
+            Remove Asset
+        </oj-button>
+
+    </div>
+</div>
+
+
+
+
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <oj-validation-group id="formValidation" class="form-container" role="group">
+        <div id="form-container-employee">
+            <oj-form-layout id="closure-information" class="form" direction="row" max-columns="2">
+                <oj-select-single required id="bill" label-hint="Do you have bill?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill}}" on-value-changed="[[billNumSec]]">
+                </oj-select-single>
+                <div id="billSec" style="display:none">
+                    <oj-bind-if test="[[billCheck()  == 'Yes']]">
+                        <oj-input-text id="billNumber" label-hint="Bill Number" required="true" value="{{billNumber}}"></oj-input-text>
+                    </oj-bind-if>
+                </div> 
+                <div id="billAttatchSec" style="display:none">
+                    <oj-bind-if test="[[billCheck()  == 'Yes']]">
+                    <oj-select-single required id="bill" label-hint="Do you have bill to attatch?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill_attach}}" on-value-changed="[[billFileSec]]"></oj-select-single>
+                     </oj-select-single>   
+                    </oj-bind-if>                 
+                </div> 
+                <div id="billAttatchFileSec" style="display:none">
+                    <oj-file-picker  id="billFile" class="demo-max-width" primary-text="Bill"
+                    secondary-text="[[billSecondaryText]]" on-oj-select="[[uploadBill]]" required>
+                    </oj-file-picker>      
+                    <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorBill]]'></oj-bind-text></div> 
+                    <oj-bind-if test="[[billExist()  != '']]">
+                        <a :data-document-link="[[billFile()]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+                          <span>Click here to view</span>
+                        </a>
+                     </oj-bind-if>                           
+                </div> 
+                <oj-select-single required id="guarantee_card" label-hint="Do you have guarantee?" label-edge="inside" data="[[choiceListDP]]" value="{{have_guarantee}}" on-value-changed="[[guaranteeSec]]">
+                </oj-select-single>
+                <div id="guaranteeSec" style="display:none">
+                    <oj-bind-if test="[[guaranteeCheck()  == 'Yes']]">
+                    <oj-input-text id="guaranteeNumber" label-hint="Guarantee Number" value="{{guaranteeNumber}}"></oj-input-text>
+                </oj-bind-if>
+                </div> 
+                <div id="guaranteeAttatchSec" style="display:none">
+                    <oj-bind-if test="[[guaranteeCheck()  == 'Yes']]">
+                    <oj-select-single required id="guarantee_card" label-hint="Do you have guarantee card?" label-edge="inside" data="[[choiceListDP]]" value="{{have_guarantee_card}}" on-value-changed="[[guaranteeCardSec]]">
+                    </oj-select-single> 
+                </oj-bind-if>
+                </div> 
+                <div id="guaranteeFileSec" style="display:none">
+                    <oj-file-picker  id="guaranteeCard" class="demo-max-width" primary-text="Guarantee Card"
+                    secondary-text="[[cardSecondaryText]]" on-oj-select="[[uploadGuarantee]]">
+                    </oj-file-picker>  
+                    <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorGuarantee]]'></oj-bind-text></div>  
+                    <oj-bind-if test="[[guaranteeExist()  != '']]">
+                        <a :data-document-link="[[guaranteeFile()]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+                          <span>Click here to view</span>
+                        </a>
+                     </oj-bind-if>                      
+                </div> 
+                <oj-select-single required id="warrenty" label-hint="Do you have warrenty?" label-edge="inside" data="[[choiceListDP]]" value="{{have_warrenty}}" on-value-changed="[[warrentySec]]"></oj-select-single>
+                </oj-select-single>
+                <div id="warrentyEndSec" style="display:none">
+                <oj-bind-if test="[[warrentyCheck()  == 'Yes']]">
+                    <oj-input-date id="warrentyEndDate" label-hint="Warrenty End Date"  value="{{warrentyEndDate}}" required></oj-input-date>
+                </oj-bind-if>
+                </div>
+                <div id="warrentyReminderSec" style="display:none">
+                <oj-bind-if test="[[warrentyCheck()  == 'Yes']]">
+                    <oj-select-single required id="warrenty_reminder" label-hint="Do you want warranty renewal reminder?" label-edge="inside" data="[[choiceListDP]]" value="{{warrentyReminder}}">
+                    </oj-select-single>   
+                </oj-bind-if>      
+                </div> 
+                <div>
+                    <oj-bind-if test="[[warrentyReminder()  == 'Yes']]">
+                        <div style="color:green;margin-top:10px">
+                            Renewal reminder sends a notification 15 days before the warranty expires.
+                        </div>                    
+                    </oj-bind-if> 
+                    </div>    
+
+                <div>
+                       
+                </div>  
+                <div>
+                       
+                </div>  
+                 <div class="oj-flex">
+                    <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
+                        <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
+
+                        <div style="color:red;margin-top:-20px">
+                            <oj-bind-text value="[[numError]]"></oj-bind-text>
+                        </div>
+                    </div>
+                    <div class="oj-flex-item oj-sm-4 oj-sm-padding-2x-start oj-md-padding-3x-start">
+                    </br>
+                    <oj-bind-if test="[[currency() == 'INR']]">
+                        <div style="margin: -20px 0px;">
+                        <oj-radioset id="rowDirectionEnabledRadioset" value="{{selectedOptions}}" class="oj-choice-direction-row" label-hint="GST Included">
+                            <oj-option value="No">No</oj-option>
+                            <oj-option value="Yes">Yes</oj-option>
+                        </oj-radioset>
+                        </div>
+                    </oj-bind-if>
+            
+                    <oj-bind-if test="[[currency() == 'USD']]">
+                        <div style="margin: -20px 0px;">
+                        <oj-radioset id="rowDirectionEnabledRadioset" value="{{selectedOptions}}" class="oj-choice-direction-row" label-hint="VAT Included">
+                            <oj-option value="No">No</oj-option>
+                            <oj-option value="Yes">Yes</oj-option>
+                        </oj-radioset>
+                        </div>
+                    </oj-bind-if>
+            
+                    <oj-bind-if test="[[currency() == 'GBP']]">
+                        <div style="margin: -20px 0px;">
+                        <oj-radioset id="rowDirectionEnabledRadioset" value="{{selectedOptions}}" class="oj-choice-direction-row" label-hint="VAT Included">
+                            <oj-option value="No">No</oj-option>
+                            <oj-option value="Yes">Yes</oj-option>
+                        </oj-radioset>
+                        </div>
+                    </oj-bind-if>
+                             
+                        </div>
+                </div>
+
+                <div></div>
+                --------------------------------------------------------------------------------------------------------------------------------------------
+                <div></div>
+                <br>
+                <div>
+                <oj-file-picker  id="SupportingDocument" class="demo-max-width" primary-text="Supporting Documents"
+                secondary-text="[[extraSecondaryText]]" on-oj-select="[[uploadExtra]]">
+                </oj-file-picker> 
+                <div class="oj-text-color-danger"><oj-bind-text value='[[typeErrorExtra]]'></oj-bind-text></div>
+                <oj-bind-if test="[[extraExist()  != '']]">
+                    <a :data-document-link="[[extraFile()]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
+                      <span>Click here to view</span>
+                    </a>
+                 </oj-bind-if>       
+                 </div>                  
+                <div>
+                    <oj-text-area id="note" label-hint="Notes (Max 350 Char)" raw-valuenewE="" rows="3" 
+                    clear-icon="always" value="{{notes}}" on-value-changed="[[getInputCount]]">
+                    </oj-text-area>
+                    <div style="color:red;">
+                        <oj-bind-text value="[[lessCount]]"></oj-bind-text>
+                    </div> 
+                 </div>         
+            </oj-form-layout>
+            <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
+                <oj-button id="save" chroming="borderless" on-oj-action="[[formSubmit]]" 
+                    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+                    <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-save"></i> Update</span>
+                </oj-button>
+                <oj-bind-if test="[[updatedAt()  != '']]">
+                <oj-button id="close" chroming="borderless" on-oj-action="" 
+                    style="background-color: #34b53a;color: #fff;border-radius: 10px;">
+                    <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-circle-check"></i> Close Purchase</span>
+                </oj-button>
+                </oj-bind-if>
+            </div>
+        </div>
+    </oj-validation-group> 
+</div>   
+
+    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+        <div class="demo-popup-body">
+            <div class="demo-popup-content oj-sm-padding-2x">
+                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+            </div>
+        </div>
+    </oj-popup>
+    
+    <oj-dialog id="successView">
+        <div slot="header" style="display: contents;">
+            <p id="dialogTitleId" class="oj-dialog-title">Successfully Saved</p>
+            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
+                <span slot="startIcon" class="oj-ux-ico-close"></span>
+                Cancel
+            </oj-button>
+        </div>
+        <div slot="body">
+            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
+                <p style="font-weight: 500;text-align: left">Holiday added successfully</p>
+            </div>
+        </div>
+    </oj-dialog>
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+  </div> 

@@ -102,6 +102,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                                 console.log(data)
+                                data=data[0]
                                 console.log(data.length)
                                 document.getElementById('loaderView').style.display='none';
                                 document.getElementById('actionView').style.display='block';
@@ -109,10 +110,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 for (var i = 0; i < data.length; i++) {
                                     self.AssetDet.push({
                                         'slno': i+1,
-                                        'asset_no': "AS" + data[0][i][0],                                    
-                                        'asset_name':  data[0][i][2],
-                                        'po_no':"PO"+ data[0][i][1], 
-                                        'product_name': data[0][i][3],
+                                        'assetId':data[i][0], 
+                                        'asset_no': "AS" + data[i][0],                                    
+                                        'asset_name':  data[i][2],
+                                        'po_no':"PO"+ data[i][1], 
+                                        'product_name': data[i][3],
                                     });
                                 }
                                 
@@ -150,9 +152,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.goToAsset = (event,data)=>{
-                    var clickedRowId = data.item.data.po_no
-                    sessionStorage.setItem("purchaseId", clickedRowId);
-                    self.router.go({path:'purchaseClosure'})
+                    var clickedRowId = data.item.data.assetId
+                    sessionStorage.setItem("assetId", clickedRowId);
+                    self.router.go({path:'assetView'})
                 }
 
                

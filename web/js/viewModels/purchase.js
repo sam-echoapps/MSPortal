@@ -218,6 +218,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         success: function (data) {
                             data = JSON.parse(data[0]);
                             console.log(data)
+                            if(sessionStorage.getItem("currency") == null){
+                                location.reload()
+                            }
                             document.getElementById('loaderView').style.display='none';
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
