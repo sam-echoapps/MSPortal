@@ -75,11 +75,11 @@
           <div class="oj-flex-bar-end">
             <!-- Responsive Toolbar -->
             <oj-toolbar>
-              <oj-button id="notifyButton" display="icons" chroming="borderless" on-oj-action="[[endToggle]]" class="notify-button" style="position: relative; border: none;">
+              <oj-button id="notifyButton" display="icons" chroming="borderless" on-oj-action="[[endToggle]]" class="notify-button" style="position: relative;">
                 <span slot="startIcon" class="fa fa-bell"></span>
                 <span id="count" class="oj-badge oj-badge-sm" slot="endIcon" 
-                      style="position: absolute; top: 0px; right: 0px; background-color: red; color: white;">
-                    <oj-bind-text value="[[notificationCount]]"></oj-bind-text>
+                      style="position: absolute; top: 0; right: 0; background-color: red; color: white; display: none;"> 
+                    <!-- The count will be updated directly by JavaScript -->
                 </span>
             </oj-button>
 <!--     This hide in mobile view          <oj-menu-button id="userMenu" display="[[smScreen() ? 'icons' : 'all']]">  -->
@@ -140,40 +140,40 @@
         </div>
       </div>
       <!-- Popup Drawer -->
-<oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px;">
-  <div class="demo-drawer-header">
-    <div id="endHeader">
-      <h6>Notifications</h6>
-    </div>
-    <oj-button id="endButtonCloser" display="icons" chroming="borderless" on-oj-action="[[closeMenu]]">
-      <span slot="startIcon" class="oj-ux-ico-close"></span>
-      Close
-    </oj-button>
-  </div>
-  <div class="demo-padding demo-form-container">
-      <oj-list-view id="listviewimage" aria-label="Available products" data="[[NoticeList]]" gridlines.item="visible" class="demo-list-view oj-sm-padding-2x-vertical">
-        <template slot="itemTemplate" data-oj-as="item">
-          <li>
-            <oj-list-item-layout>
-              <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
-                <oj-bind-text id="notice_category" value="[[item.data.notice_category]]"></oj-bind-text>
-              </div>
-              <div class="oj-typography-body-md">
-                <oj-bind-text id="notice_name" value="[[item.data.notice_name]]"></oj-bind-text>
-              </div>
-              <div slot="tertiary" class="oj-typography-body-xs">
-                <oj-bind-text id="notice_description" value="[[item.data.notice_description]]"></oj-bind-text>
-              </div>
-            </oj-list-item-layout>
-          </li>
-        </template>
-      </oj-list-view>
-      <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
-         See all notifications ->
-      </oj-button>
-    </div>
-
-</oj-drawer-popup>
+      <oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px;">
+        <div class="demo-drawer-header">
+          <div id="endHeader">
+            <h6>Notifications</h6>
+          </div>
+          <oj-button id="endButtonCloser" display="icons" chroming="borderless" on-oj-action="[[closeMenu]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Close
+          </oj-button>
+        </div>
+        <div class="demo-padding demo-form-container">
+            <oj-list-view id="listviewimage" aria-label="Available products" data="[[NoticeList]]" gridlines.item="visible" class="demo-list-view oj-sm-padding-2x-vertical">
+              <template slot="itemTemplate" data-oj-as="item">
+                <li>
+                  <oj-list-item-layout>
+                    <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
+                      <oj-bind-text id="notice_category" value="[[item.data.notice_category]]"></oj-bind-text>
+                    </div>
+                    <div class="oj-typography-body-md">
+                      <oj-bind-text id="notice_name" value="[[item.data.notice_name]]"></oj-bind-text>
+                    </div>
+                    <div slot="tertiary" class="oj-typography-body-xs">
+                      <oj-bind-text id="notice_description" value="[[item.data.notice_description]]"></oj-bind-text>
+                    </div>
+                  </oj-list-item-layout>
+                </li>
+              </template>
+            </oj-list-view>
+            <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
+               See all notifications ->
+            </oj-button>
+          </div>
+      
+      </oj-drawer-popup>
 <!--   <footer class="oj-web-applayout-footer" role="contentinfo">
     <div class="oj-web-applayout-footer-item oj-web-applayout-max-width">
       <ul>

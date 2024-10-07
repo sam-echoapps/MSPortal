@@ -1,6 +1,6 @@
 define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
-     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable", "ojs/ojcheckboxset", "ojs/ojlabel", "ojs/ojlabelvalue", "ojs/ojactioncard"], 
+     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable", "ojs/ojcheckboxset", "ojs/ojlabel", "ojs/ojlabelvalue", "ojs/ojactioncard","ojs/ojselectcombobox"], 
     function (oj,ko,$, app, ArrayDataProvider, FilePickerUtils) {
 
         class AssetView {
@@ -15,14 +15,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.comments = ko.observable('');
                 self.department = ko.observable('');
 
-                self.departments = [
-                    {"label":"High","value":"High"},
-                    {"label":"Medium","value":"Medium"},
-                    {"label":"Low","value":"Low"}
-                ]
-                self.departmentList = new ArrayDataProvider(self.departments, {
-                    keyAttributes: 'value'
-                });
+
                 this.agreement = ko.observableArray();
 
                 self.documentText = ko.observable('');
@@ -84,6 +77,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.extraExist = ko.observable('');
                 self.updatedAt = ko.observable('');
                 self.currency = ko.observable('');
+                self.categoryList =  ko.observableArray([]);
+                self.category = ko.observable('');
+                self.DepartmentDet = ko.observableArray([]);
+                self.departmentFilter = ko.observable('');
+                self.StaffDet = ko.observableArray([]);
+                self.staff = ko.observable('');
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -133,11 +132,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (result) {
                             console.log(result)
-                            let data,data2;
+                            let data,data2,data3,data4,data5;
                             document.getElementById('loaderView').style.display='none';
                             data = result[0]
                             self.assetNumber("AS"+data[0][0])
                             self.assetName(data[0][2])
+                            self.category(data[0][4])
+                            self.departmentFilter(data[0][5])
+                            self.staff(data[0][6])
                             data2 = JSON.parse(result[1]);
                             console.log(data2)
                             self.have_bill(data2[2])
@@ -171,9 +173,34 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             // Get only the date part (YYYY-MM-DD)
                             let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
                             self.updatedAt(dateUpdatedOnly)
+                            data3= result[2]
+                            console.log(data3)
+                            if(data3.length !=0){
+                                for (var i = 0; i < data3.length; i++) {
+                                    self.categoryList.push({'value': data3[i][1],'label': data3[i][1]  });
+                                }
+                            }
+                            data4= result[3]
+                            console.log(data4)
+                            if(data4.length !=0){
+                                for (var i = 0; i < data4.length; i++) {
+                                    self.DepartmentDet.push({'value': data4[i][0],'label': data4[i][1]  });
+                                }
+                            }
+                            data5= result[4]
+                            console.log(data5)
+                            if(data5.length !=0){
+                                for (var i = 0; i < data5.length; i++) {
+                                    self.StaffDet.push({'value': data5[i][0],'label': data5[i][1]+" "+data5[i][2]+ " " +data5[i][3]  });
+                                }
+                            }
                         }  
                     });                
                 }
+                self.categoryListDet = new ArrayDataProvider(this.categoryList, { keyAttributes: "value"});
+                self.DepartmentList = new ArrayDataProvider(this.DepartmentDet, { keyAttributes: "value"});
+                self.StaffList = new ArrayDataProvider(this.StaffDet, { keyAttributes: "value"});
+
 
                 self.assetRemove = ()=>{
                     document.getElementById('loaderView').style.display='block';
@@ -197,36 +224,91 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
 
-                self.formSubmit = ()=>{
-                    const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
-                            let popup = document.getElementById("loaderPopup");
-                            popup.open();
-                            
-                            $.ajax({
-                                url: BaseURL+"/HRModuleAddHoliday",
-                                type: 'POST',
-                                data: JSON.stringify({
-                                    holiday_name : self.holidayName(),
-                                    holiday_date : self.holidayDate(),
-                                    comments : self.comments(),
-                                }),
-                                dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
-                                context: self,
-                                error: function (xhr, textStatus, errorThrown) {
-                                    console.log(textStatus);
-                                },
-                                success: function (data) {
-                                    document.querySelector('#openAddHoliday').close();
-                                    let popup = document.getElementById("loaderPopup");
-                                    popup.close();
-                                    let popup1 = document.getElementById("successView");
-                                    popup1.open();
-                                }
-                            })
-                        }
+                self.formSubmit = () => {
+                    const formValid = self._checkValidationGroup("formValidation");
+                
+                    // Validation for guarantee file
+                    if (self.have_guarantee() == 'Yes' && self.guaranteeFile() == '') {
+                        self.guaranteeManadatory('Upload');
+                    } else {
+                        self.guaranteeManadatory('');
                     }
+                
+                    // Validation for bill file
+                    if (self.have_bill_attach() == 'Yes' && self.billFile() == '') {
+                        self.billManadatory('Upload');
+                    } else {
+                        self.billManadatory('');
+                    }
+                   
+                    if (formValid && self.numError() == '' && self.typeErrorBill() == '' && self.typeErrorGuarantee() == '' && self.typeErrorExtra() == '' && self.billManadatory() == '' && self.guaranteeManadatory() == '') {
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                
+                        const processFileUpload = (file, callback) => {
+                            if (file != '') {
+                                const reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onload = () => {
+                                    callback(reader.result);  // This will pass the file content as base64
+                                };
+                            } else {
+                                callback(null);  // No file uploaded
+                            }
+                        };
+                
+                        // Process both files (bill and guarantee) asynchronously
+                        processFileUpload(self.fileBill(), (billFileContent) => {
+                            processFileUpload(self.fileGuarantee(), (guaranteeFileContent) => {
+                                processFileUpload(self.fileExtra(), (extraFileContent) => {
+                
+                                // Send AJAX request with both files
+                                $.ajax({
+                                    url: BaseURL + "/HRModuleUpdateAssetInfo",
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        assetId: sessionStorage.getItem("assetId"),
+                                        have_bill: self.have_bill(),
+                                        bill_number: self.billNumber(),
+                                        have_bill_attach: self.have_bill_attach(),
+                                        bill_file: self.billFile(),
+                                        have_guarantee: self.have_guarantee(),
+                                        guarantee_number: self.guaranteeNumber(),
+                                        have_guarantee_card: self.have_guarantee_card(),
+                                        guarantee_card_file: self.guaranteeFile(),
+                                        have_warrenty: self.have_warrenty(),
+                                        warrenty_end_date: self.warrentyEndDate(),
+                                        warrenty_reminder: self.warrentyReminder(),
+                                        total_amount: self.totalAmount(),
+                                        tax_included: self.selectedOptions(),
+                                        supporting_document : self.extraFile(),
+                                        closure_notes: self.notes(),
+                                        category : self.category(),
+                                        department : self.departmentFilter(),
+                                        owner : self.staff(),
+                                        bill_file_content: billFileContent,
+                                        guarantee_file_content: guaranteeFileContent,
+                                        extra_file_content: extraFileContent  
+                                    }),
+                                    dataType: 'json',
+                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    context: self,
+                                    error: function (xhr, textStatus, errorThrown) {
+                                        console.log(textStatus);
+                                    },
+                                    success: function (data) {
+                                        console.log(data);
+                                        popup.close();
+                                        let popup1 = document.getElementById("successView");
+                                        popup1.open();
+                                    }
+                                });
+                            });
+                        });
+                    });
+                    }
+                };
+
 
                 self.messageClose = ()=>{
                     location.reload();
@@ -424,6 +506,70 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.typeErrorExtra('The certificate must be a file of type: PNG, JPEG, JPG or PDF.')
         }
       }
+
+      self.previewClick = (e) => {
+        e.preventDefault(); // Prevent the default anchor click behavior
+        const documentLink = e.target.closest('a').getAttribute('data-document-link');
+        console.log(documentLink); // Log the document link to verify
+    
+        // // Display loader (optional)
+        // let popup = document.getElementById("loaderView");
+        // popup.open();
+    
+        $.ajax({
+            url: BaseURL + "/HRModuleDocView",
+            type: 'POST',
+            data: JSON.stringify({
+                fileName: documentLink
+            }),
+            dataType: 'json',
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(textStatus);
+            },
+            success: function (data) {
+                // Hide loader (optional)
+                //let popup = document.getElementById("loaderView");
+                //popup.close();
+    
+                var fileType = data[1];
+                var base64Code = data[0][0];
+                console.log(data);
+                if (fileType === "pdf") {
+                    var byteCharacters = atob(base64Code);
+                    var byteNumbers = new Array(byteCharacters.length);
+                    for (var i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    var byteArray = new Uint8Array(byteNumbers);
+                    var blob = new Blob([byteArray], { type: 'application/pdf' });
+    
+                    var blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                } else if (fileType === "jpeg" || fileType === "png") {
+                    // Create a Blob for the image
+                    var byteCharacters = atob(base64Code);
+                    var byteNumbers = new Array(byteCharacters.length);
+                    for (var i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    var byteArray = new Uint8Array(byteNumbers);
+                    var blob = new Blob([byteArray], { type: 'image/' + fileType });
+                
+                    // Generate a URL for the Blob
+                    var blobUrl = URL.createObjectURL(blob);
+                
+                    // Open the image in a new tab
+                    window.open(blobUrl, '_blank');
+                } else {
+                    self.offerFileMessage("File not found");
+                    setTimeout(() => {
+                        self.offerFileMessage("");
+                    }, 3000);
+                }
+            }
+        });
+    };  
+
 
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {
