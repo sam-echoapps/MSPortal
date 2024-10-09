@@ -1,6 +1,6 @@
 define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider","ojs/ojlistdataproviderview","ojs/ojdataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
-     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojactioncard","ojs/ojavatar"], 
+     "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojactioncard","ojs/ojavatar", "ojs/ojradioset"], 
     function (oj,ko,$, app, ArrayDataProvider,ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
 
         class AssetManager {
@@ -47,7 +47,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userrole = ko.observable(userrole);
 
                 self.notificationCount = ko.observable(0); 
-                
+
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
@@ -101,6 +101,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(textStatus);
                             },
                             success: function (data) {
+                                let pono=null;
                                 console.log(data)
                                 data=data[0]
                                 console.log(data.length)
@@ -108,12 +109,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 document.getElementById('actionView').style.display='block';
                                 if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
+                                    if(data[i][1] != null){
+                                        pono = "PO"+ data[i][1]
+                                    }
                                     self.AssetDet.push({
                                         'slno': i+1,
                                         'assetId':data[i][0], 
                                         'asset_no': "AS" + data[i][0],                                    
                                         'asset_name':  data[i][2],
-                                        'po_no':"PO"+ data[i][1], 
+                                        'po_no': pono, 
                                         'product_name': data[i][3],
                                     });
                                 }
@@ -157,7 +161,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.router.go({path:'assetView'})
                 }
 
-               
+                self.goToAssetView = (event,data)=>{
+                    var clickedRowId = data.item.data.assetId
+                    sessionStorage.setItem("assetId", clickedRowId);
+                    self.router.go({path:'assetAddView'})
+                }
 
                    
                 self._checkValidationGroup = (value) => {
@@ -176,6 +184,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.querySelector('#openAddNotice').open();
                 }
                
+                self.addAsset = (event,data)=>{
+                    self.router.go({path:'assetAdd'})
+                }
+
                 
 
                 self.rewriteUrl=(url)=> {

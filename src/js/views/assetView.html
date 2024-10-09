@@ -141,7 +141,7 @@
                 </div>  
                  <div class="oj-flex">
                     <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
-                        <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
+                        <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" on-value-changed="[[priceValidate]]" required="true" readonly="true"></oj-input-text>
 
                         <div style="color:red;margin-top:-20px">
                             <oj-bind-text value="[[numError]]"></oj-bind-text>
@@ -151,7 +151,7 @@
                     </br>
                     <oj-bind-if test="[[currency() == 'INR']]">
                         <div style="margin: -20px 0px;">
-                        <oj-radioset id="rowDirectionEnabledRadioset" value="{{selectedOptions}}" class="oj-choice-direction-row" label-hint="GST Included">
+                        <oj-radioset id="rowDirectionEnabledRadioset" value="{{selectedOptions}}" class="oj-choice-direction-row" label-hint="GST Included" readonly="true">
                             <oj-option value="No">No</oj-option>
                             <oj-option value="Yes">Yes</oj-option>
                         </oj-radioset>
@@ -205,22 +205,22 @@
                  
                  --------------------------------------------------------------------------------------------------------------------------------------------
                  <oj-combobox-one label-hint="Category" label-edge="inside" options="{{categoryList}}"
-                 value="{{category}}" required="true">
+                 value="{{selectedCategory}}" required="true">
                  </oj-combobox-one>
-                 <oj-select-single 
+                 <oj-combobox-one 
                  label-hint="Select Department"
                  label-edge="inside" 
-                 data="{{DepartmentList}}" 
-                 value="{{departmentFilter}}"
+                 options="{{DepartmentList}}" 
+                 value="{{selectedDepartment}}"
                  required>
-               </oj-select-single>
-               <oj-select-single 
+               </oj-combobox-one>
+               <oj-combobox-one 
                label-hint="Select Owner"
                label-edge="inside" 
-               data="{{StaffList}}" 
-               value="{{staff}}"
+               options="{{StaffList}}" 
+               value="{{owner_name}}"
                required>
-                </oj-select-single>
+                </oj-combobox-one>
                 </oj-form-layout>
             <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
                 <oj-button id="save" chroming="borderless" on-oj-action="[[formSubmit]]" 

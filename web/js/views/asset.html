@@ -96,7 +96,7 @@
         </div>
     </div>
     <div class="oj-flex-item oj-md-padding-2x-horizontal ">
-        <oj-button chroming="solid"  on-oj-action="" class="oj-sm-padding-3x-vertical">
+        <oj-button chroming="solid"  on-oj-action="[[addAsset]]" class="oj-sm-padding-3x-vertical">
           <i class="fa-solid "></i>&nbsp;Add Asset
         </oj-button>
       </div>
@@ -118,9 +118,16 @@
             "headerText": "Product Name", "field": "product_name", "id": "product_name"}
             ]' style='width: 100%;' class="demo-table-container">
             <template slot="actionTemplate" data-oj-as="cell">
+              <oj-bind-if test="[[cell.row.po_no  != null]]">
                   <a :id="[[cell.row.asset_no]]" on-click= "[[goToAsset]]">
                     <oj-bind-text value="[[cell.row.asset_no]]"></oj-bind-text>
                 </a>
+              </oj-bind-if>
+              <oj-bind-if test="[[cell.row.po_no  == null]]">
+                <a :id="[[cell.row.asset_no]]" on-click= "[[goToAssetView]]">
+                  <oj-bind-text value="[[cell.row.asset_no]]"></oj-bind-text>
+              </a>
+            </oj-bind-if>
              </template>
             </oj-table>
         </div>

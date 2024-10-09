@@ -44,6 +44,25 @@
     justify-content: space-between;
     align-items: center;
   }
+  .red-dot {
+    position: absolute; /* Position the dot relative to the noticeItem */
+    top: 50%; /* Center vertically */
+    right: 10px; /* Adjust as needed to position it at the end */
+    transform: translateY(-50%); /* Center the dot vertically */
+    width: 8px; /* Size of the dot */
+    height: 8px; /* Size of the dot */
+    background-color: red; /* Color of the dot */
+    border-radius: 50%; /* Make it a circle */
+  }
+
+
+  .unread-notification {
+      position: relative; /* Ensure the dot is positioned relative to the notification item */
+      background-color: rgb(255, 255, 255); /* Background color for unread notifications */
+      border-radius: 5px; /* Slightly rounded corners */
+      padding: 4px; /* Add padding for better spacing */
+      margin: 5px 0; /* Margin for spacing between notifications */
+  }
 </style>
 
 </head>
@@ -100,6 +119,7 @@
                   <oj-bind-if test="[[userrole() == 'employee' ]]">
                     <oj-option id="myProfile" value="myProfile">My Profile</oj-option> 
                   </oj-bind-if> -->
+                  <oj-option id="myProfile" value="myProfile">Profile</oj-option>
                   <oj-option id="out" value="out">Sign Out</oj-option>
                 </oj-menu>
               </oj-menu-button>
@@ -140,41 +160,24 @@
           </oj-module>
         </div>
       </div>
-      <!-- Popup Drawer -->
-      <oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px;">
-        <div class="demo-drawer-header">
+     <!-- Popup Drawer -->
+     <oj-drawer-popup id="endDrawer" class="demo-drawer-end" edge="end" opened="{{endOpened}}" style="width: 300px; "><!--background-color: rgb(255, 250, 250);-->
+      <div class="demo-drawer-header">
           <div id="endHeader">
-            <h6>Notifications</h6>
+              <h6>Notifications</h6>
           </div>
           <oj-button id="endButtonCloser" display="icons" chroming="borderless" on-oj-action="[[closeMenu]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Close
+              <span slot="startIcon" class="oj-ux-ico-close"></span>
+              Close
           </oj-button>
-        </div>
-        <div class="demo-padding demo-form-container">
-            <oj-list-view id="listviewimage" aria-label="Available products" data="[[NoticeList]]" gridlines.item="visible" class="demo-list-view oj-sm-padding-2x-vertical">
-              <template slot="itemTemplate" data-oj-as="item">
-                <li>
-                  <oj-list-item-layout>
-                    <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
-                      <oj-bind-text id="notice_category" value="[[item.data.notice_category]]"></oj-bind-text>
-                    </div>
-                    <div class="oj-typography-body-md">
-                      <oj-bind-text id="notice_name" value="[[item.data.notice_name]]"></oj-bind-text>
-                    </div>
-                    <div slot="tertiary" class="oj-typography-body-xs">
-                      <oj-bind-text id="notice_description" value="[[item.data.notice_description]]"></oj-bind-text>
-                    </div>
-                  </oj-list-item-layout>
-                </li>
-              </template>
-            </oj-list-view>
-            <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
-               See all notifications ->
-            </oj-button>
-          </div>
-      
-      </oj-drawer-popup>
+      </div>
+      <div class="demo-padding demo-form-container">
+          <ul id="notificationList" class="demo-list-view oj-sm-padding-2x-vertical" style="list-style-type: none; padding: 10px;"></ul>
+        <oj-button id="moreButton" chroming="borderless" on-oj-action="[[viewMore]]">
+            See all notifications ->
+        </oj-button>
+    </div>      
+  </oj-drawer-popup>
 <!--   <footer class="oj-web-applayout-footer" role="contentinfo">
     <div class="oj-web-applayout-footer-item oj-web-applayout-max-width">
       <ul>

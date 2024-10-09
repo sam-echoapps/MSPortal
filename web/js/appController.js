@@ -91,38 +91,75 @@ return new oj.ListDataProviderView(arrayDataProvider);
 });
 
 self.getAllNotification = function() {
-self.NoticeDet([]);
-$.ajax({
-url: BaseURL+"/HRModuleGetStaffAllNotification",
-type: 'POST',
-data: JSON.stringify({
- userId: sessionStorage.getItem("userId"),
-}),
-dataType: 'json',
-timeout: sessionStorage.getItem("timeInetrval"),
-context: self,
-
-error: function (xhr, textStatus, errorThrown) {
- console.log(textStatus);
-},
-success: function (data) {
- data = JSON.parse(data[0]);
- if(data.length!=0){
-   for (var i = 0; i < data.length; i++) {
-     self.NoticeDet.push({
-         'slno': i + 1,
-         //'id': data[i][1],
-         'notice_category': data[i][1] || ' ',
-         'notice_name': data[i][2],
-         'notice_description': data[i][3],
-     });
- }
-} 
-}  
+  const notificationList = document.getElementById('notificationList');
+  notificationList.innerHTML = ''; 
+  $.ajax({
+      url: BaseURL + "/HRModuleGetStaffAllNotification",
+      type: 'POST',
+      data: JSON.stringify({
+          userId: sessionStorage.getItem("userId"),
+      }),
+      dataType: 'json',
+      timeout: sessionStorage.getItem("timeInetrval"),
+      context: self,
+      error: function (xhr, textStatus, errorThrown) {
+          console.log(textStatus);
+      },
+      success: function (data) {
+        data = JSON.parse(data[0]);
+        //console.log(data);
+        if (data.length !== 0) {
+            for (var i = 0; i < data.length; i++) {
+                var status = data[i][5]; 
+    
+                const noticeItem = document.createElement('li');
+                noticeItem.classList.add('oj-list-item-layout'); 
+                
+                if (status === 'unread') {
+                    noticeItem.classList.add('unread-notification');
+                    
+                    const redDot = document.createElement('span');
+                    redDot.classList.add('red-dot');
+                    noticeItem.appendChild(redDot); 
+    
+                    noticeItem.innerHTML += `
+                        <div>
+                            <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
+                                <strong>${data[i][1] || ' '}</strong> <!-- Bold part for unread -->
+                            </div>
+                            <div class="oj-typography-body-md">
+                                <strong>${data[i][2]}</strong> <!-- Bold part for unread -->
+                            </div>
+                            <div slot="tertiary" class="oj-typography-body-xs">
+                                ${data[i][3]}
+                            </div>
+                        </div>`;
+                } else {
+                    noticeItem.classList.add('read-notification'); 
+                    noticeItem.innerHTML += `
+                        <div>
+                            <div slot="overline" class="oj-typography-body-xs oj-text-color-secondary">
+                                ${data[i][1] || ' '}
+                            </div>
+                            <div class="oj-typography-body-md">
+                                ${data[i][2]}
+                            </div>
+                            <div slot="tertiary" class="oj-typography-body-xs">
+                                ${data[i][3]}
+                            </div>
+                        </div>`;
+                }
+                notificationList.appendChild(noticeItem);
+    
+                const hr = document.createElement('hr');
+                hr.style.border = '1px solid #eee'; 
+                hr.style.margin = '10px 0'; 
+                notificationList.appendChild(hr);
+            }
+        }
+    }
 });
-}
-
-self.NoticeList = new ArrayDataProvider(this.NoticeDet, { keyAttributes: "id"});
+}; 
 
 self.viewMore = function (event, data) {
  self.closeMenu(); 
@@ -178,6 +215,8 @@ if(sessionStorage.getItem('userRole')=='employee'){
    { path: 'notice', detail : {label: 'Notice',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
 ];  
 }
 else if(sessionStorage.getItem('userRole')=='junior manager'){
@@ -241,6 +280,8 @@ else if(sessionStorage.getItem('userRole')=='senior manager'){
    { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
    { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
 ];  
 }
 else if(sessionStorage.getItem('userRole')=='senior hr'){
@@ -279,6 +320,8 @@ else if(sessionStorage.getItem('userRole')=='senior hr'){
    { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
    { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
 ];  
 }
 else if(sessionStorage.getItem('userRole')=='junior hr'){
@@ -453,6 +496,8 @@ else{
    { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'asset', detail : {label: 'Asset Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
  ];
 }
 
