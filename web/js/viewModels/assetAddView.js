@@ -285,7 +285,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                                 // Send AJAX request with both files
                                 $.ajax({
-                                    url: BaseURL + "/HRModuleUpdateAssetInfo",
+                                    url: BaseURL + "/HRModuleUpdateAddAssetInfo",
                                     type: 'POST',
                                     data: JSON.stringify({
                                         assetId: sessionStorage.getItem("assetId"),

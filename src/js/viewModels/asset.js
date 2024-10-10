@@ -40,7 +40,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.tabData = [
                     { id: "allAsset", label: "All Assets" },
-                    { id: "companyNotice", label: "Get Report" },
+                    { id: "report", label: "Get Report" },
                 ];
 
                 let userrole = sessionStorage.getItem("userRole")
@@ -80,10 +80,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.selectedTabAction1 = ko.computed(() => { 
                     if(self.selectedTab() == 'allAsset'){
                         $("#allAsset").show();
-                        $("#companyNotice").hide();
-                    }else if(self.selectedTab() == 'companyNotice'){
+                        $("#report").hide();
+                    }else if(self.selectedTab() == 'report'){
                         $("#allAsset").hide();
-                        $("#companyNotice").show();
+                        $("#report").show();
                     }
                     });
 

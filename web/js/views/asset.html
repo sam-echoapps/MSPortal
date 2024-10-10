@@ -18,8 +18,8 @@
 </div>
 
 
-<div id="companyNotice" style="display:none">
-<div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
+<div id="report" class="oj-panel oj-xl-margin-4x" style="display:none;margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+  <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
         <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
         <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
@@ -62,14 +62,6 @@
         </div>
       </oj-bind-if>
     </div> 
-
-        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
-            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-input-text  label-hint="Search" label-edge="inside"
-            placeholder="Search.."   clear-icon="always">
-            </oj-input-text>
-        </div>
-        </div>
         
 
 <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
@@ -97,7 +89,7 @@
     </div>
     <div class="oj-flex-item oj-md-padding-2x-horizontal ">
         <oj-button chroming="solid"  on-oj-action="[[addAsset]]" class="oj-sm-padding-3x-vertical">
-          <i class="fa-solid "></i>&nbsp;Add Asset
+          <i class="fa-solid fa-plus"></i>&nbsp;Add Asset
         </oj-button>
       </div>
     </div>

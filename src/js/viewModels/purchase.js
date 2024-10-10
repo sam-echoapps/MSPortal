@@ -48,6 +48,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.staffId = ko.observable();  
                 self.numError = ko.observable('');
                 self.currency = ko.observable('');
+                self.paymentStatus = ko.observable('');
 
                 self.tabData = [
                     { id: "open", label: "Open PO" },
@@ -226,6 +227,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     console.log(data[i][1])
+                                    let dateCreated = new Date(data[i][8]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     self.PurchaseDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -237,9 +241,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'vendor_po_doc': data[i][5], 
                                         'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
                                         'status': data[i][7],
-                                        'created_date': data[i][8],
+                                        'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
-                                        'ordered_by': data[i][10],                                   
+                                        'ordered_by': data[i][10],    
+                                        'payment_status': data[i][11],                                                                  
                                     });
                                     
                                 }
@@ -272,6 +277,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     console.log(data[i][1])
+                                    let dateCreated = new Date(data[i][8]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     self.PurchaseCloseDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -283,9 +291,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'vendor_po_doc': data[i][5], 
                                         'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
                                         'status': data[i][7],
-                                        'created_date': data[i][8],
+                                        'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
-                                        'ordered_by': data[i][10],                                   
+                                        'ordered_by': data[i][10], 
+                                        'payment_status': data[i][11],                                                                                                    
                                     });
                                     
                                 }
@@ -574,6 +583,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.editEstimatedPrice(data[6])
                             self.editStatus(data[7])
                             self.deniedNotes(data[8])
+                            self.paymentStatus(data[9])
                         }
                     });
                 };
@@ -778,6 +788,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     console.log(data[i][1])
+                                    let dateCreated = new Date(data[i][8]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     let totalAmount = data[i][11] ? data[i][11] + " " + sessionStorage.getItem("currency") : '';
                                     self.PurchaseReportDet.push({
                                         'slno': i+1,
@@ -790,10 +803,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'vendor_po_doc': data[i][5], 
                                         'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
                                         'status': data[i][7],
-                                        'created_date': data[i][8],
+                                        'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
                                         'ordered_by': data[i][10],
-                                        'total_amount': totalAmount,                                   
+                                        'total_amount': totalAmount,  
+                                        'payment_status': data[i][12],                                                                                                                                     
                                     });
 
                                     var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6] + " " +sessionStorage.getItem("currency"),data[i][11], data[i][8], data[i][7] ]; 
@@ -923,7 +937,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'status': data[i][7],
                                         'created_date': data[i][8],
                                         'updated_at': data[i][9], 
-                                        'ordered_by': data[i][10],                                   
+                                        'ordered_by': data[i][10],    
+                                        'payment_status': data[i][11],                                                                  
                                     });
                                     
                                 }

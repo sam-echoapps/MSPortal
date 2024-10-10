@@ -39,27 +39,31 @@
 
 <div id="open">
 <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
-    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-space-between" style="margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
-        <oj-button chroming="solid"  on-oj-action="[[addPurchase]]" class="oj-sm-padding-3x-vertical">
-            <i class="fa-solid fa-plus"></i>&nbsp;Add Purchase
-          </oj-button>
-          <div>
-          <oj-input-date id="from" label-hint="Select From date" value="{{fromDatePurchase}}" date-picker="[[datePicker]]"
-          class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
-          </oj-input-date>
-            <oj-input-date id="to" label-hint="Select To date" value="{{toDatePurchase}}" date-picker="[[datePicker]]"
-                class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>&nbsp;&nbsp;
-            <oj-button id="show" chroming="borderless" on-oj-action="[[showPurchaseData]]" 
-        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top: 9px;">
-        <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
-    </oj-button>
-            </div>
-          <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+  <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+     <oj-input-date id="from" label-hint="Select From date" value="{{fromDatePurchase}}" date-picker="[[datePicker]]"
+      class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
+      </oj-input-date>
+        <oj-input-date id="to" label-hint="Select To date" value="{{toDatePurchase}}" date-picker="[[datePicker]]"
+            class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>&nbsp;&nbsp;
+        <oj-button id="show" chroming="borderless" on-oj-action="[[showPurchaseData]]" 
+    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top: 9px;">
+    <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+  </oj-button>
+    </div>
+    <div class="oj-md-padding-2x-horizontal oj-sm-padding-5x-vertical">
+       <oj-button chroming="solid"  on-oj-action="[[addPurchase]]" class="oj-sm-padding-3x-vertical" style="margin-top: -20px;">
+    <i class="fa-solid fa-plus"></i>&nbsp;Add Purchase
+  </oj-button>
+    </div>
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
             <oj-input-text id="filter" label-hint="Search" label-edge="inside"
-            placeholder="Search.." on-raw-value-changed="[[handleValuePurchase]]" value="{{filter}}" clear-icon="always">
-            </oj-input-text>
+        placeholder="Search.." on-raw-value-changed="[[handleValuePurchase]]" value="{{filter}}" clear-icon="always">
+        </oj-input-text>
         </div>
-      </div> 
+    </div>
+</div>
 
       <oj-dialog id="openAddPurchase" class="popupPurchase" dialog-title="Add Purchase" modality="modeless" drag-affordance="title-bar"
       cancel-behavior="[[CancelBehaviorOpt]]">
@@ -97,17 +101,15 @@
     { "headerClassName" : "table-header-style",
       "headerText": "Purpose", "field": "purpose", "id": "purpose" },
     { "headerClassName" : "table-header-style",
-      "headerText": "Vendor PO No.", "field": "vendor_po_no", "id": "vendor_po_no" },
-    { "headerClassName" : "table-header-style",
-    "headerText": "Vendor PO Document", "id": "vendor_po_doc",  "field": "vendor_po_doc","template": "documentTemplate"},
-    { "headerClassName" : "table-header-style",
       "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
     { "headerClassName" : "table-header-style",
       "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
-            "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate", "width" : "200px"}]' style='width: 100%;' class="demo-table-container">
+    "headerText": "Payment Status", "field": "payment_status", "id": "payment_status", "template": "statusTemplate" },
+    { "headerClassName" : "table-header-style",
+            "headerText": "Order Status", "field": "status", "id": "status", "template": "bgTemplate", "width" : "200px"}]' style='width: 100%;' class="demo-table-container">
      <template slot="actionTemplate" data-oj-as="cell">
       <oj-bind-if test="[[cell.row.status != 'Denied' && cell.row.status != 'Approved' ]]">
         <a :id="[[cell.row.pono]]" on-click= "[[editPurchase]]">
@@ -179,15 +181,13 @@
       </oj-bind-if>
         </oj-bind-if>
     </template>
-    <template slot="documentTemplate" data-oj-as="cell">
-      <oj-bind-if test="[[cell.row.vendor_po_doc]]">
-        <a :data-document-link="[[cell.row.vendor_po_doc]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
-          <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
-        </a>
+    <template slot="statusTemplate" data-oj-as="cell">
+      <oj-bind-if test="[[cell.row.payment_status == 'Unpaid' ]]">
+          <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
       </oj-bind-if>
-        <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
-          <span>N/A</span>
-        </oj-bind-if>
+      <oj-bind-if test="[[cell.row.payment_status == 'Paid' ]]">
+          <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+      </oj-bind-if>
     </template>
     </oj-table>
 </div>
@@ -219,15 +219,13 @@
         { "headerClassName" : "table-header-style",
           "headerText": "Purpose", "field": "purpose", "id": "purpose" },
         { "headerClassName" : "table-header-style",
-          "headerText": "Vendor PO No.", "field": "vendor_po_no", "id": "vendor_po_no" },
-        { "headerClassName" : "table-header-style",
-        "headerText": "Vendor PO Document", "id": "vendor_po_doc",  "field": "vendor_po_doc","template": "documentTemplate"},
-        { "headerClassName" : "table-header-style",
           "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
         { "headerClassName" : "table-header-style",
           "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
         { "headerClassName" : "table-header-style",
         "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Payment Status", "field": "payment_status", "id": "payment_status", "template": "statusTemplate" },
         { "headerClassName" : "table-header-style",
                 "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
          <template slot="bgTemplate" data-oj-as="cell">
@@ -244,15 +242,13 @@
             <div class="oj-table-element-reject"><oj-bind-text value="Closed"></oj-bind-text></div>
         </oj-bind-if>
         </template>
-        <template slot="documentTemplate" data-oj-as="cell">
-          <oj-bind-if test="[[cell.row.vendor_po_doc]]">
-            <a :data-document-link="[[cell.row.vendor_po_doc]]" on-click="[[previewClick]]" target="_blank" style="color:#6a73fa;">
-              <i class="fa-solid fa-eye" style="font-size: 20px;"></i>
-            </a>
+        <template slot="statusTemplate" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.payment_status == 'Unpaid' ]]">
+              <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
           </oj-bind-if>
-            <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
-              <span>N/A</span>
-            </oj-bind-if>
+          <oj-bind-if test="[[cell.row.payment_status == 'Paid' ]]">
+              <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+          </oj-bind-if>
         </template>
         </oj-table>
     </div>
@@ -334,6 +330,8 @@
   { "headerClassName" : "table-header-style",
   "headerText": "Created Date", "field": "created_date", "id": "created_date" },
   { "headerClassName" : "table-header-style",
+  "headerText": "Payment Status", "field": "payment_status", "id": "payment_status", "template": "statusTemplate" },
+  { "headerClassName" : "table-header-style",
           "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
    <template slot="bgTemplate" data-oj-as="cell">
     <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
@@ -358,6 +356,14 @@
       <oj-bind-if test="[[cell.row.vendor_po_doc =='']]">
         <span>N/A</span>
       </oj-bind-if>
+  </template>
+  <template slot="statusTemplate" data-oj-as="cell">
+    <oj-bind-if test="[[cell.row.payment_status == 'Unpaid' ]]">
+        <div class="oj-table-element-medium"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+    </oj-bind-if>
+    <oj-bind-if test="[[cell.row.payment_status == 'Paid' ]]">
+        <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+    </oj-bind-if>
   </template>
   </oj-table>
 </div>
@@ -428,9 +434,10 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
           <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" readonly="true"></oj-input-text>
         </oj-bind-if>
+        <oj-input-text id="paymentStatus" label-hint="Payment Status" value="{{paymentStatus}}" readonly="true"></oj-input-text>
           <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
             <oj-bind-if test="[[staffId() != userId() || userrole() == 'director']]">
-            <oj-select-single required id="status" label-hint="Status" label-edge="inside"
+            <oj-select-single required id="status" label-hint="Order Status" label-edge="inside"
             data="[[statusList]]" value="{{editStatus}}" ></oj-select-single>        
           </oj-bind-if>
           </oj-bind-if>
@@ -480,9 +487,10 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           <div class="oj-text-color-danger"><oj-bind-text value='[[editTypeError]]'></oj-bind-text></div>
           <oj-input-text id="editEstimatedPrice" label-hint="Estimated Price" required="true" value="{{editEstimatedPrice}}" readonly="true"></oj-input-text>
         </oj-bind-if>
+        <oj-input-text id="paymentStatus" label-hint="Payment Status" value="{{paymentStatus}}" readonly="true"></oj-input-text>
           <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
             <oj-bind-if test="[[staffId() != userId() || userrole() == 'director']]">
-            <oj-select-single required id="status" label-hint="Status" label-edge="inside"
+            <oj-select-single required id="status" label-hint="Order Status" label-edge="inside"
             data="[[statusList]]" value="{{editStatus}}" readonly="true"></oj-select-single>        
           </oj-bind-if>
           </oj-bind-if>
