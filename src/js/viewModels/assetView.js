@@ -236,17 +236,31 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.formSubmit = () => {
+                    //alert(self.category())
+                    //alert(self.selectedCategory())
+
+                    //alert(self.departmentFilter())
+                    //alert(self.selectedDepartment())
+                    
+                    //alert(self.staff())
+                    //alert(self.owner_name())
+                   
                     const categoryValue = self.selectedCategory();
                     if (Number.isInteger(Number(categoryValue))) {
                         self.selectedCategory(categoryValue);
                     }
-                    const departmentValue = self.departmentFilter();
+                    const departmentValue = self.selectedDepartment();
                     if (Number.isInteger(Number(departmentValue))) {
                         self.selectedDepartment(departmentValue);
+                    }else{
+                        self.selectedDepartment(self.departmentFilter());
                     }
-                    const staffValue = self.staff();
+
+                    const staffValue = self.owner_name();
                     if (Number.isInteger(Number(staffValue))) {
                         self.owner_name(staffValue);
+                    }else{
+                        self.owner_name(self.staff())
                     }
                     const formValid = self._checkValidationGroup("formValidation");
                     // Validation for guarantee file

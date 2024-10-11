@@ -19,7 +19,7 @@
 <oj-validation-group id="formValidation" class="form-container" role="group">
     <div id="form-container">
         <oj-form-layout id="purchase-information" class="form" direction="row" max-columns="1">
-            <oj-input-text id="lineManager" label-hint="Line Manager Limit (Must not exceed 50,000.)" required="true" value="{{lineManager}}" on-value-changed="[[purchaseLimitFill]]"></oj-input-text>
+            <oj-input-text id="lineManager" label-hint="Line Manager Limit (can only go up to 50,000.)" required="true" value="{{lineManager}}" on-value-changed="[[purchaseLimitFill]]"></oj-input-text>
             <div style="color:red;margin-top:-40px">
                 <oj-bind-text value="[[limitError]]"></oj-bind-text>
             </div>
