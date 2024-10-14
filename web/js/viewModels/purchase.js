@@ -102,7 +102,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.priceMissing = ko.observable('');
 
-
+                self.totalAmountHeaderText = ko.observable("");
+                self.currencyType = ko.observable("");
+                self.estimatedAmountHeaderText = ko.observable("");
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
@@ -222,6 +224,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(sessionStorage.getItem("currency") == null){
                                 location.reload()
                             }
+                            if(sessionStorage.getItem("currency") =='INR'){
+                                self.currencyType('(₹)')
+                            }else if(sessionStorage.getItem("currency") =='USD'){
+                                self.currencyType('($)')
+                            }else if(sessionStorage.getItem("currency") =='GBP'){
+                                self.currencyType('(£)')
+                            }
+                            self.estimatedAmountHeaderText('Estimated Amount' + self.currencyType())
+                            self.totalAmountHeaderText('Total Amount' + self.currencyType())
                             document.getElementById('loaderView').style.display='none';
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
@@ -239,7 +250,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
                                         'vendor_po_doc': data[i][5], 
-                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'estimated_price': data[i][6],
                                         'status': data[i][7],
                                         'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
@@ -289,7 +300,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
                                         'vendor_po_doc': data[i][5], 
-                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'estimated_price': data[i][6],
                                         'status': data[i][7],
                                         'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
@@ -777,6 +788,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                             console.log(data)
+                            let totalEstimatedSum = 0;
                             document.getElementById('loaderView').style.display='none';
                             if(data[0]!="No data found"){
                             data = JSON.parse(data);
@@ -791,7 +803,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     let dateCreated = new Date(data[i][8]);
                                     // Get only the date part (YYYY-MM-DD)
                                     let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
-                                    let totalAmount = data[i][11] ? data[i][11] + " " + sessionStorage.getItem("currency") : '';
+                                    //let totalAmount = data[i][11] ? data[i][11] + " " + sessionStorage.getItem("currency") : '';
+                                    let totalAmount = data[i][11]
+                                    let total_estimated_amount = parseFloat(data[i][6])
                                     self.PurchaseReportDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -801,7 +815,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
                                         'vendor_po_doc': data[i][5], 
-                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'estimated_price': data[i][6],
                                         'status': data[i][7],
                                         'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
@@ -809,11 +823,31 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'total_amount': totalAmount,  
                                         'payment_status': data[i][12],                                                                                                                                     
                                     });
+                                    totalEstimatedSum += total_estimated_amount;
 
-                                    var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6] + " " +sessionStorage.getItem("currency"),data[i][11], data[i][8], data[i][7] ]; 
+                                    var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6],data[i][11], data[i][8], data[i][7] ]; 
                                     csvContent += rowData.join(',') + '\n';
                                     
                                 }
+                                self.PurchaseReportDet.push({
+                                    'slno': '',
+                                    'id': '',
+                                    'pono': '', 
+                                    'staff_id': '',
+                                    'item_name': '',
+                                    'purpose': '',
+                                    'vendor_po_no': '', 
+                                    'vendor_po_doc': '', 
+                                    'estimated_price': '<strong>' + totalEstimatedSum.toFixed(2) + '</strong>',
+                                    'status': '',
+                                    'created_date': '',
+                                    'updated_at': '', 
+                                    'ordered_by': '',
+                                    'total_amount': '',
+                                    'payment_status': '',  
+                                });
+                                csvContent += [ '', '', '', '',totalEstimatedSum.toFixed(2),'', '', '' ].join(',') + '\n'; 
+
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
                                 var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
@@ -924,6 +958,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     console.log(data[i][1])
+                                    let dateCreated = new Date(data[i][8]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     self.PurchaseDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -933,9 +970,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'purpose': data[i][3],
                                         'vendor_po_no': data[i][4], 
                                         'vendor_po_doc': data[i][5], 
-                                        'estimated_price': data[i][6] + " " +sessionStorage.getItem("currency"),
+                                        'estimated_price': data[i][6],
                                         'status': data[i][7],
-                                        'created_date': data[i][8],
+                                        'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
                                         'ordered_by': data[i][10],    
                                         'payment_status': data[i][11],                                                                  

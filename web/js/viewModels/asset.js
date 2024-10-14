@@ -332,7 +332,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data = JSON.parse(data);
                         console.log(data)
                         var csvContent = '';
-                            var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Total Amount'];
+                            var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Total Amount'];
                             csvContent += headers.join(',') + '\n';
                         if(data.length!=0){
                             for (var i = 0; i < data.length; i++) {
@@ -343,7 +343,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 owner_name=""
                             }
                             let total_amount = parseFloat(data[i][10]) || 0; // Assuming data[i][10] holds total_amount
-
+                            let dateCreated = new Date(data[i][11]);
+                            // Get only the date part (YYYY-MM-DD)
+                            let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                             self.AssetReportDet.push({
                                 'slno': i+1,
                                 'asset_no': "AS"+data[i][0],
@@ -351,10 +353,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 'department': data[i][8],
                                 'owner': owner_name,
                                 'category': data[i][9],
-                                'total_amount': data[i][10]                                                                                                                                     
+                                'created_date': dateCreatedOnly,                                                                                                                                       
+                                'total_amount': data[i][10]
                             });
                             totalAmountSum += total_amount;
-                                var rowData = [i+1, "AS"+data[i][0],data[i][1],data[i][8],owner_name,data[i][9],data[i][10] ]; 
+                                var rowData = [i+1, "AS"+data[i][0],data[i][1],data[i][8],owner_name,data[i][9],dateCreatedOnly,data[i][10] ]; 
                                 csvContent += rowData.join(',') + '\n';
                                 
                             }
@@ -366,9 +369,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 'department': '',
                                 'owner': '',
                                 'category': '',
+                                'created_date': '',
                                 'total_amount': totalAmountSum.toFixed(2)  // Sum of total_amounts
                             });
-                            csvContent += [ '', '', '', '', '', '', totalAmountSum.toFixed(2) ].join(',') + '\n'; 
+                            csvContent += [ '', '', '', '', '', '','', totalAmountSum.toFixed(2) ].join(',') + '\n'; 
 
                             var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                             var today = new Date();
@@ -379,7 +383,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                              }
                              else{
                                 var csvContent = '';
-                                var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Total Amount'];
+                                var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Total Amount'];
                                 csvContent += headers.join(',') + '\n';
                                 var rowData = []; 
                                 csvContent += rowData.join(',') + '\n';

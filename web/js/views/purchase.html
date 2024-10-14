@@ -101,7 +101,7 @@
     { "headerClassName" : "table-header-style",
       "headerText": "Purpose", "field": "purpose", "id": "purpose" },
     { "headerClassName" : "table-header-style",
-      "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+      "field": "estimated_price", "id": "estimated_price", "headerTemplate": "estimatedAmountHeaderTemplate" },
     { "headerClassName" : "table-header-style",
       "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
     { "headerClassName" : "table-header-style",
@@ -189,6 +189,9 @@
           <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
       </oj-bind-if>
     </template>
+    <template slot="estimatedAmountHeaderTemplate">
+      <oj-bind-text value="[[estimatedAmountHeaderText]]"></oj-bind-text>
+  </template>
     </oj-table>
 </div>
 </div>
@@ -218,8 +221,8 @@
           "headerClassName" : "table-header-style"	 },
         { "headerClassName" : "table-header-style",
           "headerText": "Purpose", "field": "purpose", "id": "purpose" },
-        { "headerClassName" : "table-header-style",
-          "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+          { "headerClassName" : "table-header-style",
+          "field": "estimated_price", "id": "estimated_price", "headerTemplate": "estimatedAmountHeaderTemplate" },
         { "headerClassName" : "table-header-style",
           "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
         { "headerClassName" : "table-header-style",
@@ -250,6 +253,9 @@
               <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
           </oj-bind-if>
         </template>
+        <template slot="estimatedAmountHeaderTemplate">
+          <oj-bind-text value="[[estimatedAmountHeaderText]]"></oj-bind-text>
+      </template>
         </oj-table>
     </div>
     </div>
@@ -289,7 +295,7 @@
     </div>
     <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
       <oj-select-many 
-        label-hint="Select Price Range"
+        label-hint="Select Estimated Price Range"
         label-edge="inside" 
         options="[[priceFilterList]]" 
         value="{{priceFilter}}"
@@ -324,9 +330,9 @@
   { "headerClassName" : "table-header-style",
     "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
   { "headerClassName" : "table-header-style",
-    "headerText": "Estimated Price", "field": "estimated_price", "id": "estimated_price" },
+     "field": "estimated_price", "id": "estimated_price", "headerTemplate": "estimatedAmountHeaderTemplate",  "template": "estimatedPriceTemplate"},
   { "headerClassName" : "table-header-style",
-    "headerText": "Total Amount", "field": "total_amount", "id": "total_amount" },
+     "field": "total_amount", "id": "total_amount",  "headerTemplate": "totalAmountHeaderTemplate" },
   { "headerClassName" : "table-header-style",
   "headerText": "Created Date", "field": "created_date", "id": "created_date" },
   { "headerClassName" : "table-header-style",
@@ -365,6 +371,16 @@
         <div class="oj-table-element-low"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
     </oj-bind-if>
   </template>
+  <template slot="estimatedAmountHeaderTemplate">
+    <oj-bind-text value="[[estimatedAmountHeaderText]]"></oj-bind-text>
+</template>
+  <template slot="totalAmountHeaderTemplate">
+    <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
+</template>
+<template slot="estimatedPriceTemplate" data-oj-as="cell">
+  <!-- Use the html binding to interpret the HTML content correctly -->
+  <span data-bind="html: cell.row.estimated_price"></span>
+</template>
   </oj-table>
 </div>
 </div>

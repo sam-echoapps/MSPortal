@@ -101,6 +101,8 @@
           { "headerClassName" : "table-header-style",
             "headerText": "Owner Name", "field": "owner", "id": "owner_name" },
           { "headerClassName" : "table-header-style",
+            "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+          { "headerClassName" : "table-header-style",
             "headerText": "Total Amount", "field": "total_amount", "id": "total_amount" }
           ]' style='width: 100%;' class="demo-table-container">
           <!-- <template slot="actionTemplate" data-oj-as="cell">
@@ -131,11 +133,11 @@
             placeholder="Search.." on-raw-value-changed="[[handleValueAsset]]" value="{{filter}}" clear-icon="always">
             </oj-input-text>
         </div>
-        <div class="oj-flex-item oj-md-padding-2x-horizontal ">
+      <!--   <div class="oj-flex-item oj-md-padding-2x-horizontal ">
           <oj-button chroming="solid"  on-oj-action="" class="oj-sm-padding-3x-vertical">
             Total Assets :
           </oj-button>
-        </div>
+        </div> -->
     </div>
     <div class="oj-flex-item oj-md-padding-2x-horizontal ">
         <oj-button chroming="solid"  on-oj-action="[[addAsset]]" class="oj-sm-padding-3x-vertical">
