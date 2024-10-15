@@ -77,6 +77,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.AssetReportDet = ko.observableArray([]);
                 self.blob = ko.observable()
                 self.fileName = ko.observable()
+                self.totalAmountHeaderText = ko.observable("");
+                self.currency = ko.observable("");
+                self.currencyType = ko.observable("");
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -84,6 +87,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
+                        self.getCurrency();
                         self.getAssetFilterList();
                         self.getAssetInfoList();
                         if(window.location.pathname=='/Hr'){
@@ -107,6 +111,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }
                 }
+
+                self.getCurrency = ()=>{
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetCurrencyType",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error:", textStatus); 
+                            reject(textStatus);
+                        },
+                        success: function (data) {
+                            self.currency(data[0][0])
+                            sessionStorage.setItem("currency",self.currency())
+                        }
+                    });
+                }
+
 
                 self.selectedTabAction1 = ko.computed(() => { 
                     if(self.selectedTab() == 'allAsset'){
@@ -136,6 +158,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(data)
                                 data=data[0]
                                 console.log(data.length)
+                                if(sessionStorage.getItem("currency") == null){
+                                    location.reload()
+                                }
+                                if(sessionStorage.getItem("currency") =='INR'){
+                                    self.currencyType('(₹)')
+                                }else if(sessionStorage.getItem("currency") =='USD'){
+                                    self.currencyType('($)')
+                                }else if(sessionStorage.getItem("currency") =='GBP'){
+                                    self.currencyType('(£)')
+                                }
+                                self.totalAmountHeaderText('Total Amount' + self.currencyType())
                                 document.getElementById('loaderView').style.display='none';
                                 document.getElementById('actionView').style.display='block';
                                 if(data.length!=0){
@@ -370,7 +403,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 'owner': '',
                                 'category': '',
                                 'created_date': '',
-                                'total_amount': totalAmountSum.toFixed(2)  // Sum of total_amounts
+                                'total_amount': '<strong>' +  totalAmountSum.toFixed(2) + '</strong>'   // Sum of total_amounts
                             });
                             csvContent += [ '', '', '', '', '', '','', totalAmountSum.toFixed(2) ].join(',') + '\n'; 
 

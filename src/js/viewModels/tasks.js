@@ -111,6 +111,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(data)
                                 if(data.length!=0){
                                     for (var i = 0; i < data.length; i++) {
+                                        let dateCreated = new Date(data[i][7]);
+                                        // Get only the date part (YYYY-MM-DD)
+                                        let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                         self.TaskDet.push({
                                             'slno': i+1,
                                             'id': data[i][0],
@@ -120,7 +123,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                             'priority': data[i][4], 
                                             'owner': data[i][8] + " "+ data[i][9] +" "+ data[i][10],
                                             'status': data[i][6],
-                                            'created_date': data[i][7],
+                                            'created_date': dateCreatedOnly,
                                             'reminder_date': data[i][11],
                                             'description': data[i][12]
                                         });

@@ -265,17 +265,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 csvContent += headers.join(',') + '\n';
 
                                 for (var i = 0; i < data.length; i++) {
+                                    let dateCreated = new Date(data[i][7]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     self.TaskDet.push({
                                         'slno': i+1,
                                         'name': data[i][1] + " "+ data[i][2] +" "+ data[i][3],
                                         'designation': data[i][4],
                                         'department': data[i][5],
                                         'task_name': data[i][6],
-                                        'created_date': data[i][7],
+                                        'created_date': dateCreatedOnly,
                                         'due_date': data[i][8],
                                         'status': data[i][9],
                                     });
-                                    var rowData = [i+1, data[i][1] + " "+ data[i][2] +" "+ data[i][3],data[i][4],data[i][5], data[i][6], data[i][7], 
+                                    var rowData = [i+1, data[i][1] + " "+ data[i][2] +" "+ data[i][3],data[i][4],data[i][5], data[i][6], dateCreatedOnly, 
                                     data[i][8], data[i][9] ]; 
                                     csvContent += rowData.join(',') + '\n';
                                 }
@@ -361,17 +364,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     csvContent += headers.join(',') + '\n';
 
                                 for (var i = 0; i < data.length; i++) {
+                                    let dateCreated = new Date(data[i][7]);
+                                    // Get only the date part (YYYY-MM-DD)
+                                    let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     self.TaskDet.push({
                                         'slno': i+1,
                                         'name': data[i][1] + " "+ data[i][2] +" "+ data[i][3],
                                         'designation': data[i][4],
                                         'department': data[i][5],
                                         'task_name': data[i][6],
-                                        'created_date': data[i][7],
+                                        'created_date': dateCreatedOnly,
                                         'due_date': data[i][8],
                                         'status': data[i][9],
                                     });
-                                    var rowData = [i+1, data[i][1] + " "+ data[i][2] +" "+ data[i][3],data[i][4],data[i][5], data[i][6], data[i][7], 
+                                    var rowData = [i+1, data[i][1] + " "+ data[i][2] +" "+ data[i][3],data[i][4],data[i][5], data[i][6], dateCreatedOnly, 
                                     data[i][8], data[i][9] ]; 
                                     csvContent += rowData.join(',') + '\n';
                                 }

@@ -183,6 +183,8 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Priority", "field": "priority", "id": "priority", "template": "statusTemplate" },
     { "headerClassName" : "table-header-style",
+    "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+    { "headerClassName" : "table-header-style",
     "headerText": "Due Date", "field": "due_date", "id": "due_date" },
     { "headerClassName" : "table-header-style",
     "headerText": "Reminder Date", "field": "reminder_date", "id": "reminder_date" },
@@ -199,6 +201,7 @@
            </oj-bind-if>
      </template>
      <template slot="bgTemplate" data-oj-as="cell">
+        <oj-bind-if test="[[cell.row.owner_id  == userId() || cell.row.employee_id == userId()]]">
         <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
             <div class="oj-table-element-pending"> <oj-select-single required id="{{cell.row.id}}" 
                 data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single></div>
@@ -210,6 +213,21 @@
           <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
               <div class="oj-table-element-approve"><oj-select-single required id="{{cell.row.id}}" 
                 data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+        </oj-bind-if>
+    </oj-bind-if>
+    <oj-bind-if test="[[cell.row.owner_id  != userId() && cell.row.employee_id != userId()]]">
+        <oj-bind-if test="[[cell.row.status == 'Pending' ]]">
+            <div class="oj-table-element-pending">   <oj-bind-text value="[[cell.row.status]]"></oj-bind-text>
+            </div>
+        </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'In Progress' ]]">
+              <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.status == 'Task Done' ]]">
+              <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>
           </oj-bind-if>
           <oj-bind-if test="[[cell.row.status == 'Dropped' ]]">
             <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.status]]"></oj-bind-text></div>

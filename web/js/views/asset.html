@@ -103,7 +103,7 @@
           { "headerClassName" : "table-header-style",
             "headerText": "Created Date", "field": "created_date", "id": "created_date" },
           { "headerClassName" : "table-header-style",
-            "headerText": "Total Amount", "field": "total_amount", "id": "total_amount" }
+            "headerText": "Total Amount", "field": "total_amount", "id": "total_amount", "template": "totalAmountTemplate", "headerTemplate": "totalAmountHeaderTemplate" }
           ]' style='width: 100%;' class="demo-table-container">
           <!-- <template slot="actionTemplate" data-oj-as="cell">
             <oj-bind-if test="[[cell.row.po_no  != null]]">
@@ -117,6 +117,13 @@
             </a>
           </oj-bind-if>
            </template> -->
+           <template slot="totalAmountTemplate" data-oj-as="cell">
+            <!-- Use the html binding to interpret the HTML content correctly -->
+            <span data-bind="html: cell.row.total_amount"></span>
+          </template>
+          <template slot="totalAmountHeaderTemplate">
+            <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
+        </template>
           </oj-table>
       </div>
       </div>

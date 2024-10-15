@@ -12,7 +12,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             let BaseURL = sessionStorage.getItem("BaseURL")
 
             var routerLength = args.parentRouter._routes.length;
-            if(routerLength!=20){
+            if(routerLength!=23){
                 location.reload();
             }
 

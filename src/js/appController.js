@@ -17,6 +17,8 @@ let BaseURL = sessionStorage.getItem("BaseURL")
 self.notificationCount = ko.observable(0);
 
 self.getAllNotificationCount = function() {
+  if(BaseURL!= null)
+    {
    self.notificationCount(0); // Reset count initially
    $.ajax({
        url: BaseURL + "/HRModuleGetStaffAllNotificationCount",
@@ -44,7 +46,9 @@ self.getAllNotificationCount = function() {
                }
            }
        }
+       
    });
+  }
 };
 
 self.init = function() {
@@ -760,6 +764,10 @@ self.username(sessionStorage.getItem("userName"));
 self.userrole(sessionStorage.getItem("userRole"));
 self.logineduser(sessionStorage.getItem("loginedUser"));
 self.SignIn('Y');
+if(BaseURL == null)
+  {
+    location.reload();
+  }
 };
 
 ControllerViewModel.prototype.onLoginSuccess = function() {
