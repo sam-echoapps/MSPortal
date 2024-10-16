@@ -86,6 +86,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.owner_name = ko.observable('');
                 self.selectedDepartment = ko.observable('');
                 self.selectedCategory = ko.observable('');
+                self.assetType = ko.observable('');
+                self.assetTypeList = ko.observableArray([]);  
+                self.assetTypeList.push(
+                    {'value' : 'N/A', 'label' : 'N/A'},
+                    {'value' : 'Currently Usable', 'label' : 'Currently Usable'},
+                    {'value' : 'Exhausted ', 'label' : 'Exhausted '},  
+                );
+                self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -149,8 +157,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.staff(data[0][6])
                             if(data[0][7] != null){
                             self.owner_name(data[0][7] +  " " +data[0][8] + " " +data[0][9])
+                            }else{
+                                self.owner_name('N/A')
                             }
                             self.selectedDepartment(data[0][10])
+                            self.assetType(data[0][12])
                             data2 = JSON.parse(result[1]);
                             console.log(data2)
                             self.have_bill(data2[2])
@@ -187,6 +198,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data3= result[2]
                             console.log(data3)
                             if(data3.length !=0){
+                                self.categoryList.push({'value': '0', 'label': 'N/A'});
                                 for (var i = 0; i < data3.length; i++) {
                                     self.categoryList.push({'value': data3[i][1],'label': data3[i][1]  });
                                 }
@@ -194,44 +206,91 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data4= result[3]
                             console.log(data4)
                             if(data4.length !=0){
+                                self.DepartmentDet.push({'value': '0', 'label': 'N/A'});
                                 for (var i = 0; i < data4.length; i++) {
                                     self.DepartmentDet.push({'value': data4[i][0],'label': data4[i][1]  });
                                 }
                             }
-                            data5= result[4]
-                            console.log(data5)
-                            if(data5.length !=0){
-                                for (var i = 0; i < data5.length; i++) {
-                                    self.StaffDet.push({'value': data5[i][0],'label': data5[i][1]+" "+data5[i][2]+ " " +data5[i][3]  });
-                                }
-                            }
+                            // data5= result[4]
+                            // console.log(data5)
+                            // if(data5.length !=0){
+                            //     self.StaffDet.push({'value': '0', 'label': 'N/A'});
+                            //     for (var i = 0; i < data5.length; i++) {
+                            //         self.StaffDet.push({'value': data5[i][0],'label': data5[i][1]+" "+data5[i][2]+ " " +data5[i][3]  });
+                            //     }
+                            // }
                         }  
                     });                
                 }
                 self.categoryListDet = new ArrayDataProvider(this.categoryList, { keyAttributes: "value"});
                 self.DepartmentList = new ArrayDataProvider(this.DepartmentDet, { keyAttributes: "value"});
-                self.StaffList = new ArrayDataProvider(this.StaffDet, { keyAttributes: "value"});
 
-
-                self.assetRemove = ()=>{
-                    document.getElementById('loaderView').style.display='block';
+                self.getStaffFilter = ()=>{
+                    let departmentId; 
+                    if (Number.isInteger(Number(self.selectedDepartment()))) {
+                        departmentId = self.selectedDepartment();
+                        if(self.selectedDepartment() == 0){
+                            self.owner_name('N/A')
+                        }else  if(self.selectedDepartment() > 0){
+                            self.owner_name('')
+                        }else{
+                            self.selectedDepartment(self.departmentFilter())
+                        }
+                    }else{
+                        departmentId = self.departmentFilter();
+                    }
                     $.ajax({
-                        url: BaseURL+"/HRModuleDeleteAsset",
+                        url: BaseURL+"/getStaffDepartment",
                         type: 'POST',
                         data: JSON.stringify({
-                            assetId: sessionStorage.getItem("assetId"),
+                            departmentId : departmentId,
                         }),
                         timeout: sessionStorage.getItem("timeInetrval"),
                         context: self,
-                        
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
                         },
                         success: function (data) {
+                            document.getElementById('loaderView').style.display='none';
                             console.log(data)
-                            self.router.go({path:'asset'})
-                        }  
-                    });
+                            self.StaffDet([])
+                            data = data[0]
+                            if(data.length !=0){ 
+                                self.StaffDet.push({'value': '0', 'label': 'N/A'});
+                                for (var i = 0; i < data.length; i++) {
+                                    self.StaffDet.push({'value': data[i][0],'label': data[i][1]+" "+data[i][2]+ " " +data[i][3]  });
+                                }
+                            }
+                        }
+                    })
+                }
+ 
+                self.StaffList = new ArrayDataProvider(self.StaffDet, { keyAttributes: "value"});
+
+
+                self.assetRemove = ()=>{
+                    document.getElementById('loaderView').style.display='block';
+                    if((self.assetType() != 'Currently Usable') || self.owner_name() != 'N/A'){
+                        let popup1 = document.getElementById("warningView");
+                        popup1.open();
+                    }
+                    // $.ajax({
+                    //     url: BaseURL+"/HRModuleDeleteAsset",
+                    //     type: 'POST',
+                    //     data: JSON.stringify({
+                    //         assetId: sessionStorage.getItem("assetId"),
+                    //     }),
+                    //     timeout: sessionStorage.getItem("timeInetrval"),
+                    //     context: self,
+                        
+                    //     error: function (xhr, textStatus, errorThrown) {
+                    //         console.log(textStatus);
+                    //     },
+                    //     success: function (data) {
+                    //         console.log(data)
+                    //         self.router.go({path:'asset'})
+                    //     }  
+                    // });
                 }
 
 
@@ -322,6 +381,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         category : self.selectedCategory(),
                                         department : self.selectedDepartment(),
                                         owner : self.owner_name(),
+                                        assetType : self.assetType(),
                                         bill_file_content: billFileContent,
                                         guarantee_file_content: guaranteeFileContent,
                                         extra_file_content: extraFileContent  

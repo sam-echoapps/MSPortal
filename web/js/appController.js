@@ -502,6 +502,7 @@ else{
    { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
    { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+   { path: 'rota', detail : {label: 'Rota',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
  ];
 }
 
@@ -700,6 +701,7 @@ else {
    {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"tasks"},
    {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
    {"name": "Asset Manager","id": "asset","icons": "fa-solid fa fa-money-check", "path":"asset"},
+   {"name": "Rota System","id": "rota","icons": "fa-solid fa fa-money-check", "path":"rota"},
    {"name": "Notice Board","id": "notice","icons": "fa-solid fa fa-bullhorn ", "path":"notice"},
    {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
      "children": [

@@ -86,6 +86,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.owner_name = ko.observable('');
                 self.selectedDepartment = ko.observable('');
                 self.selectedCategory = ko.observable('');
+                self.assetType = ko.observable('');
+                self.assetTypeList = ko.observableArray([]);  
+                self.assetTypeList.push(
+                    {'value' : 'Durable Assets', 'label' : 'Durable Assets'},
+                    {'value' : 'Consumables', 'label' : 'Consumables'},  
+                );
+                self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -149,8 +156,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.staff(data[0][6])
                             if(data[0][7] != null){
                             self.owner_name(data[0][7] +  " " +data[0][8] + " " +data[0][9])
+                            }else{
+                                self.owner_name('N/A')
                             }
                             self.selectedDepartment(data[0][10])
+                            self.assetType(data[0][12])
                             data2 = JSON.parse(result[1]);
                             console.log(data2)
                             self.have_bill(data2[2])
@@ -200,6 +210,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data5= result[4]
                             console.log(data5)
                             if(data5.length !=0){
+                                self.StaffDet.push({'value': '0', 'label': 'N/A'});
                                 for (var i = 0; i < data5.length; i++) {
                                     self.StaffDet.push({'value': data5[i][0],'label': data5[i][1]+" "+data5[i][2]+ " " +data5[i][3]  });
                                 }
@@ -239,13 +250,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     if (Number.isInteger(Number(categoryValue))) {
                         self.selectedCategory(categoryValue);
                     }
-                    const departmentValue = self.departmentFilter();
+                    const departmentValue = self.selectedDepartment();
                     if (Number.isInteger(Number(departmentValue))) {
                         self.selectedDepartment(departmentValue);
+                    }else{
+                        self.selectedDepartment(self.departmentFilter());
                     }
-                    const staffValue = self.staff();
+
+                    const staffValue = self.owner_name();
                     if (Number.isInteger(Number(staffValue))) {
                         self.owner_name(staffValue);
+                    }else{
+                        self.owner_name(self.staff())
                     }
                     const formValid = self._checkValidationGroup("formValidation");
                     // Validation for guarantee file
@@ -307,6 +323,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         category : self.selectedCategory(),
                                         department : self.selectedDepartment(),
                                         owner : self.owner_name(),
+                                        assetType : self.assetType(),
                                         bill_file_content: billFileContent,
                                         guarantee_file_content: guaranteeFileContent,
                                         extra_file_content: extraFileContent  

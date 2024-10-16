@@ -86,6 +86,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.owner_name = ko.observable('');
                 self.selectedDepartment = ko.observable('');
                 self.selectedCategory = ko.observable('');
+                self.assetType = ko.observable('');
+                self.assetTypeList = ko.observableArray([]);  
+                self.assetTypeList.push(
+                    {'value' : 'Durable Assets', 'label' : 'Durable Assets'},
+                    {'value' : 'Consumables', 'label' : 'Consumables'},  
+                );
+                self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -152,6 +159,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data3= result[2]
                             console.log(data3)
                             if(data3.length !=0){
+                                self.StaffDet.push({'value': '0', 'label': 'N/A'});
                                 for (var i = 0; i < data3.length; i++) {
                                     self.StaffDet.push({'value': data3[i][0],'label': data3[i][1]+" "+data3[i][2]+ " " +data3[i][3]  });
                                 }
@@ -227,6 +235,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         category : self.selectedCategory(),
                                         department : self.selectedDepartment(),
                                         owner : self.owner_name(),
+                                        assetType : self.assetType(),
                                         bill_file_content: billFileContent,
                                         guarantee_file_content: guaranteeFileContent,
                                         extra_file_content: extraFileContent  
