@@ -816,6 +816,60 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
                 self.departmentList = new ArrayDataProvider(this.DepartmentDetList, { keyAttributes: "value"});
 
+                self.viewPrivilege = (event,data)=>{
+                    var rowId = data.item.data.id
+                    sessionStorage.setItem("roleId", rowId);
+                    self.getPrivilege();
+                    document.querySelector('#openPrivilege').open();
+                }
+
+                self.CancelBehaviorOpt = ko.observable('icon'); 
+                self.privilege = ko.observable('employee');
+                self.description = ko.observable();
+
+                self.Options = [
+                    {"label":"Employee","value":"employee"},
+                    {"label":"Leaves","value":"leaves"},
+                    {"label":"Task Manager","value":"task_manager"},
+                    {"label":"Settings","value":"settings"},
+                    {"label":"Company Holidays","value":"company_holidays"},
+                    {"label":"Goals","value":"goals"},
+                    {"label":"Documents","value":"documents"},
+                    {"label":"Notice Board","value":"notice_board"},
+                    {"label":"Expense","value":"expense"},
+                    {"label":"Purchase","value":"purchase"},
+                ]
+
+                self.privilege_List = new ArrayDataProvider(self.Options, {
+                    keyAttributes: 'value'
+                });
+
+                self.getPrivilege = (event,data)=>{
+                    document.getElementById('loaderView').style.display='block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetRolePrivilege",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            id : sessionStorage.getItem("roleId"),
+                            privilege : self.privilege(),
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display='none';
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            if(data[0] != ''){
+                                self.description(data[0][0])
+                            } 
+                        }
+                    })
+                }
+
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {
                         return url;

@@ -15,9 +15,13 @@
 <!--    <img style= "width:150px;height:100px;"src="../../css/images/sample_company.jpg" alt="QuickHCM360 HR Application">  -->                  
       <oj-bind-if test="[[logo() == 'yes' ]]">
         <img style= "width:200px; margin-bottom: 20px;" data-bind="attr: {src: companyLogoShow}" alt="QuickHCM360 HR Application">
-        <!-- <oj-avatar role="img" src="[[companyLogoShow]]" :title="Company Logo"> -->
         </oj-avatar> 
         </oj-bind-if> 
+      <!--  <oj-bind-if test="[[logo() == 'yes' ]]">
+            <img style= "width:200px; margin-bottom: 20px;" data-bind="attr: {src: companyLogoShow}" alt="QuickHCM360 HR Application">
+             <oj-avatar role="img" src="[[companyLogoShow]]" :title="Company Logo">
+            </oj-avatar> 
+            </oj-bind-if>  -->
         <oj-validation-group id="formValidation"role="group">
             <oj-form-layout label-edge="top" id="form-container">
                 <oj-input-text required id="control1" value="{{username}}" label-hint="Username"></oj-input-text>

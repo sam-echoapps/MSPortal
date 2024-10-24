@@ -30,7 +30,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     keyAttributes: 'value'
                 });
 
-                self.DesignationDet2 = ko.observableArray([]);
                 self.DepartmentDet = ko.observableArray([]);
                 self.designation  = ko.observable('');
                 self.department  = ko.observable('');
@@ -238,7 +237,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 }
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
-                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                var fileName = 'Leave_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
                                 self.blob(blob);
                                 self.fileName(fileName);
                             }
@@ -251,7 +250,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 csvContent += rowData.join(',') + '\n';
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
-                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                var fileName = 'Leave_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
                                 self.blob(blob);
                                 self.fileName(fileName);
                             }
@@ -335,7 +334,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
-                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                var fileName = 'Leave_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
                                 self.blob(blob);
                                 self.fileName(fileName);
                             }
@@ -348,7 +347,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 csvContent += rowData.join(',') + '\n';
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
-                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                var fileName = 'Leave_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
                                 self.blob(blob);
                                 self.fileName(fileName);
                             }
@@ -358,7 +357,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 }
-
 
                 self.TaskList = new ArrayDataProvider(this.TaskDet, { keyAttributes: "id"});
 

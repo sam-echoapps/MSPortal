@@ -21,10 +21,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getCalenderLeaves();
                         self.getEventDates();
                         self.getStaff();
-                        self.getLeaves();
                         self.getMembers();
                         self.getHolidayDetails();
-                        self.getMyLeaves();
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -93,13 +91,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#leave_approval").hide();
                         $("#leave_balance").hide();
                         self.getLeaveBalance();
-                        self.MyfilterYear();
+                        self.getMyLeaves();
                         $("#my_requests").show();
                     }
                     else if(self.selectedTab() == 'leave_approval'){
                         $("#calender").hide();
-                        self.filterYear();
                         $("#leave_requests").hide();
+                        self.getLeaves();
                         $("#leave_approval").show();
                         $("#leave_balance").hide();
                         $("#my_requests").hide();
@@ -322,8 +320,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 // self.hour = ko.observable();
                 self.leave_type = ko.observable();
                 self.start_date = ko.observable();
-                self.LeaveTypeDet = ko.observableArray([]); 
-
+                self.LeaveTypeDet = ko.observableArray([]);
+                self.description = ko.observable('');
 
                 self.getLeaveType = ()=>{
                     self.LeaveTypeDet([]);
@@ -372,6 +370,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 //     }
                 // }
 
+                self.saveLeaveMsg = ko.observable('Error');
+
                 self.formSubmit = () => {
                     const formValid = self._checkValidationGroup("formValidation2"); 
                     if (formValid) {
@@ -391,6 +391,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
+                                description: self.description(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -400,10 +401,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                                 console.log(data);
+                                if(data[0].length !=0){ 
+                                    for (var i = 0; i < data[0].length; i++) {
+                                        self.saveLeaveMsg(data[0][0]);
+                                    }
+                                }
                                 let popup = document.getElementById("loaderPopup");
                                 popup.close();
-                                let popup1 = document.getElementById("successView");
-                                popup1.open();
+                                if (self.saveLeaveMsg() === "Successfully submitted the leave") {
+                                    let popup1 = document.getElementById("successView");
+                                    popup1.open();
+                                } else {
+                                    let popup2 = document.getElementById("successView3");
+                                    popup2.open();
+                                }
                             }
                         });
                     }
@@ -432,6 +443,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
+                                description: self.description(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -441,10 +453,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                                 console.log(data);
+                                if(data[0].length !=0){ 
+                                    for (var i = 0; i < data[0].length; i++) {
+                                        self.saveLeaveMsg(data[0][0]);
+                                    }
+                                }
                                 let popup = document.getElementById("loaderPopup");
                                 popup.close();
-                                let popup1 = document.getElementById("successView");
-                                popup1.open();
+                                if (self.saveLeaveMsg() === "Successfully submitted the leave") {
+                                    let popup1 = document.getElementById("successView");
+                                    popup1.open();
+                                } else {
+                                    let popup2 = document.getElementById("successView3");
+                                    popup2.open();
+                                }
                             }
                         });
                     }
@@ -469,6 +491,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 start_date: self.start_date(),
                                 end_date: self.end_date(),
                                 leave_reason: self.leave_reason(),
+                                description: self.description(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -478,10 +501,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             },
                             success: function (data) {
                                 console.log(data);
+                                if(data[0].length !=0){ 
+                                    for (var i = 0; i < data[0].length; i++) {
+                                        self.saveLeaveMsg(data[0][0]);
+                                    }
+                                }
                                 let popup = document.getElementById("loaderPopup");
                                 popup.close();
-                                let popup1 = document.getElementById("successView");
-                                popup1.open();
+                                if (self.saveLeaveMsg() === "Successfully submitted the leave") {
+                                    let popup1 = document.getElementById("successView");
+                                    popup1.open();
+                                } else {
+                                    let popup2 = document.getElementById("successView3");
+                                    popup2.open();
+                                }
                             }
                         });
                     }
@@ -511,7 +544,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         success: function(result1) {
                             console.log(result1);
                             document.getElementById('loaderView').style.display = 'none';
-                            //document.getElementById('leave_approval').style.display = 'block';
+                            document.getElementById('leave_approval').style.display = 'block';
                 
                             if (result1[0].length != 0) {
                                 for (var i = 0; i < result1[0].length; i++) {
@@ -541,77 +574,78 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
 
                 self.yearList = new ArrayDataProvider(this.LeaveYearDet, { keyAttributes: "value"});
-
-                self.filterYearCallCount = 0; // Initialize counter
-                // Debounce function to limit calls to filterYear
-                function debounce(func, wait) {
-                    let timeout;
-                    return function (...args) {
-                        const context = this;
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => func.apply(context, args), wait);
-                    };
-                }
-
-                self.filterYear = debounce(function () {
-                    self.LeaveDet([]);
-                    self.filterYearCallCount++; // Increment counter
-
-                    if (self.yearFilter() == '') {
-                        const currentYear = new Date().getFullYear();
-                        console.log(currentYear);
-                        self.yearFilter(currentYear);
-                    }
-                    if (self.yearFilter() != '') {
-                        if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                            self.LeaveDet([]);
-                        }
-                        document.getElementById('loaderView').style.display = 'block';
-                        $.ajax({
-                            url: BaseURL + "/HRModuleGetYearLeaveEmployeeFilter2",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                year: self.yearFilter(),
-                                userId: sessionStorage.getItem("userId")
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function(xhr, textStatus, errorThrown) {
-                                if (textStatus == 'timeout' || textStatus == 'error') {
-                                    document.querySelector('#TimeoutSup').open();
-                                }
-                            },
-                            success: function(result2) {
-                                console.log(result2);
-                                document.getElementById('loaderView').style.display = 'none';
-                                document.getElementById('leave_approval').style.display = 'block';
-                                self.LeaveDet([]);
-
-                                if (result2.length != 0) {
-                                    if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                                        self.LeaveDet([]);
-                                    }
-
-                                    for (var i = 0; i <= result2.length; i++) {
-                                        self.LeaveDet.push({
-                                            'no': i + 1,
-                                            'id': result2[i][0],
-                                            'name': result2[i][6], // 'full_name' is now at the 7th position
-                                            'start_date': result2[i][1],
-                                            'end_date': result2[i][2],
-                                            'leave_type': result2[i][3],
-                                            'leave_reason': result2[i][4],
-                                            'status': result2[i][5]
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }, 10); // 1-second debounce delay
-                
                 self.LeaveData = new ArrayDataProvider(this.LeaveDet, { keyAttributes: "id" });
+
+                // self.filterYearCallCount = 0; // Initialize counter
+                // // Debounce function to limit calls to filterYear
+                // function debounce(func, wait) {
+                //     let timeout;
+                //     return function (...args) {
+                //         const context = this;
+                //         clearTimeout(timeout);
+                //         timeout = setTimeout(() => func.apply(context, args), wait);
+                //     };
+                // }
+
+                // self.filterYear = debounce(function () {
+                //     self.LeaveDet([]);
+                //     self.filterYearCallCount++; // Increment counter
+
+                //     if (self.yearFilter() == '') {
+                //         const currentYear = new Date().getFullYear();
+                //         console.log(currentYear);
+                //         self.yearFilter(currentYear);
+                //     }
+                //     if (self.yearFilter() != '') {
+                //         if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
+                //             self.LeaveDet([]);
+                //         }
+                //         document.getElementById('loaderView').style.display = 'block';
+                //         $.ajax({
+                //             url: BaseURL + "/HRModuleGetYearLeaveEmployeeFilter2",
+                //             type: 'POST',
+                //             data: JSON.stringify({
+                //                 year: self.yearFilter(),
+                //                 userId: sessionStorage.getItem("userId")
+                //             }),
+                //             dataType: 'json',
+                //             timeout: sessionStorage.getItem("timeInetrval"),
+                //             context: self,
+                //             error: function(xhr, textStatus, errorThrown) {
+                //                 if (textStatus == 'timeout' || textStatus == 'error') {
+                //                     document.querySelector('#TimeoutSup').open();
+                //                 }
+                //             },
+                //             success: function(result2) {
+                //                 console.log(result2);
+                //                 document.getElementById('loaderView').style.display = 'none';
+                //                 document.getElementById('leave_approval').style.display = 'block';
+                //                 self.LeaveDet([]);
+
+                //                 if (result2.length != 0) {
+                //                     if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
+                //                         self.LeaveDet([]);
+                //                     }
+
+                //                     for (var i = 0; i <= result2.length; i++) {
+                //                         self.LeaveDet.push({
+                //                             'no': i + 1,
+                //                             'id': result2[i][0],
+                //                             'name': result2[i][6], // 'full_name' is now at the 7th position
+                //                             'start_date': result2[i][1],
+                //                             'end_date': result2[i][2],
+                //                             'leave_type': result2[i][3],
+                //                             'leave_reason': result2[i][4],
+                //                             'status': result2[i][5]
+                //                         });
+                //                     }
+                //                 }
+                //             }
+                //         });
+                //     }
+                // }, 10); // 1-second debounce delay
+                
+                // self.LeaveData = new ArrayDataProvider(this.LeaveDet, { keyAttributes: "id" });
 
                 self.filter = ko.observable('');
 
@@ -640,8 +674,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusList = ko.observableArray([]);
                 self.statusList.push(
                     {"label":"Pending","value":"Pending"},
-                    {"label":"Reject","value":"Reject"},
-                    {"label":"Approve","value":"Approve"},
+                    {"label":"Rejected","value":"Reject"},
+                    {"label":"Approved","value":"Approve"},
                 );
                 self.statusList = new ArrayDataProvider(self.statusList, {
                     keyAttributes: 'value'
@@ -655,6 +689,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.leave_reason = ko.observable('');
                 //self.hour = ko.observable('');
                 self.leaveId = ko.observable();
+                self.description2 = ko.observable('');
 
                 self.reviewLeave = (event, data) => {
                     var rowId = data.item.data.id;
@@ -684,6 +719,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.leaveType(data[0][4]);
                                 self.leave_reason(data[0][5]);
                                 self.status(data[0][6]);
+                                self.description2(data[0][7]);
                             }
                         }
                     });
@@ -767,6 +803,21 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.LeaveDet2 = ko.observableArray([]);
 
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const day = currentDate.getDate();
+
+                self.fromDate = ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date(year, 0, 1)));
+                self.datePicker = {
+                    numberOfMonths: 1
+                };
+
+                self.toDate = ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date(year, month,day)));
+
+                self.blob = ko.observable()
+                self.fileName = ko.observable()
+
                 self.getTeams = () => {
                     self.LeaveDet2([]); // Clear the existing data
                     document.getElementById('loaderView').style.display = 'block';
@@ -784,32 +835,83 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
-                           // document.getElementById('leaveTable2').style.display = 'block';
                             console.log(data);
                             document.getElementById('loaderView').style.display = 'none';
+                            var csvContent = '';
+                            var headers = ['ID', 'Name', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total Leave', 'Remaining'];
+                
+                            // Add headers to CSV content
+                            csvContent += headers.join(',') + '\n';
+                
                             if (data[0].length != 0) {
                                 for (var i = 0; i < data[0].length; i++) {
                                     self.LeaveDet2.push({
                                         'id': data[0][i][0],
                                         'name': data[0][i][1],
+                                        'jan': data[0][i][4],
+                                        'feb': data[0][i][5],
+                                        'mar': data[0][i][6],
+                                        'apr': data[0][i][7],
+                                        'may': data[0][i][8],
+                                        'jun': data[0][i][9],
+                                        'jul': data[0][i][10],
+                                        'aug': data[0][i][11],
+                                        'sep': data[0][i][12],
+                                        'oct': data[0][i][13],
+                                        'nov': data[0][i][14],
+                                        'dec': data[0][i][15],
                                         'total_leave': data[0][i][2],
                                         'remaining': data[0][i][3]
                                     });
+                
+                                    // Prepare row data for CSV
+                                    var rowData = [
+                                        data[0][i][0], 
+                                        data[0][i][1], 
+                                        data[0][i][4], 
+                                        data[0][i][5], 
+                                        data[0][i][6], 
+                                        data[0][i][7], 
+                                        data[0][i][8], 
+                                        data[0][i][9], 
+                                        data[0][i][10], 
+                                        data[0][i][11], 
+                                        data[0][i][12], 
+                                        data[0][i][13], 
+                                        data[0][i][14], 
+                                        data[0][i][15], 
+                                        data[0][i][2], 
+                                        data[0][i][3]
+                                    ];
+                                    csvContent += rowData.join(',') + '\n';
                                 }
+                            } else {
+                                // No data found case
+                                var rowData = []; 
+                                csvContent += rowData.join(',') + '\n';
                             }
+                
+                            // Create CSV Blob and FileName
+                            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                            var today = new Date();
+                            var fileName = 'leave_balance_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                
+                            // Assign blob and fileName to observable properties or any other way to download
+                            self.blob(blob);
+                            self.fileName(fileName);
                         }
                     });
                 }
                 
                 self.LeaveData2 = new ArrayDataProvider(self.LeaveDet2, { keyAttributes: "id" });
-
+                
                 self.formSubmit3 = () => {
                     let selectedMemberId = self.Member();
-                
+                    
                     if (selectedMemberId) {
                         self.LeaveDet2([]); // Clear the existing data
                         document.getElementById('loaderView').style.display = 'block';
-                
+                        
                         $.ajax({
                             url: BaseURL + "/HRModuleGetLeaveData",
                             type: 'POST',
@@ -824,24 +926,91 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             success: function (data) {
                                 document.getElementById('leaveTable2').style.display = 'block';
                                 document.getElementById('loaderView').style.display = 'none';
+                
+                                var csvContent = '';
+                                var headers = ['ID', 'Name', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total Leave', 'Remaining'];
+                
+                                // Add headers to CSV content
+                                csvContent += headers.join(',') + '\n';
+                
                                 if (data[0].length != 0) {
                                     for (var i = 0; i < data[0].length; i++) {
                                         self.LeaveDet2.push({
                                             'id': data[0][i][0],
                                             'name': data[0][i][1],
+                                            'jan': data[0][i][4],
+                                            'feb': data[0][i][5],
+                                            'mar': data[0][i][6],
+                                            'apr': data[0][i][7],
+                                            'may': data[0][i][8],
+                                            'jun': data[0][i][9],
+                                            'jul': data[0][i][10],
+                                            'aug': data[0][i][11],
+                                            'sep': data[0][i][12],
+                                            'oct': data[0][i][13],
+                                            'nov': data[0][i][14],
+                                            'dec': data[0][i][15],
                                             'total_leave': data[0][i][2],
                                             'remaining': data[0][i][3]
                                         });
+                
+                                        // Prepare row data for CSV
+                                        var rowData = [
+                                            data[0][i][0],
+                                            data[0][i][1],
+                                            data[0][i][4],
+                                            data[0][i][5],
+                                            data[0][i][6],
+                                            data[0][i][7],
+                                            data[0][i][8],
+                                            data[0][i][9],
+                                            data[0][i][10],
+                                            data[0][i][11],
+                                            data[0][i][12],
+                                            data[0][i][13],
+                                            data[0][i][14],
+                                            data[0][i][15],
+                                            data[0][i][2],
+                                            data[0][i][3]
+                                        ];
+                                        csvContent += rowData.join(',') + '\n';
                                     }
                                 } else {
                                     console.log("No leave data received from backend.");
+                                    var rowData = []; 
+                                    csvContent += rowData.join(',') + '\n';
                                 }
+                
+                                // Create CSV Blob and FileName
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileName = 'leave_balance_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                
+                                // Assign blob and fileName to observable properties or any other way to download
+                                self.blob(blob);
+                                self.fileName(fileName);
                             }
                         });
                     } else {
                         console.log("No member selected.");
                     }
                 }
+
+                self.downloadExcel = ()=> {
+                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                      // For Internet Explorer
+                      window.navigator.msSaveOrOpenBlob(self.blob(), self.fileName());
+                    } else {
+                      // For modern browsers
+                      var link = document.createElement('a');
+                      link.href = window.URL.createObjectURL(self.blob());
+                      link.download = self.fileName();
+                      link.style.display = 'none';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }
+                  }
 
                 //Leave Balance Updater Function: This function should be called where the leave balance needs to be updated and displayed.
                 self.changeLeaveBalance = ()=>{
@@ -895,7 +1064,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
               self.getMyLeaves = () => {
                   self.MyLeaveDet([]);
-                  document.getElementById('loaderView').style.display = 'none';
+                  document.getElementById('loaderView').style.display = 'block';
                   $.ajax({
                       url: BaseURL + "/HRModuleGetSelfLeaveStatus",
                       type: 'POST',
@@ -906,9 +1075,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                       context: self,
                       error: function(xhr, textStatus, errorThrown) {
                           console.log(textStatus);
+                          document.getElementById('loaderView').style.display = 'none';
                       },
                       success: function(result1) {
                           console.log(result1);
+                          document.getElementById('loaderView').style.display = 'none';
+                          document.getElementById('my_requests').style.display = 'block';
 
                           if (result1[0].length != 0) {
                               for (var i = 0; i < result1[0].length; i++) {
@@ -935,69 +1107,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
               };
 
               self.MyYearList = new ArrayDataProvider(this.LeaveYearDet, { keyAttributes: "value"});
-
-              self.MyfilterYearCallCount = 0; // Initialize counter
-
-              self.MyfilterYear = debounce(function () {
-                  self.MyLeaveDet([]);
-                  self.MyfilterYearCallCount++; // Increment counter
-
-                  if (self.MyYearFilter() == '') {
-                      const currentYear = new Date().getFullYear();
-                      console.log(currentYear);
-                      self.MyYearFilter(currentYear);
-                  }
-                  if (self.MyYearFilter() != '') {
-                      if (self.MyfilterYearCallCount <= 3) { // Clear only on first 3 calls
-                          self.MyLeaveDet([]);
-                      }
-                      document.getElementById('loaderView').style.display = 'block';
-                      $.ajax({
-                          url: BaseURL + "/HRModuleGetSelfLeaveStatusFilter",
-                          type: 'POST',
-                          data: JSON.stringify({
-                              staff_id: sessionStorage.getItem("userId"),
-                              year: self.MyYearFilter()
-                          }),
-                          dataType: 'json',
-                          timeout: sessionStorage.getItem("timeInetrval"),
-                          context: self,
-                          error: function(xhr, textStatus, errorThrown) {
-                              if (textStatus == 'timeout' || textStatus == 'error') {
-                                  document.querySelector('#TimeoutSup').open();
-                              }
-                          },
-                          success: function(result2) {
-                              console.log(result2);
-                              document.getElementById('loaderView').style.display = 'none';
-                              document.getElementById('my_requests').style.display = 'block';
-
-                              if (result2.length != 0) {
-
-                                  if (self.MyfilterYearCallCount <= 3) { // Clear only on first 3 calls
-                                      self.MyLeaveDet([]);
-                                  }
-
-                                  for (var i = 0; i <= result2.length; i++) {
-                                      self.MyLeaveDet.push({
-                                          'no': i + 1,
-                                          'id': result2[i][0],
-                                          'start_date': result2[i][1],
-                                          'end_date': result2[i][2],
-                                          'leave_type': result2[i][3],
-                                          'leave_reason': result2[i][4],
-                                          'status': result2[i][5]
-                                      });
-                                  }
-                              }
-                          }
-                      });
-                  }
-              }, 10); // 1-second debounce delay
-              
               self.MyLeaveData = new ArrayDataProvider(this.MyLeaveDet, { keyAttributes: "id" });
 
-              
               self.Myfilter = ko.observable('');
 
               self.MyLeaveData = ko.computed(function () {
@@ -1024,7 +1135,128 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
               self.leaveReport = ()=>{
                 self.router.go({path:'leaveReport'})
             }
-            
+
+            self.statusUpdate = (event,data)=>{
+                let leaveId =  data.item.data.id;
+                let status = event.detail.value;
+                sessionStorage.setItem('leaveId',leaveId) 
+                sessionStorage.setItem('status',status)
+
+                let popup = document.getElementById("loaderPopup");
+                popup.open();
+                
+                $.ajax({
+                    url: BaseURL+"/HRModuleReviewLeaveStatus2",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        leaveId : self.leaveId(),
+                        status : self.status(),
+
+                        leaveId: sessionStorage.getItem('leaveId'),
+                        status : sessionStorage.getItem('status'),
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        popup.close();
+                        let popup2 = document.getElementById("successView2");
+                        popup2.open();
+                    }
+                })
+            }
+
+            self.fromDateMyLeave = ko.observable('')
+            self.toDateMyLeave = ko.observable('')
+
+            self.datePicker = {
+                numberOfMonths: 1
+            };
+
+            self.showMyLeaveData = ()=>{
+                self.MyLeaveDet([]);
+                document.getElementById('loaderView').style.display='block';
+                let fromDate = self.fromDateMyLeave()
+                let toDate = self.toDateMyLeave();
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetMyLeaveListFilter",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        userId : sessionStorage.getItem("userId"),
+                        fromDate : fromDate,
+                        toDate : toDate
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        document.getElementById('loaderView').style.display='none';
+                        if(data.length!=0){
+                            for (var i = 0; i < data.length; i++) {
+                                self.MyLeaveDet.push({
+                                    'no': i + 1,
+                                    'id': data[i][0],
+                                    'start_date': data[i][1],
+                                    'end_date': data[i][2],
+                                    'leave_type': data[i][3],
+                                    'leave_reason': data[i][4],
+                                    'status': data[i][5]                                 
+                                }); 
+                            } 
+                        }
+                    }
+                })
+            }
+
+            self.fromDateAllLeave = ko.observable('')
+            self.toDateAllLeave = ko.observable('')
+
+            self.showAllLeaveData = ()=>{
+                self.LeaveDet([]);
+                document.getElementById('loaderView').style.display='block';
+                let fromDate = self.fromDateAllLeave()
+                let toDate = self.toDateAllLeave();
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetAllLeaveListFilter",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        userId : sessionStorage.getItem("userId"),
+                        fromDate : fromDate,
+                        toDate : toDate
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        document.getElementById('loaderView').style.display='none';
+                        if(data[0].length != 0){
+                            for (var i = 0; i < data[0].length; i++) {
+                                self.LeaveDet.push({
+                                    'no': i + 1,
+                                    'id': data[0][i][0],
+                                    'name': data[0][i][6],
+                                    'start_date': data[0][i][1],
+                                    'end_date': data[0][i][2],
+                                    'leave_type': data[0][i][3],
+                                    'leave_reason': data[0][i][4],
+                                    'status': data[0][i][5]                             
+                                }); 
+                            } 
+                        }
+                    }
+                })
+            }
             
             self.rewriteUrl=(url)=> {
                 if (url.includes('/Hr')) {

@@ -1,7 +1,9 @@
 define(['ojs/ojcore',"knockout", 'ojs/ojcontext', "jquery","appController","ojs/ojconverterutils-i18n", 
     "ojs/ojarraydataprovider",
     "ojs/ojtable", "ojs/ojbutton", "ojs/ojcheckboxset", "ojs/ojgauge", "ojs/ojchart","ojs/ojdatetimepicker",
-    "ojs/ojlistview", "ojs/ojfilmstrip","ojs/ojlistitemlayout", "ojs/ojswitch", "ojs/ojbutton","ojs/ojgauge"], 
+    "ojs/ojlistview", "ojs/ojfilmstrip","ojs/ojlistitemlayout", "ojs/ojswitch", "ojs/ojbutton","ojs/ojgauge",
+    "ojs/ojchart","ojs/ojformlayout", "ojs/ojdialog","ojs/ojvalidationgroup","ojs/ojprogress-circle",
+    "ojs/ojswitcher","ojs/ojavatar"], 
 function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
     
     class dasboardAdminfViewModel {
@@ -16,35 +18,14 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             const day = String(date.getDate()).padStart(2, '0');
             
             const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
-            self.currentDate=`${daysOfWeek[date.getDay()]} ${day}/${month}/${date.getFullYear()}`
             
+            //Top Banner section
+            self.userName=ko.observable(sessionStorage.getItem("userName"))
+            self.currentDate=`${daysOfWeek[date.getDay()]} ${day}/${month}/${date.getFullYear()}`
             self.currentTime=ko.observable()
             self.liveShowTime=ko.observable()
-            
-            self.breakStartTime=ko.observable()
-            self.breakInterval=ko.observable();
-            self.running=ko.observable(false)
 
-            self.userName=ko.observable(sessionStorage.getItem("userName"))
-            self.clockInTime=ko.observable(0)
-            self.checkIn=ko.observable(false);
-
-            self.clockInBtnDisabled=ko.observable(false)
-            self.clockOutBtnDisabled=ko.observable(true)
-            self.breakStartBtnDisable=ko.observable(false)
-            self.breakStopBtnDisable=ko.observable(true)
-            self.breakTime=ko.observable(0)
-
-            self.employeClockinData = ko.observableArray([]);
-            self.workingTimePattern=ko.observable()
-            self.totalLeaves=ko.observable(0);
-            self.leavesTaken=ko.observable(0);
-            self.leavesRemaining=ko.observable(0);
-
-            self.holidays = ko.observableArray([]);
-            self.absentEmployees = ko.observableArray([]);
-            self.employeeLeaveRequest = ko.observableArray([]);
-
+            //Common Functions
             self.getCurrentTime=()=>{
                 var now = new Date()
                 var hours = now.getHours();
@@ -79,80 +60,33 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 return `${hours}:${minutes} ${suffix}`;
             }
 
-            self.getWorkingPattern=()=>{
-                $.ajax({
-                    url: BaseURL + "/getEmployeeWorkingPattern",
-                    type: 'POST',
-                    data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
-                    }),
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
-                    context: self,
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log(textStatus);
-                    },
-                    success: function (data) {
-                        console.log(data);
-                        if(data.length!=0){
-                            let startTime=data[0].start_time
-                            let finishTime=data[0].finish_time
-                            startTime=self.convertTo12HourFormat(startTime)
-                            finishTime=self.convertTo12HourFormat(finishTime)
-                            self.workingTimePattern(`${startTime} to ${finishTime}`)
-                        }
-                    }
-                });
+            self.timeToseconds=(time)=>{
+                let [hours, minutes, seconds] = time.split(':').map(Number);
+                return hours * 3600 + minutes * 60 + seconds;
             }
 
-            self.getEmployeeClockinData=()=>{
-                self.employeClockinData([]);
+            self.secondsToTime=(totalSeconds)=> {
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+                
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            self.changeLeaveBalance = ()=>{
                 $.ajax({
-                    url: BaseURL + "/getCurrentDayEmployeeClockinDetail",
+                    url: BaseURL+"/HRModuleChangeLeaveBalance",
                     type: 'GET',
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: sessionStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
-                        console.log(textStatus);
-                        document.getElementById('loaderView').style.display = 'none';
+                        console.log("Error fetching :", textStatus); // Log any error
                     },
                     success: function (data) {
-                        if (data.length != 0) { 
-                            for (var i = 0; i < data.length; i++) {
-                                let clockInStatus=data[i][4] 
-                                let breakStatus = data[i][5];   
-                                if (clockInStatus=="clockIn"){
-                                    clockInStatus="Done"
-                                }
-                                else if(clockInStatus=="clockOut"){
-                                    clockInStatus="Clocked Out"
-                                }
-                                if(breakStatus=="break"){
-                                    clockInStatus="Break"
-                                }
-                                self.employeClockinData.push({
-                                    id: data[i][0], 
-                                    name: `${data[i][1]} ${data[i][2]}`, 
-                                    email: data[i][3],
-                                    status: clockInStatus
-                                })
-                                if(data[i][0]==sessionStorage.getItem("userId")){
-                                    let userName = `${data[i][1]} ${data[i][2]}`
-                                    userName = userName.charAt(0).toUpperCase() + userName.slice(1)
-                                    self.userName(userName)
-                                }
-                            }
-                        }
+                        // console.log(data);
                     }
-                });
+                })
             }
-            
-            self.employeClockinDataProvider = new ArrayDataProvider(self.employeClockinData, {
-                keyAttributes: 'id'
-            }); 
 
             self.checkEmployeClockedIn=async ()=>{
                 let totalBreakTime = await self.getTotalBreakTime()
@@ -176,8 +110,6 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         console.log(textStatus);
                     },
                     success: function (data) {
-                        console.log(data);
-                        
                         if(data[0]==1 && data[1]=="clockIn"){
                             self.clockInBtnDisabled(true);
                             if(self.running()){
@@ -212,11 +144,48 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                             document.getElementById('clockOut').style.backgroundColor = '#ff3a29bd';
                             document.getElementById('clockIn').style.backgroundColor = '#3524ff';
                         }
-                        console.log(self.clockInBtnDisabled());
                     }
                 });
             }
 
+            //Clockin Working Pattern section
+            self.workingTimePattern=ko.observable()
+            self.workStartTime=ko.observable();
+            self.workFinishTime=ko.observable();
+            self.getWorkingPattern=()=>{
+                $.ajax({
+                    url: BaseURL + "/getEmployeeWorkingPattern",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        staffId: sessionStorage.getItem("userId")
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        if(data.length!=0){
+                            let startTime=data[0].start_time
+                            self.workStartTime(startTime);
+                            let finishTime=data[0].finish_time
+                            self.workFinishTime(finishTime);
+                            startTime=self.convertTo12HourFormat(startTime)
+                            finishTime=self.convertTo12HourFormat(finishTime)
+                            self.workingTimePattern(`${startTime} to ${finishTime}`)
+                        }
+                    }
+                });
+            }
+
+            //Clockin Section clockin/out btn
+            self.clockInTime=ko.observable(0)
+            self.checkIn=ko.observable(false);
+            self.clockInBtnDisabled=ko.observable(false)
+            self.clockOutBtnDisabled=ko.observable(true)
+            
             self.getLocation=()=>{
                 return new Promise((resolve, reject) => {
                     if ("geolocation" in navigator) {
@@ -270,6 +239,101 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 });
             }
 
+            // Late Clockin Setup
+            self.checkClockinTime=()=>{
+                var now=new Date
+                const [targetHours, targetMinutes, targetSeconds] = self.workStartTime().split(':').map(Number);
+                const targetTime = new Date();
+                targetTime.setHours(targetHours, targetMinutes, targetSeconds || 0);
+                const timeDifference = now - targetTime;
+                const differenceInMinutes = Math.abs(timeDifference / 1000 / 60);
+                
+                if (differenceInMinutes > 30) {
+                    document.querySelector('#lateClockinPopup').open();
+                }
+                else{
+                    self.clockInAction();
+                }
+            }
+
+            self.lateClockinSubmit=async ()=>{
+                let output = document.getElementById('lateClockinOutput');
+                let content = "<p>Hi,</p>"
+                content+=`<p>This is to inform you that ${self.userName()} clocked in late today. Below are the details:</p>`
+                content+=`<p>Employee Id : ${sessionStorage.getItem("userId")}`
+
+                let reasonHTML = output.innerHTML;
+                const currentDate = new Date();
+                const day = String(currentDate.getDate()).padStart(2, '0');
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+                const year = currentDate.getFullYear();
+                const formattedDate = `${day}/${month}/${year}`;
+
+                var now=new Date
+                var hours = now.getHours().toString().padStart(2, '0');;
+                var minutes = now.getMinutes().toString().padStart(2, '0');
+                var seconds = now.getSeconds().toString().padStart(2, '0');
+
+                content+=`<p>Date : ${formattedDate}</p>`
+                content+=`<p>Scheduled Clock-In Time: ${self.workStartTime()}</p>`
+                content+=`<p>Clock-In Time: ${hours}:${minutes}:${seconds}</p>`
+                content+=`<p>Reason :- ${reasonHTML}</p>`
+                content+=`<p>Please take note of this incident for further action if necessary.</p><br>`
+                content+=`<p>Kind Regards,</p><p>UAN Global</p>`
+                
+                let contentSubject = `Late Clock-In: ${self.userName()} - ${formattedDate}`;
+
+                let location = "Location not available";
+                let longitude = "";
+                let latitude = "";
+                try {
+                    [location, longitude, latitude] = await self.getLocation();
+                } catch (error) {
+                    console.warn("Failed to fetch location data:", error);
+                }
+                var now=new Date
+                var hours = now.getHours();
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+                self.clockInTime(`${hours}:${minutes}:${seconds}`) 
+                console.log(contentSubject);
+
+                if(reasonHTML!=""){
+                    let loader = document.getElementById("loaderPopup");
+                    loader.open();
+                    $.ajax({
+                        url: BaseURL+"/sendLateClockinReason",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                            content : content,
+                            subject : contentSubject,
+                            clockinTime: `${hours}:${minutes}:${seconds}`,
+                            clockinLocation: location,
+                            clockinLongitude: longitude,
+                            clockinLatitude: latitude,
+                            clockInStatus: "clockIn"
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            let loader = document.getElementById("loaderPopup");
+                            loader.close();
+                            self.lateClockinPopupClose();
+                            self.clockInAction();
+                        }
+                    })
+                }
+            }
+
+            self.lateClockinPopupClose=()=>{
+                document.querySelector('#lateClockinPopup').close();
+            }
+
             self.clockInAction=async (e)=>{
                 let location = "Location not available";
                 let longitude = "";
@@ -284,7 +348,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 var minutes = now.getMinutes();
                 var seconds = now.getSeconds();
                 self.clockInTime(`${hours}:${minutes}:${seconds}`) 
-
+                
                 document.getElementById('clockIn').style.backgroundColor = '#6c5ffca8';
                 document.getElementById('clockOut').style.backgroundColor = '#ff3a29';
                 self.clockInBtnDisabled(true)
@@ -318,16 +382,107 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }
                 });          
             }
+            
+            // setup early clockout
+            self.checkClockOutTime=()=>{
+                var now=new Date
+                const [targetFinishHours, targetFinishMinutes, targetFinishSeconds] = self.workFinishTime().split(':').map(Number);
+                const finishTime = new Date();
+                finishTime.setHours(targetFinishHours, targetFinishMinutes, targetFinishSeconds || 0);
+                const timeDifference = finishTime - now;
+                const differenceInMinutes = timeDifference / 1000 / 60;
+                
+                if (differenceInMinutes > 30) {
+                    document.querySelector('#earlyClockoutPopup').open();
+                }
+                else{
+                    self.clockOutAction();
+                }
+            }
+
+            self.earlyClockoutNext=()=>{
+                let output = document.getElementById('earlyClockOutOutput');
+                let reasonHTML = output.innerHTML;
+                if(reasonHTML!=""){
+                    self.earlyClockOutPopupClose();
+                    document.querySelector('#dailyReportPopUp').open();
+                }
+                else{
+                    document.getElementById("early_error").style.display="block"
+                }
+            }
+
+            self.earlyClockOutSubmit=()=>{
+                return new Promise((resolve, reject) => {
+                    let output = document.getElementById('earlyClockOutOutput');
+                    let content = "<p>Hi,</p>"
+                    content+=`<p>This is to inform you that ${self.userName()} clocked out early today. Below are the details:</p>`
+                    content+=`<p>Employee Id : ${sessionStorage.getItem("userId")}`
+
+                    let reasonHTML = output.innerHTML;
+                    const currentDate = new Date();
+                    const day = String(currentDate.getDate()).padStart(2, '0');
+                    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+                    const year = currentDate.getFullYear();
+                    const formattedDate = `${day}/${month}/${year}`;
+
+                    var now=new Date
+                    var hours = now.getHours().toString().padStart(2, '0');;
+                    var minutes = now.getMinutes().toString().padStart(2, '0');
+                    var seconds = now.getSeconds().toString().padStart(2, '0');
+
+                    content+=`<p>Date : ${formattedDate}</p>`
+                    content+=`<p>Scheduled Clock-Out Time: ${self.workFinishTime()}</p>`
+                    content+=`<p>Clock-Out Time: ${hours}:${minutes}:${seconds}</p>`
+                    content+=`<p>Reason :- ${reasonHTML}</p>`
+                    content+=`<p>Please take note of this incident for further action if necessary.</p><br>`
+                    content+=`<p>Kind Regards,</p><p>UAN Global</p>`
+
+                    let contentSubject = `Early Clock-Out: ${self.userName()} - ${formattedDate}`;
+                    
+                    if(reasonHTML!=""){
+                        let loader = document.getElementById("loaderPopup");
+                        loader.open();
+                        $.ajax({
+                            url: BaseURL+"/sendEarlyClockOut",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                staffId : sessionStorage.getItem("userId"),
+                                content : content,
+                                subject : contentSubject,
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                let loader = document.getElementById("loaderPopup");
+                                loader.close();
+                                resolve('Success');
+                            }
+                        })
+                    }
+                })
+            }
+
+            self.earlyClockOutPopupClose=()=>{
+                document.querySelector('#earlyClockoutPopup').close();
+            }
 
             self.clockOutAction=()=>{
-                let popup = document.getElementById('clockOutPopup');
-                popup.open();
+                document.querySelector('#dailyReportPopUp').open();
+                // let popup = document.getElementById('clockOutPopup');
+                // popup.open();
             }
 
             self.confirmClockOut=async ()=>{
                 let location = "Location not available";
                 let longitude = "";
                 let latitude = "";
+                let loader = document.getElementById("loaderPopup");
+                loader.open();
                 try {
                     [location, longitude, latitude] = await self.getLocation();
                 } catch (error) {
@@ -355,6 +510,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 self.breakStartBtnDisable(true)
                 self.breakStopBtnDisable(true)
                 self.checkIn(false);
+                
                 $.ajax({
                     url: BaseURL + "/ClockoutActivity",
                     type: 'POST',
@@ -378,6 +534,8 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         console.log(data);
                         self.getEmployeeClockinData()
                         self.cancelClockOut();
+                        let loader = document.getElementById("loaderPopup");
+                        loader.close();
                     }
                 });
             }
@@ -386,6 +544,15 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 let popup = document.getElementById('clockOutPopup');
                 popup.close();
             }
+
+            //Break Section
+            self.breakStartTime=ko.observable()
+            self.breakInterval=ko.observable();
+            self.running=ko.observable(false)
+            self.breakStartBtnDisable=ko.observable(false)
+            self.breakStopBtnDisable=ko.observable(true)
+            self.breakTime=ko.observable(0)
+            self.formatedBreakTimeStore=ko.observable()
 
             self.getTotalBreakTime=()=>{
                 return new Promise((resolve, reject) => {
@@ -424,6 +591,12 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             self.runBreakTime=()=>{
                 const now = new Date();
                 const elapsedTime = now - self.breakStartTime(); 
+                
+                const seconds = Math.floor((elapsedTime / 1000) % 60);
+                const minutes = Math.floor((elapsedTime / 1000 / 60) % 60);
+                const hours = Math.floor((elapsedTime / 1000 / 60 / 60) % 24);
+                self.formatedBreakTimeStore(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`)
+                
                 // self.breakTime(elapsedTime)
                 if (elapsedTime <= 3600000) {
                     self.breakTime(elapsedTime);
@@ -446,7 +619,6 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 const seconds = Math.floor((elapsedTime / 1000) % 60);
                 const minutes = Math.floor((elapsedTime / 1000 / 60) % 60);
                 const hours = Math.floor((elapsedTime / 1000 / 60 / 60) % 24);
-
                 return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             });
 
@@ -498,14 +670,19 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     var hours = now.getHours();
                     var minutes = now.getMinutes();
                     var seconds = now.getSeconds();
-
+                    
+                    let totalBreakTime=await self.getTotalBreakTime();
+                    let totalBreakSeconds = self.timeToseconds(self.formatedBreakTimeStore())+self.timeToseconds(totalBreakTime)
+                    totalBreakTime=self.secondsToTime(totalBreakSeconds)
+                    
                     $.ajax({
                         url: BaseURL + "/addBreakOutDetails",
                         type: 'POST',
                         data: JSON.stringify({
                             staffId: sessionStorage.getItem("userId"),
                             breakOutTime: `${hours}:${minutes}:${seconds}`,
-                            breakStatus: "breakOut"
+                            breakStatus: "breakOut",
+                            totalBreakTime: totalBreakTime
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
@@ -515,7 +692,6 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                             console.log(textStatus);
                         },
                         success: async function (data) {
-                            console.log(data); 
                             let totalBreakTime = await self.getTotalBreakTime()
                             const timeParts = totalBreakTime.split(':'); 
                             const hours = parseInt(timeParts[0], 10);
@@ -567,7 +743,12 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }
                 });
             }
-            
+
+            //Attendance and leaves section
+            self.totalLeaves=ko.observable(0);
+            self.leavesTaken=ko.observable(0);
+            self.leavesRemaining=ko.observable(0);
+
             self.getLeaveDetails=()=>{
                 $.ajax({
                     url: BaseURL + "/getLeavesDetails",
@@ -595,25 +776,158 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 });
             }
 
-            self.changeLeaveBalance = ()=>{
-                $.ajax({
-                    url: BaseURL+"/HRModuleChangeLeaveBalance",
-                    type: 'GET',
-                    timeout: sessionStorage.getItem("timeInetrval"),
-                    context: self,
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log("Error fetching :", textStatus); // Log any error
-                    },
-                    success: function (data) {
-                        // console.log(data);
-                    }
-                })
-            }
-
             self.applyLeave=()=>{
                 self.router.go({path : 'leaves'});     
             }
 
+            //Apply Week off section
+            self.weekoffDay = ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date()));
+            self.min = ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date());
+            
+            self.applyWeekOff=()=>{
+                document.querySelector('#weekOffPopup').open();
+            }
+
+            self.weekOffSumbit=()=>{
+                const formValid = self._checkValidationGroup("weekOffValidation");
+                if (formValid) {
+                    let loader = document.getElementById("loaderPopup");
+                    loader.open();
+                    $.ajax({
+                        url: BaseURL+"/addWeekOffDetails",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                            weekOffDay : self.weekoffDay()
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            self.closeWeekOff()
+                            let loader = document.getElementById("loaderPopup");
+                            loader.close();
+                            let popup1 = document.getElementById("Success_Message");
+                            popup1.open();
+                        }
+                    })
+                }
+            }
+
+            self._checkValidationGroup = (value) => {
+                const tracker = document.getElementById(value);
+                if (tracker.valid === "valid") {
+                    return true;
+                }
+                else {
+                    tracker.showMessages();
+                    tracker.focusOn("@firstInvalidShown");
+                    return false;
+                }
+            };
+
+            self.closeWeekOff=()=>{
+                document.querySelector('#weekOffPopup').close();
+            }
+
+            self.successMessageClose=()=>{
+                let popup1 = document.getElementById("Success_Message");
+                popup1.close();
+            }
+
+            //Clocked in table section
+            self.employeClockinData = ko.observableArray([]);
+            self.getEmployeeClockinData=()=>{
+                self.employeClockinData([]);
+                $.ajax({
+                    url: BaseURL + "/getCurrentDayEmployeeClockinDetail",
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                        document.getElementById('loaderView').style.display = 'none';
+                    },
+                    success: function (data) {
+                        if (data.length != 0) { 
+                            for (var i = 0; i < data.length; i++) {
+                                let clockInStatus=data[i][4] 
+                                let breakStatus = data[i][5];   
+                                if (clockInStatus=="clockIn"){
+                                    clockInStatus="Done"
+                                }
+                                else if(clockInStatus=="clockOut"){
+                                    clockInStatus="Clocked Out"
+                                }
+                                if(breakStatus=="break"){
+                                    clockInStatus="Break"
+                                }
+                                self.employeClockinData.push({
+                                    id: data[i][0], 
+                                    name: `${data[i][1]} ${data[i][2]}`, 
+                                    email: data[i][3],
+                                    status: clockInStatus
+                                })
+                                if(data[i][0]==sessionStorage.getItem("userId")){
+                                    let userName = `${data[i][1]} ${data[i][2]}`
+                                    userName = userName.charAt(0).toUpperCase() + userName.slice(1)
+                                    self.userName(userName)
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            self.employeClockinDataProvider = new ArrayDataProvider(self.employeClockinData, {
+                keyAttributes: 'id'
+            });
+
+            //Announcement Section
+            self.announcements = ko.observableArray()
+            self.getAnnouncements=()=>{
+                self.announcements([]);
+                $.ajax({
+                    url: BaseURL + "/getAnnouncements",
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInterval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                        document.getElementById('loaderView').style.display = 'none';
+                    },
+                    success: function (data) {
+                        if (data.length != 0) {
+                            for(let i=0;i<data.length;i++){
+                                let noticeHeading = data[i].notice_name.charAt(0).toUpperCase() + data[i].notice_name.slice(1);
+                                let noticeDescription = data[i].notice_description.charAt(0).toUpperCase() + data[i].notice_description.slice(1);
+                                self.announcements.push({
+                                    name: data[i].fullname, 
+                                    notice_heading: noticeHeading,
+                                    notice_description: noticeDescription,
+                                    created_date : data[i].created_date
+                                })
+                            }
+                        }
+                    }
+                });
+            }
+
+            // setInterval(function(){
+            //     self.getAnnouncements()
+            // },10000)
+            self.announcementDataProvider = new ArrayDataProvider(self.announcements, {
+                keyAttributes: 'id'
+            });
+            
+            //Holidays Section
+            self.holidays = ko.observableArray([]);
             self.monthHolidays = ()=>{
                 self.holidays([])
                 $.ajax({
@@ -638,12 +952,12 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }
                 })
             }
-
             self.holidayListDataProvider = new ArrayDataProvider(self.holidays, {
                 keyAttributes: "id",
             });
 
-            
+            //Absent Employees Section
+            self.absentEmployees = ko.observableArray([]);
             self.getAbsentEmployees = ()=>{
                 self.absentEmployees([])
                 $.ajax({
@@ -661,19 +975,143 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                                     id: data[i][0],
                                     name: `${data[i][1]} ${data[i][2]}`,
                                     department: data[i][3],
-                                    day: data[i][4]
+                                    day: data[i][4],
+                                    status: data[i][5]
                                 })
                             }
                         }
                     }
                 })
             }
-
             self.absentEmployeeListDataProvider = new ArrayDataProvider(self.absentEmployees, {
                 keyAttributes: "id",
             });
-            
-            
+
+
+            //Task Details Section
+            self.selectedTab=ko.observable("my_task")
+            self.TaskDet = ko.observableArray([]);
+            self.chartTaskData = ko.observableArray([]);
+            self.getSeriesColor = function(seriesId) {
+                switch(seriesId) {
+                    case "Pending Tasks":
+                        return '#FFAA00';
+                    case "Tasks Done":
+                        return '#34B53A';
+                    case "Progress Tasks":
+                        return '#007BFF';
+                    case "Dropped Tasks":
+                        return '#FF3A29';
+                    default:
+                        return '#808080';
+                }
+            };
+
+            self.getStaffTaskView=()=>{
+                self.TaskDet([]);
+                self.chartTaskData([]);
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetStaffTaskList",
+                    type: 'POST',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    data: JSON.stringify({
+                        staffId : sessionStorage.getItem("userId")
+                    }),
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        var statusCount=data[3];
+
+                        self.chartTaskData.push(
+                            {"id": 0,"series": "Pending Tasks","group": "Group A","value": statusCount[0][0]},
+                            {"id": 1,"series": "Tasks Done","group": "Group A","value": statusCount[0][2]},
+                            {"id": 2,"series": "Progress Tasks","group": "Group A","value": statusCount[0][1]},
+                            {"id": 3,"series": "Dropped Tasks","group": "Group A","value": statusCount[0][3]}
+                        )
+
+                        data = JSON.parse(data[0]);
+                        if(data.length!=0){
+                            for (var i = 0; i < data.length; i++) {
+                                let created_date=data[i][7]
+                                const dateObject = new Date(created_date.replace(' ', 'T'));
+                                const day = ('0' + dateObject.getDate()).slice(-2);
+                                const month = ('0' + (dateObject.getMonth() + 1)).slice(-2);
+                                const year = dateObject.getFullYear();
+                                
+                                self.TaskDet.push({
+                                    'slno': i+1,
+                                    'id': data[i][0],
+                                    'employee_id': data[i][1], 
+                                    'task_name': data[i][2],
+                                    'due_date': data[i][3],
+                                    'priority': data[i][4], 
+                                    'owner': data[i][8] + " "+ data[i][9] +" "+ data[i][10],
+                                    'status': data[i][6],
+                                    'created_date': `${day}/${month}/${year}`,
+                                    'reminder_date': data[i][11]
+                                });
+                                
+                            }
+                            
+                        }
+                    }
+                })
+            }
+
+            self.TaskList = new ArrayDataProvider(self.TaskDet, { keyAttributes: "id"});
+            self.taskChartDataProvider = new ArrayDataProvider(self.chartTaskData, {
+                keyAttributes: 'id'
+            });
+
+            // Employee Task
+            self.employeeTaskDet = ko.observableArray([])
+            self.getEmployeeTaskCount=()=>{
+                self.employeeTaskDet([]);
+                $.ajax({
+                    url: BaseURL+"/getLinemanagerEmployeeTaskCount",
+                    type: 'POST',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    data: JSON.stringify({
+                        staffId : sessionStorage.getItem("userId")
+                    }),
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if(data.length!=0){
+                            for (var i = 0; i < data[0].length; i++) {
+                                self.employeeTaskDet.push({
+                                    'slno': i+1,
+                                    'photo':data[0][i][0],
+                                    'id': data[0][i][1],
+                                    'name': data[0][i][2], 
+                                    'designation': data[0][i][3],
+                                    'role': data[0][i][4],
+                                    'task_count': data[0][i][5],
+                                    'profile_photo': 'data:image/jpeg;base64,' + data[1][i]
+                                });
+                                
+                            }
+                            
+                        }
+                    }
+                })
+            }
+            self.employeeTaskCountData = new ArrayDataProvider(self.employeeTaskDet, { keyAttributes: "id"});
+
+            self.goToTaskView = (event,data)=>{
+                var clickedStaffId = data.item.data.id
+                sessionStorage.setItem("staffId", clickedStaffId);
+                self.router.go({path:'taskView'})
+            }
+
+
+            //Employee Leave Request section
+            self.employeeLeaveRequest = ko.observableArray([]);
             self.getEmployeeLeaveRequests = ()=>{
                 self.employeeLeaveRequest([])
                 $.ajax({
@@ -751,6 +1189,107 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 })
             }
 
+            //Report Editor
+            self.toolBtnClick=(e)=>{
+                let btn=e.currentTarget;
+                let cmd = btn.dataset['command'];
+                if (cmd === 'createlink') {
+                    let url = prompt("Enter the link here: ", "http:\/\/");
+                    document.execCommand(cmd, false, url);
+                } else {
+                    document.execCommand(cmd, false, null);
+                }
+            }
+
+            self.addDoneTasks = ko.observable(false);
+            self.changeDoneTask = ko.computed(()=>{
+                if(self.addDoneTasks()){
+                    let output = document.getElementById('dailyReportOutput');
+                    let content = "<div id='pending-task-content'><p style='font-size: 18px;'>Pending tasks today Done</p>"
+                    content += "<ul>"
+
+                    $.ajax({
+                        url: BaseURL+"/getDoneTaskReports",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            if(data.length!=0){
+                                for(var i=0;i<data.length;i++){
+                                    content += `<li>${data[i][1]}</li>`
+                                }
+                            }
+                            content += "</ul></div>";
+                            let output = document.getElementById('dailyReportOutput');
+                            output.innerHTML += content;
+                        }
+                    })
+                }
+                else{
+                    let pending_task = document.getElementById('pending-task-content');
+                    if(pending_task){
+                        pending_task.remove();
+                    }
+                }
+            })
+
+            self.closeDailyReport=()=>{
+                document.querySelector('#dailyReportPopUp').close();
+            }
+
+            self.dailyReportSubmit=async ()=>{
+                let earlyReasonoutput = document.getElementById('earlyClockOutOutput');
+                let reasonHTML = earlyReasonoutput.innerHTML;
+                if(reasonHTML!=""){
+                    let submitEarlyClockOut = await self.earlyClockOutSubmit();
+                }
+                let output = document.getElementById('dailyReportOutput');
+                let reportHTML = output.innerHTML;
+                // let reportText = output.textContent;
+                const currentDate = new Date();
+                const day = String(currentDate.getDate()).padStart(2, '0');
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+                const year = currentDate.getFullYear();
+                const formattedDate = `${day}/${month}/${year}`;
+                let contentSubject = `Daily Report(${formattedDate}) - ${self.userName()}`;
+                console.log(contentSubject);
+                if(reportHTML!=""){
+                    let loader = document.getElementById("loaderPopup");
+                    loader.open();
+                    $.ajax({
+                        url: BaseURL+"/sendDailyReport",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                            content : reportHTML,
+                            subject : contentSubject
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            let loader = document.getElementById("loaderPopup");
+                            loader.close();
+                            self.closeDailyReport();
+                            self.confirmClockOut();
+                        }
+                    })
+                }
+            }
+
+
+            //App Common Functions
             self.rewriteUrl=(url)=> {
                 if (url.includes('/Hr')) {
                     return url;
@@ -782,6 +1321,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 else {
                     self.checkEmployeClockedIn();
                     self.getEmployeeClockinData();
+                    self.getAnnouncements();
                     self.getBreakDetails();
                     self.getWorkingPattern();
                     self.getLeaveDetails();
@@ -789,6 +1329,8 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     self.monthHolidays();
                     self.getAbsentEmployees();
                     self.getEmployeeLeaveRequests();
+                    self.getStaffTaskView();
+                    self.getEmployeeTaskCount();
                     app.onAppSuccess();
 
                     if(window.location.pathname=='/Hr'){
@@ -813,7 +1355,6 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     
                 }
             };
-            
         }
         getItemInitialDisplay(index) {
             return index < 1 ? "" : "none";

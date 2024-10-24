@@ -69,6 +69,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             document.getElementById('loaderView').style.display='none';
+                            document.getElementById('actionView').style.display='block';
                             console.log(data)
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
@@ -95,6 +96,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 self.yearList = new ArrayDataProvider(this.GoalYearDet, { keyAttributes: "value"});
+                self.dataProvider = new ArrayDataProvider(this.GoalDet, { keyAttributes: "id"});
 
                 self.formSubmit = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
@@ -149,76 +151,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.querySelector('#openAddGoal').open();
                 }
 
-                self.filterYearCallCount = 0; // Initialize counter
-                // Debounce function to limit calls to filterYear
-                function debounce(func, wait) {
-                    let timeout;
-                    return function (...args) {
-                        const context = this;
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => func.apply(context, args), wait);
-                    };
-                }
-
-                self.filterYear = debounce(function () {
-                    self.GoalDet([]);
-                    self.filterYearCallCount++; // Increment counter
-
-                    if(self.yearFilter() == ''){
-                        const currentYear = new Date().getFullYear();
-                        console.log(currentYear);
-                        self.yearFilter(currentYear)
-                    }
-                    if (self.yearFilter() != '' ) {
-                        if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                            self.GoalDet([]);
-                        }
-                        document.getElementById('loaderView').style.display='block';
-                        $.ajax({
-                            url: BaseURL  + "/HRModuleGetYearGoalFilterList",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                staffId : sessionStorage.getItem("userId"),
-                                year : self.yearFilter()
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function (xhr, textStatus, errorThrown) {
-                                if(textStatus == 'timeout' || textStatus == 'error'){
-                                    document.querySelector('#TimeoutSup').open();
-                                }
-                            },
-                            success: function (data) {
-                                document.getElementById('loaderView').style.display='none';
-                                document.getElementById('actionView').style.display='block';
-                                console.log(data)
-                                if(data[0].length !=0){ 
-                                    if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                                        self.GoalDet([]);
-                                    }
-
-                                    for (var i = 0; i < data[0].length; i++) {
-                                        self.GoalDet.push({
-                                            'no': i+1,
-                                            'id': data[0][i][0],
-                                            'goal_subject': data[0][i][1],
-                                            'description': data[0][i][2],
-                                            'start_date': data[0][i][3],
-                                            'end_date': data[0][i][4],
-                                            'status': data[0][i][5],
-                                            'admin_status': data[0][i][6],
-                                        });
-                                    }
-                                }
-                        }
-                        })
-                    }
-                       
-                }, 10); // 1-second debounce delay
-
-                self.dataProvider = new ArrayDataProvider(this.GoalDet, { keyAttributes: "id"});
-
                 self.status = ko.observable();
                 self.statusList = ko.observableArray([]);
                 self.statusList.push(
@@ -236,6 +168,53 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     console.log(rowId)
                     sessionStorage.setItem("goalId", rowId);
                     self.router.go({path:'goalsView'})
+                }
+
+                self.datePicker = {
+                    numberOfMonths: 1
+                };
+
+                self.fromDate = ko.observable('')
+                self.toDate = ko.observable('')
+
+                self.showData = ()=>{
+                    self.GoalDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    let fromDate = self.fromDate()
+                    let toDate = self.toDate();
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetGoalListFilter",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("userId"),
+                            fromDate : fromDate,
+                            toDate : toDate
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            if(data[0].length !=0){
+                                for (var i = 0; i < data[0].length; i++) {
+                                    self.GoalDet.push({
+                                        'no': i+1,
+                                        'id': data[0][i][0],
+                                        'goal_subject': data[0][i][1],
+                                        'description': data[0][i][2],
+                                        'start_date': data[0][i][3],
+                                        'end_date': data[0][i][4],
+                                        'status': data[0][i][5],
+                                        'admin_status': data[0][i][6],                                 
+                                    }); 
+                                } 
+                            }
+                        }
+                    })
                 }
 
                 self.rewriteUrl=(url)=> {

@@ -154,6 +154,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.fromDatePurchase = ko.observable('')
                 self.toDatePurchase = ko.observable('')
 
+
+                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencies = [
+                    {"label":"USD","value":"USD"},
+                    {"label":"INR","value":"INR"},
+                    {"label":"GBP","value":"GBP"},
+                    {"label":"AED","value":"AED"}
+                ]
+
+                self.currencyList = new ArrayDataProvider(self.currencies, {
+                    keyAttributes: 'value'
+                });
+                self.estimatedPriceConvert = ko.observable('')
+                self.editEstimatedPriceConvert = ko.observable('')
+
+
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
@@ -230,6 +246,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.currencyType('($)')
                             }else if(sessionStorage.getItem("currency") =='GBP'){
                                 self.currencyType('(£)')
+                            }else if(sessionStorage.getItem("currency") =='AED'){
+                                self.currencyType('(د.إ)')
                             }
                             self.estimatedAmountHeaderText('Estimated Amount' + self.currencyType())
                             self.totalAmountHeaderText('Total Amount' + self.currencyType())
@@ -592,6 +610,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.editSecondaryText(data[5])
                             self.editFileCheck(data[5])
                             self.editEstimatedPrice(data[6])
+                            self.editEstimatedPriceConvert(data[6])
                             self.editStatus(data[7])
                             self.deniedNotes(data[8])
                             self.paymentStatus(data[9])
@@ -682,16 +701,106 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.router.go({path:'purchaseClosure'})
                     }
 
-                    self.priceValidate = (event)=>{
-                        var ASCIICode= event.detail.value
-                        var check = /^\d+(\.\d+)?$/.test(ASCIICode);
-                        //console.log(check)
-                        if (check == true){
-                            self.numError('')
-                        }else{
-                            self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
+                    self.priceValidate = async (event) => {
+                        var inputValue = event.detail.value;  // Use a more descriptive variable name
+                        var isValidNumber = /^\d+(\.\d+)?$/.test(inputValue);
+                    
+                        if (isValidNumber) {
+                            self.numError('');  // Clear the error message if input is valid
+                            await convertCurrency(inputValue,self.currencySelected());  // Pass the input value to the conversion function
+                        } else {
+                            self.estimatedPrice('')
+                            self.numError("Please enter a valid number. Decimals are allowed (e.g., 12.34).");
+                        }
+                    };
+                    
+                    async function convertCurrency(amount, sourceCurrency) {
+                        const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                        const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
+                    
+                        try {
+                            let response = await fetch(url); // Use browser's fetch API
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            let data = await response.json();
+                    
+                            console.log(data.rates);
+                    
+                            // Check if the target currency exists in the rates
+                            if (targetCurrency in data.rates) {
+                                const conversionRate = data.rates[targetCurrency];
+                                console.log(`1 ${sourceCurrency} = ${conversionRate} ${targetCurrency}`);
+                    
+                                // Convert the entered amount from source currency to target currency
+                                let amountInConvertedCurrency = amount * conversionRate;
+                                console.log(`${amount} ${sourceCurrency} = ${amountInConvertedCurrency.toFixed(2)} ${targetCurrency}`);
+                    
+                                // Update the UI with the converted value
+                                self.estimatedPrice(`${amountInConvertedCurrency.toFixed(2)}`);
+                            } else {
+                                throw new Error(`Currency ${targetCurrency} is not supported.`);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching exchange rate:', error);
+                            self.numError('Failed to fetch exchange rate. Please try again later.');
                         }
                     }
+
+                    self.priceValidateEdit = async (event) => {
+                        var inputValue = event.detail.value;  // Use a more descriptive variable name
+                        var isValidNumber = /^\d+(\.\d+)?$/.test(inputValue);
+                        if (isValidNumber) {
+                            self.numError('');  // Clear the error message if input is valid
+                            await convertCurrencyEdit(inputValue,self.currencySelected());  // Pass the input value to the conversion function
+                        } else {
+                            self.editEstimatedPrice('')
+                            self.numError("Please enter a valid number. Decimals are allowed (e.g., 12.34).");
+                        }
+                    };
+                    
+                    async function convertCurrencyEdit(amount, sourceCurrency) {
+                        const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                        const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
+                    
+                        try {
+                            let response = await fetch(url); // Use browser's fetch API
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            let data = await response.json();
+                    
+                            console.log(data.rates);
+                    
+                            // Check if the target currency exists in the rates
+                            if (targetCurrency in data.rates) {
+                                const conversionRate = data.rates[targetCurrency];
+                                console.log(`1 ${sourceCurrency} = ${conversionRate} ${targetCurrency}`);
+                    
+                                // Convert the entered amount from source currency to target currency
+                                let amountInConvertedCurrency = amount * conversionRate;
+                                console.log(`${amount} ${sourceCurrency} = ${amountInConvertedCurrency.toFixed(2)} ${targetCurrency}`);
+                    
+                                // Update the UI with the converted value
+                                self.editEstimatedPrice(`${amountInConvertedCurrency.toFixed(2)}`);
+                            } else {
+                                throw new Error(`Currency ${targetCurrency} is not supported.`);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching exchange rate:', error);
+                            self.numError('Failed to fetch exchange rate. Please try again later.');
+                        }
+                    }
+                    
+                    
+                    self.clearText = () => {
+                        self.estimatedPriceConvert('')
+                        self.estimatedPrice('')
+                        self.editEstimatedPrice('')
+                        self.editEstimatedPriceConvert('')
+                    }
+
+
 
                     self.deniedNotesVal = ko.observable('')
                     self.statusUpdateList = (event,data)=>{

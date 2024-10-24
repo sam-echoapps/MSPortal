@@ -1,7 +1,7 @@
-define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils",
+define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojconverterutils-i18n", "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
      "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojtable","ojs/ojavatar","ojs/ojradioset","ojs/ojinputsearch","ojs/ojselectcombobox"], 
-    function (oj,ko,$, app, ArrayDataProvider, ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
+    function (oj,ko,$, app, ArrayDataProvider, ojconverterutils_i18n_1, ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
 
         class employees {
             constructor(args) {
@@ -24,7 +24,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.tabData1 = [
                     { id: "employee", label: "View Employees" },
                     { id: "addemployee", label: "Add Employee" },
-                    { id: "manage", label: "Manage Team" },
+                    // { id: "manage", label: "Manage Team" },
+                    { id: "report", label: "Get Report" },
                 ];
 
                 self.tabData2 = [
@@ -39,16 +40,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
+                        document.getElementById('loaderView').style.display = 'block';
                         self.getcompanycode();
                         self.getDesignation();
-                        self.getDepartment();
                         self.getDesignationList();
-                        self.getRoles();
-                        self.getTeamLeader();
-                        self.getTeamMembers();
-                        self.getTeamDetails();
                         self.getActiveInactive();
+                        self.getRoles();
                         self.getRolesDefault();
+                        self.getDepartmentReport();
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -75,9 +74,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.DesignationDet = ko.observableArray([]);
                 self.getDesignation = ()=>{
-                    document.getElementById('loaderView').style.display='block';
+                    // document.getElementById('loaderView').style.display='none';
                     document.getElementById('addemployee').style.display='none';
-                    document.getElementById('manage').style.display='none';
+                    // document.getElementById('manage').style.display='none';
+                    document.getElementById('report').style.display='none';
                     self.StaffDet([]);
                     $.ajax({
                         url: BaseURL+"/HRModuleGetDesignation",
@@ -86,12 +86,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
-                            document.getElementById('loaderView').style.display='none';
+                            // document.getElementById('loaderView').style.display='none';
                         },
                         success: function (data) {
-                            document.getElementById('loaderView').style.display='none';
+                            // document.getElementById('loaderView').style.display='none';
                             document.getElementById('addemployee').style.display='none';
-                            document.getElementById('manage').style.display='none';
+                            // document.getElementById('manage').style.display='none';
+                            document.getElementById('report').style.display='none';
                             console.log(data)
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
@@ -107,7 +108,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.companyCode = ko.observable();
 
                 self.getcompanycode = () => {
-                    document.getElementById('loaderView').style.display='block';
+                    // document.getElementById('loaderView').style.display='none';
                         $.ajax({
                             url: BaseURL + "/HRModuleGetCompanyCode",
                             type: 'GET',
@@ -116,10 +117,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log("Error fetching company code:", textStatus); // Log any error
                                 reject(textStatus);
-                                document.getElementById('loaderView').style.display = 'none';
+                                // document.getElementById('loaderView').style.display = 'none';
                             },
                             success: function (data) {
-                                document.getElementById('loaderView').style.display = 'none';
+                                // document.getElementById('loaderView').style.display = 'none';
                                 console.log(data);
                                 self.companyCode(data[0][0][0]);
                             }
@@ -129,7 +130,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.StaffDet = ko.observableArray([]);
 
                 self.getStaff = (status) => {
-                    // $('#loaderView').css('display', 'block');
+                    $('#loaderView').css('display', 'block');
                     self.status(status);
                     self.StaffDet([]);
                     $.ajax({
@@ -143,10 +144,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
-                            document.getElementById('loaderView').style.display = 'none';
+                            $('#loaderView').css('display', 'none');
                         },
                         success: function (data) {
-                            document.getElementById('loaderView').style.display = 'none';
+                            $('#loaderView').css('display', 'none');
                             document.getElementById('contentView').style.display = 'block';
                             document.getElementById('actionView').style.display = 'block';
                             document.getElementById('tableView').style.display = 'block';
@@ -204,7 +205,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.selectedTabAction = ko.computed(() => { 
                     self.designationFilter('')
-                    //self.search('') 
                     self.getStaff(self.selectedTab())
                 });
 
@@ -283,10 +283,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     //     self.designationFilter('0')
                     // }
                     if (self.designationFilter() != '' ) {
-                        document.getElementById('loaderView').style.display='block';
-                        document.getElementById('contentView').style.display='none';
-                        document.getElementById('actionView').style.display='none';
-                        document.getElementById('tableView').style.display='none';
+                        document.getElementById('loaderView').style.display='none';
                         self.StaffDet([]);
                         $.ajax({
                             url: BaseURL  + "/HRModuleGetDesignationFilterList",
@@ -303,12 +300,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 if(textStatus == 'timeout' || textStatus == 'error'){
                                     document.querySelector('#TimeoutSup').open();
                                 }
+                                document.getElementById('loaderView').style.display='none';
                             },
                             success: function (data) {
                                 document.getElementById('loaderView').style.display='none';
-                                document.getElementById('contentView').style.display='block';
-                                document.getElementById('actionView').style.display='block';
-                                document.getElementById('tableView').style.display='block';
                                 console.log(data)
 
                                 if(data[0].length !=0){ 
@@ -369,21 +364,35 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     })
                 }
 
-
                 self.selectedTabAction1 = ko.computed(() => { 
                 if(self.selectedTab1() == 'employee'){
                     $("#employee").show();
                     $("#addemployee").hide();
-                    $("#manage").hide();
+                    // $("#manage").hide();
+                    $("#report").hide();
                 }else if(self.selectedTab1() == 'addemployee'){
                     $("#employee").hide();
+                    self.getDepartment();
                     $("#addemployee").show();
-                    $("#manage").hide();
-                }else if(self.selectedTab1() == 'manage'){
+                    // $("#manage").hide();
+                    $("#report").hide();
+                }
+                // else if(self.selectedTab1() == 'manage'){
+                //     $("#employee").hide();
+                //     self.getTeams();
+                //     self.getTeamLeader();
+                //     self.getTeamMembers();
+                //     self.getTeamDetails();
+                //     $("#addemployee").hide(); 
+                //     $("#manage").show();
+                //     $("#report").hide();
+                // }
+                else if(self.selectedTab1() == 'report'){
                     $("#employee").hide();
-                    self.getTeams();
                     $("#addemployee").hide(); 
-                    $("#manage").show();
+                    // $("#manage").hide();
+                    getAllStaffReport();
+                    $("#report").show();
                 }
                 });
 
@@ -975,6 +984,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 self.getDepartment = ()=>{
+                    self.DepartmentDet([])
                     document.getElementById('loaderView').style.display = 'block';
                     $.ajax({
                         url: BaseURL+"/HRModuleGetDesignation",
@@ -1001,7 +1011,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.getDesignationList = ()=>{
                     self.DesignationDet2([]);
                     self.EmployeeDet([]);
-                    document.getElementById('loaderView').style.display = 'block';
+                    // document.getElementById('loaderView').style.display = 'none';
                     if(self.department() !=undefined){
                     $.ajax({
                         url: BaseURL+"/HRModuleGetDesignationList",
@@ -1014,10 +1024,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
-                            document.getElementById('loaderView').style.display = 'none';
+                            // document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
-                            document.getElementById('loaderView').style.display = 'none';
+                            // document.getElementById('loaderView').style.display = 'none';
                             console.log(data)
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
@@ -1037,6 +1047,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.employeeList = new ArrayDataProvider(this.EmployeeDet, { keyAttributes: "value"});
 
                 self.getRoles = ()=>{
+                    self.RolesDet([]);
                     document.getElementById('loaderView').style.display = 'block';
                     $.ajax({
                         url: BaseURL+"/HRModuleGetRoles2",
@@ -1217,6 +1228,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 self.getTeamLeader = ()=>{
+                    self.TeamLeaderDet([]);
                     document.getElementById('loaderView').style.display = 'block';
                     $.ajax({
                         url: BaseURL+"/HRModuleTeamLeader",
@@ -1242,6 +1254,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.team_Leader_List = new ArrayDataProvider(this.TeamLeaderDet, { keyAttributes: "value"});
 
                 self.getTeamMembers = ()=>{
+                    self.TeamMembersDet([]);
                     document.getElementById('loaderView').style.display = 'block';
                     $.ajax({
                         url: BaseURL+"/HRModuleTeamMembers",
@@ -1476,7 +1489,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.getActiveInactive = () => {
 
-                    document.getElementById('loaderView').style.display = 'block';
+                    // document.getElementById('loaderView').style.display = 'none';
                     $.ajax({
                         url: BaseURL + "/HRModuleGetActiveInactiveEmployees",
                         type: 'GET',
@@ -1485,10 +1498,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
-                            document.getElementById('loaderView').style.display = 'none';
+                            // document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
-                            document.getElementById('loaderView').style.display = 'none';
+                            // document.getElementById('loaderView').style.display = 'none';
                             console.log(data);
                             if (data && data.length > 0) {
                                 self.activeEmployees(data[0][0]);
@@ -1513,6 +1526,400 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             console.log(data)
                             document.getElementById('loaderView').style.display='none';
                             self.roles(data[0][0][0])
+                        }
+                    })
+                }
+
+                self.ReportDet = ko.observableArray([]);
+                self.statusFilter = ko.observable('');
+
+                self.statusOption = [
+                    {"label":"All","value":"All"},
+                    {"label":"Active","value":"Active"},
+                    {"label":"Inactive","value":"Inactive"},
+                ]
+
+                self.statusList = new ArrayDataProvider(self.statusOption, {
+                    keyAttributes: 'value'
+                });
+
+                self.reportFromDate=ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
+                self.reportToDate=ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date()));
+
+                self.DepartmentReportDet = ko.observableArray([]);
+                self.designationReport  = ko.observable('');
+                self.departmentReport  = ko.observable('');
+                self.departmentFilter  = ko.observable('');
+                self.departmentFilter(["All"])
+                self.designationFilterReport  = ko.observable('');
+                self.designationFilterReport(["All"])
+                self.staffFilter  = ko.observable('');
+                self.staffFilter(["All"])
+                self.statusFilter(["All"])
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const day = currentDate.getDate();
+                
+                self.fromDateMissing = ko.observable();
+                self.toDateMissing = ko.observable();
+                self.designationMissing = ko.observable();
+                self.staffMissing = ko.observable();
+
+                self.blob = ko.observable()
+                self.fileNameReport = ko.observable()
+
+                self.getDepartmentReport = ()=>{
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetDesignation",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            // Clear the DepartmentDet array before populating it
+                            if(data[1].length !=0){
+                                for (var i = 0; i < data[1].length; i++) {
+                                    self.DepartmentReportDet.push({'value': data[1][i][0],'label': data[1][i][1]  });
+                                }
+                                self.DepartmentReportDet.unshift({ value: 'All', label: 'All' });
+                            }
+                        }
+                    })
+                }
+                self.departmentListReport = new ArrayDataProvider(this.DepartmentReportDet, { keyAttributes: "value"});
+
+                self.DesignationReportDet = ko.observableArray([]);
+                self.StaffReportDet = ko.observableArray([]);
+
+                self.getDesignationFilterReport = ()=>{
+                    document.getElementById('loaderView').style.display='block';
+                    $.ajax({
+                        url: BaseURL+"/getDesignationWithDepartment",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            departmentId : self.departmentFilter()
+                        }),
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            document.getElementById('loaderView').style.display='none';
+                            self.DesignationReportDet([])
+                            if(data[0].length !=0){ 
+                                for (var i = 0; i < data[0].length; i++) {
+                                    var newValue = data[0][i][1]; 
+                                    var exists = self.DesignationReportDet().some(function (designationReport) {
+                                        return designationReport.value === newValue;
+                                    });
+
+                                    if (!exists) {
+                                        self.DesignationReportDet.push({
+                                            'value': newValue,
+                                            'label': data[0][i][1]
+                                        });
+                                    }
+                                }
+                                self.DesignationReportDet.unshift({ value: 'All', label: 'All' });
+                            }
+                        }
+                    })
+                }
+                self.designationListReport = new ArrayDataProvider(this.DesignationReportDet, { keyAttributes: "value"});
+ 
+                self.getStaffList = ()=>{
+                    self.designationMissing(""); 
+                    // document.getElementById('loaderView').style.display='block';
+                    if(self.designationFilterReport() !=''){
+                    $.ajax({
+                        url: BaseURL+"/getStaffWithSelection",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            departmentId : self.departmentFilter(),
+                            designationId : self.designationFilterReport()
+                        }),
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            document.getElementById('loaderView').style.display='none';
+                            console.log(data)
+                            self.StaffReportDet([])
+                            if(data[0].length !=0){ 
+                                for (var i = 0; i < data[0].length; i++) {
+                                    var newValue = data[0][i][0]; 
+                                    var exists = self.StaffReportDet().some(function (staff) {
+                                        return staff.value === newValue;
+                                    });
+
+                                    if (!exists) {
+                                        self.StaffReportDet.push({
+                                            'value': newValue,
+                                            'label': data[0][i][1] + " " + data[0][i][2] + " " + data[0][i][3]
+                                        });
+                                    }
+                                }
+                                self.StaffReportDet.unshift({ value: 'All', label: 'All' });
+                            }
+                        }
+                    })
+                }
+                }
+                self.staffListReport = new ArrayDataProvider(this.StaffReportDet, { keyAttributes: "value"});
+ 
+                self.clearStaffError = ()=>{
+                    self.staffMissing(""); 
+                }
+                function getAllStaffReport(){
+                    self.ReportDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetAllStaffReport",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            fromDate: self.reportFromDate(),
+                            toDate: self.reportToDate()
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display='none';
+                        },
+                        success: function (data) {
+                            document.getElementById('loaderView').style.display='none';
+                            document.getElementById('actionView2').style.display='block';
+                            if(data[0]!="No data found"){ 
+                                var csvContent = '';
+                                var headers = ['SL.NO', 'Name', 'Department', 'Designation', 'Phone','Email','Line Manager', 'Status','Total Worked Time', 'Total Worked Days', 'Total Break Time', 'Leaves Taken'];
+                                    csvContent += headers.join(',') + '\n';
+
+                                data = data[0];
+                                for (var i = 0; i < data.length; i++) { 
+                                    self.ReportDet.push({
+                                        'slno': i+1,
+                                        'name': data[i].firstName + " "+ data[i].middleName +" "+ data[i].lastName,
+                                        'designation': data[i].designation,
+                                        'department': data[i].department,
+                                        'phone': data[i].phone,
+                                        'email': data[i].email,
+                                        'status': data[i].status,
+                                        'total_worked_time':data[i].totalWorkTime,
+                                        'total_break_time': data[i].totalBreakTime,
+                                        'leaves':data[i].total_leave,
+                                        'total_worked_days':data[i].totalWorkingDays,
+                                        'line_manager':data[i].line_manager
+                                    });
+                                    var rowData = [i+1, data[i].firstName + " "+ data[i].middleName +" "+ data[i].lastName,data[i].department,data[i].designation, data[i].phone, data[i].email,data[i].line_manager, data[i].status, `"${data[i].totalWorkTime}"`, data[i].totalWorkingDays,`"${data[i].totalBreakTime}"`,data[i].total_leave] 
+                                    csvContent += rowData.join(',') + '\n';
+                                }
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileNameReport = 'Staff_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                self.blob(blob);
+                                self.fileNameReport(fileNameReport);
+                            }
+                            else{
+                                var csvContent = '';
+                                var headers = ['SL.NO', 'Name', 'Department', 'Designation', 'Phone','Email','Line Manager', 'Status','Total Worked Time', 'Total Worked Days', 'Total Break Time', 'Leaves Taken'];
+                                csvContent += headers.join(',') + '\n';
+                                var rowData = []; 
+                                csvContent += rowData.join(',') + '\n';
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileNameReport = 'Staff_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                self.blob(blob);
+                                self.fileNameReport(fileNameReport);
+                            }
+
+                        }
+                    })
+                }
+
+                self.showData = ()=>{
+                    document.getElementById('staffTableReport').style.display='none';
+                    document.getElementById('loaderView').style.display='block';
+                    let departmentReport = self.departmentFilter();
+                    departmentReport = departmentReport.join(",");
+                    let designationReport = self.designationFilterReport();
+                    designationReport = designationReport.join(",");
+                    let staff = self.staffFilter();
+                    staff = staff.join(",");
+                    if(designationReport == ''){
+                        self.designationMissing("Please select a designation");
+                        document.getElementById('loaderView').style.display='none';
+                    }
+                    else{
+                        self.designationMissing(""); 
+                    }
+                    if(staff == ''){
+                        self.staffMissing("Please select a staff");
+                        document.getElementById('loaderView').style.display='none';
+                    }
+                    else{
+                        self.staffMissing(""); 
+                    }
+                    if(self.reportFromDate()==""){
+                        self.fromDateMissing("Please Enter From date");
+                    }
+                    else{
+                        self.fromDateMissing("");
+                    }
+                    if(self.reportToDate()==""){
+                        self.toDateMissing("Please Enter To date");
+                    }
+                    else{
+                        self.toDateMissing("");
+                    }
+                    let status = self.statusFilter();
+                    status = status.join(",");
+                    if(self.designationMissing() =="" && self.staffMissing() =="" && self.fromDateMissing()=="" & self.toDateMissing()==""){
+                        $.ajax({
+                            url: BaseURL+"/getSelectedStaffReport",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                department: departmentReport,
+                                designation: designationReport,
+                                staff: staff,
+                                status : status,
+                                fromDate: self.reportFromDate(),
+                                toDate: self.reportToDate()
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                self.ReportDet([])
+                                document.getElementById('loaderView').style.display='none';
+                                document.getElementById('staffTableReport').style.display='block';
+                                if(data[0]!="No data found"){
+                                    //data = JSON.parse(data[0]);
+                                    console.log(data)
+                                    var csvContent = '';
+                                    var headers = ['SL.NO', 'Name', 'Department', 'Designation', 'Phone','Email','Line Manager','Status','Total Worked Time', 'Total Worked Days', 'Total Break Time', 'Leaves Taken'];
+                                    csvContent += headers.join(',') + '\n';
+
+                                    data = data[0];
+                                    for (var i = 0; i < data.length; i++) {
+                                        
+                                        self.ReportDet.push({
+                                            'slno': i+1,
+                                            'name': data[i].firstName + " "+ data[i].middleName +" "+ data[i].lastName,
+                                            'designation': data[i].designation,
+                                            'department': data[i].department,
+                                            'phone': data[i].phone,
+                                            'email': data[i].email,
+                                            'status': data[i].status,
+                                            'total_worked_time':data[i].totalWorkTime,
+                                            'total_break_time': data[i].totalBreakTime,
+                                            'leaves':data[i].total_leave,
+                                            'total_worked_days':data[i].totalWorkingDays,
+                                            'line_manager':data[i].line_manager
+                                        });
+                                        var rowData = [i+1, data[i].firstName + " "+ data[i].middleName +" "+ data[i].lastName,data[i].department,data[i].designation, data[i].phone, data[i].email,data[i].line_manager, data[i].status, `"${data[i].totalWorkTime}"`, data[i].totalWorkingDays,`"${data[i].totalBreakTime}"`,data[i].total_leave] 
+                                        csvContent += rowData.join(',') + '\n';
+                                    }
+
+                                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                    var today = new Date();
+                                    var fileNameReport = 'Staff_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                    self.blob(blob);
+                                    self.fileNameReport(fileNameReport);
+                                }
+                                else{
+                                    var csvContent = '';
+                                    // var headers = ['SL.NO', 'Name', 'Department', 'Designation', 'Phone','Email','Status'];
+                                    var headers = ['SL.NO', 'Name', 'Department', 'Designation', 'Phone','Email','Line Manager','Status','Total Worked Time', 'Total Worked Days', 'Total Break Time', 'Leaves Taken'];
+                                    csvContent += headers.join(',') + '\n';
+                                    var rowData = []; 
+                                    csvContent += rowData.join(',') + '\n';
+                                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                    var today = new Date();
+                                    var fileNameReport = 'Staff_Report_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                    self.blob(blob);
+                                    self.fileNameReport(fileNameReport);
+                                }
+
+                            }
+                        })
+                    }
+
+                }
+
+                self.ReportList = new ArrayDataProvider(this.ReportDet, { keyAttributes: "id"});
+
+                self.filter3 = ko.observable('');
+
+                self.ReportList = ko.computed(function () {
+                    let filterCriterion = null;
+                    if (self.filter3() && this.filter3() != '') {
+                        filterCriterion = ojdataprovider_1.FilterFactory.getFilter({
+                            filterDef: { text: self.filter3() }
+                        });
+                    }
+                    const arrayDataProvider = new ArrayDataProvider(self.ReportDet, { 
+                        keyAttributes: 'id',
+                        sortComparators: {
+                            comparators: new Map().set("dob", this.comparator),
+                        },
+                    });
+                    
+                    return new ListDataProviderView(arrayDataProvider, { filterCriterion: filterCriterion });
+                }, self);
+
+                self.handleValueStaff = () => {
+                    self.filter3(document.getElementById('filter3').rawValue);
+                };
+                self.downloadExcel = ()=> {
+                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                      // For Internet Explorer
+                      window.navigator.msSaveOrOpenBlob(self.blob(), self.fileNameReport());
+                    } else {
+                      // For modern browsers
+                      var link = document.createElement('a');
+                      link.href = window.URL.createObjectURL(self.blob());
+                      link.download = self.fileNameReport();
+                      link.style.display = 'none';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }
+                }
+
+                self.responsibilities = ko.observable('');
+
+                self.viewStaff = (event,data)=>{
+                    var staffId = data.item.data.id
+                    sessionStorage.setItem("staffId", staffId);
+                    document.querySelector('#viewStaffDetails').open();
+                    document.getElementById('loaderView').style.display = 'block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetStaffResponse",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("staffId")
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            document.getElementById('loaderView').style.display = 'none';
+                            self.responsibilities(data[0][0]);
                         }
                     })
                 }

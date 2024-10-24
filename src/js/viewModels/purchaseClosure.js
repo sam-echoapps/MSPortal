@@ -74,6 +74,19 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
+                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencies = [
+                    {"label":"USD","value":"USD"},
+                    {"label":"INR","value":"INR"},
+                    {"label":"GBP","value":"GBP"},
+                    {"label":"AED","value":"AED"}
+                ]
+
+                self.currencyList = new ArrayDataProvider(self.currencies, {
+                    keyAttributes: 'value'
+                });
+                self.totalAmountConvert = ko.observable('');
+
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -153,6 +166,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.warrentyEndDate(data2[11])
                             self.warrentyReminder(data2[12]),
                             self.totalAmount(data2[13])
+                            self.totalAmountConvert(data2[13])
                             self.selectedOptions(data2[14])
                             self.extraSecondaryText(data2[15])
                             if(data2[15] !=''){
@@ -184,16 +198,55 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     });
                 }
 
-                self.priceValidate = (event)=>{
+                self.priceValidate = async (event)=>{
                     var ASCIICode= event.detail.value
                     console.log(ASCIICode)
                     var check = /^\d+(\.\d+)?$/.test(ASCIICode);
                     console.log(check)
                     if (check == true){
                         self.numError('')
+                        await convertCurrency(ASCIICode,self.currencySelected());  // Pass the input value to the conversion function
                     }else{
                         self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
                     }
+                }
+
+                async function convertCurrency(amount, sourceCurrency) {
+                    const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                    const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
+                
+                    try {
+                        let response = await fetch(url); // Use browser's fetch API
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        let data = await response.json();
+                
+                        console.log(data.rates);
+                
+                        // Check if the target currency exists in the rates
+                        if (targetCurrency in data.rates) {
+                            const conversionRate = data.rates[targetCurrency];
+                            console.log(`1 ${sourceCurrency} = ${conversionRate} ${targetCurrency}`);
+                
+                            // Convert the entered amount from source currency to target currency
+                            let amountInConvertedCurrency = amount * conversionRate;
+                            console.log(`${amount} ${sourceCurrency} = ${amountInConvertedCurrency.toFixed(2)} ${targetCurrency}`);
+                
+                            // Update the UI with the converted value
+                            self.totalAmount(`${amountInConvertedCurrency.toFixed(2)}`);
+                        } else {
+                            throw new Error(`Currency ${targetCurrency} is not supported.`);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching exchange rate:', error);
+                        self.numError('Failed to fetch exchange rate. Please try again later.');
+                    }
+                }
+
+                self.clearText = () => {
+                    self.totalAmount('')
+                    self.totalAmountConvert('')
                 }
 
                 self.guaranteeSec = function (event,data) {

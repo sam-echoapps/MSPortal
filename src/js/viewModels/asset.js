@@ -80,6 +80,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.totalAmountHeaderText = ko.observable("");
                 self.currency = ko.observable("");
                 self.currencyType = ko.observable("");
+                self.statusFilter = ko.observable(['Active']);
+                self.statusFilterOptions = [
+                    {"label":"All","value":"All"},
+                    {"label":"Active","value":"Active"},
+                    {"label":"Inactive","value":"Inactive"}
+                ]
+                self.statusFilterList = new ArrayDataProvider(self.statusFilterOptions, {
+                    keyAttributes: 'value'
+                });
+                self.statusMissing = ko.observable('');
+
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -183,6 +194,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'asset_name':  data[i][2],
                                         'po_no': pono, 
                                         'product_name': data[i][3],
+                                        'asset_status': data[i][4],
                                     });
                                 }
                                 
@@ -307,6 +319,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 }
 
+                self.statusFilterCheck = ()=> {
+                    if(self.statusFilter() == ''){
+                        self.statusMissing("Please select status");
+                    }else{
+                    self.statusMissing('');
+                    }
+                }
+
                 self.showData = ()=>{
                     self.AssetReportDet([]);
                     document.getElementById('loaderView').style.display='block';
@@ -318,6 +338,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     category = category.join(",");
                     let priceRange = self.priceFilter();
                     priceRange = priceRange.join(",");
+                    let status= self.statusFilter();
+                    status = status.join(",");
                     if(self.department() == ''){
                         self.departmentMissing("Please select a department");
                         document.getElementById('loaderView').style.display='none';
@@ -339,7 +361,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     else{
                         self.priceMissing('');
                     }
-                    if (self.departmentMissing() == '' && self.categoryMissing() == ''&& self.priceMissing() == '') {
+                    if(self.statusFilter() == ''){
+                        self.statusMissing("Please select status");
+                        document.getElementById('loaderView').style.display='none';
+                    }
+                    else{
+                        self.statusMissing('');
+                    }
+                    if (self.departmentMissing() == '' && self.categoryMissing() == ''&& self.priceMissing() == ''&& self.statusMissing() == '') {
                     $.ajax({
                         url: BaseURL+"/getAssetReport",
                         type: 'POST',
@@ -348,7 +377,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             toDate: toDate,
                             department : department,
                             category : category,
-                            priceRange : priceRange
+                            priceRange : priceRange,
+                            status : status
                         }),
                         dataType: 'json',
                         timeout: sessionStorage.getItem("timeInetrval"),
@@ -365,7 +395,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data = JSON.parse(data);
                         console.log(data)
                         var csvContent = '';
-                            var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Total Amount'];
+                            var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Status','Total Amount'];
                             csvContent += headers.join(',') + '\n';
                         if(data.length!=0){
                             for (var i = 0; i < data.length; i++) {
@@ -386,11 +416,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 'department': data[i][8],
                                 'owner': owner_name,
                                 'category': data[i][9],
-                                'created_date': dateCreatedOnly,                                                                                                                                       
+                                'created_date': dateCreatedOnly,   
+                                'asset_status': data[i][12],                                                                                                                                    
                                 'total_amount': data[i][10]
                             });
                             totalAmountSum += total_amount;
-                                var rowData = [i+1, "AS"+data[i][0],data[i][1],data[i][8],owner_name,data[i][9],dateCreatedOnly,data[i][10] ]; 
+                                var rowData = [i+1, "AS"+data[i][0],data[i][1],data[i][8],owner_name,data[i][9],dateCreatedOnly,data[i][12],data[i][10] ]; 
                                 csvContent += rowData.join(',') + '\n';
                                 
                             }
@@ -403,9 +434,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 'owner': '',
                                 'category': '',
                                 'created_date': '',
+                                'asset_status': '',
                                 'total_amount': '<strong>' +  totalAmountSum.toFixed(2) + '</strong>'   // Sum of total_amounts
                             });
-                            csvContent += [ '', '', '', '', '', '','', totalAmountSum.toFixed(2) ].join(',') + '\n'; 
+                            csvContent += [ '', '', '', '', '', '','','', totalAmountSum.toFixed(2) ].join(',') + '\n'; 
 
                             var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                             var today = new Date();
@@ -416,7 +448,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                              }
                              else{
                                 var csvContent = '';
-                                var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Total Amount'];
+                                var headers = ['SL.NO', 'Asset No', 'Asset Name', 'Department', 'Owner', 'Category','Created Date','Status','Total Amount'];
                                 csvContent += headers.join(',') + '\n';
                                 var rowData = []; 
                                 csvContent += rowData.join(',') + '\n';

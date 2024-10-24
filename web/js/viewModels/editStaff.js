@@ -1,7 +1,8 @@
-define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils",
+define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojlistdataproviderview", 
+    "ojs/ojdataprovider", "ojs/ojfilepickerutils","ojs/ojconverterutils-i18n",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",
      "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojselectcombobox","ojs/ojavatar","ojs/ojradioset","ojs/ojtable","ojs/ojaccordion"], 
-    function (oj,ko,$, app, ArrayDataProvider, ListDataProviderView, ojdataprovider_1, FilePickerUtils) {
+    function (oj,ko,$, app, ArrayDataProvider, ListDataProviderView, ojdataprovider_1, FilePickerUtils, ojconverterutils_i18n_1) {
 
         class editStaff {
             constructor(args) {
@@ -11,6 +12,46 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 let BaseURL = sessionStorage.getItem("BaseURL")
                 let userrole = sessionStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
+
+                self.connected = function () {
+                    if (sessionStorage.getItem("userName") == null) {
+                        self.router.go({path : 'signin'});
+                    }
+                    else {
+                        app.onAppSuccess();
+                        self.getRoles();
+                        self.getReportTo();
+
+                        setTimeout(() => {
+                            self.getStaff();
+                        }, 1000);
+                        
+                        self.getLeaves();
+                        self.getWorkPattern();
+                        self.getRoleForLineManager();
+
+                        if(window.location.pathname=='/Hr'){
+                            document.querySelectorAll('link').forEach(function(link){
+                                    const baseUrl = 'https://uanglobal.com/';
+                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
+                                        link.href = self.rewriteUrl(link.href);
+                                    }
+                            });
+                            document.querySelectorAll('script').forEach(function(script) {
+                                    script.src = self.rewriteUrl(script.src);
+                            });
+                            document.querySelectorAll('img').forEach(function(img) {
+                                    img.src = self.rewriteUrl(img.src);
+                            });
+                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
+                                    const currentSrc = avatar.getAttribute('src');
+                                    const newSrc = self.rewriteUrl(currentSrc);
+                                    avatar.setAttribute('src', newSrc);
+                            });
+                        }
+
+                    }
+                }
 
                 self.firstName = ko.observable();
                 self.middleName = ko.observable();
@@ -55,6 +96,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.phoneError = ko.observable('');
                 self.emailError = ko.observable('');
                 self.address = ko.observable('');
+                self.responsibilities = ko.observable('');
                 self.typeError = ko.observable('');
                 self.file = ko.observable('');
                 self.secondaryText = ko.observable('Please Upload(Optional)');
@@ -341,6 +383,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "clock-in", label: "Clock-in" },
                     { id: "overtime", label: "Overtime" },
                     { id: "documents", label: "Documents" },
+                    { id: "workReport", label: "Work Report" },
                 ];
                 self.tabData1 = [
                     { id: "basic", label: "Personal" },
@@ -614,13 +657,67 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     keyAttributes: 'value'
                 });
               
-
                 self.StaffDet = ko.observableArray([]);
                 self.DepartmentDet = ko.observableArray([]);
                 self.DesignationDet = ko.observableArray([]);
                 self.line_manager = ko.observable('');
                 self.line_manager2 = ko.observable('');
                 self.EmployeeDet = ko.observableArray([]);
+
+                self.getRoles = ()=>{
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetRoles2",
+                        type: 'GET',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching roles:", textStatus); // Log any error
+                        },
+                        success: function (data) {
+                            if(data[0].length != 0){ 
+                                for (var i = 0; i < data[0].length; i++) {
+                                    self.RolesDet.push({'value': data[0][i][0],'label': data[0][i][1]});
+                                }
+                            } else {
+                                console.log("No data received from backend."); // Log if no data is received
+                            }
+                        }
+                    })
+                }
+                self.rolesList = new ArrayDataProvider(this.RolesDet, { keyAttributes: "value"});
+
+                self.reportTo = ko.observableArray([]);
+                self.reportToDet = ko.observableArray([]);
+
+                self.getReportTo = ()=>{
+                    self.reportToDet([]);
+                    document.getElementById('loaderView').style.display = 'block';
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetReportTo",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staff_id: sessionStorage.getItem("staffId"),
+                        }),
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log("Error fetching Member:", textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            document.getElementById('loaderView').style.display = 'none';
+                            if(data[0].length != 0){ 
+                                for (var i = 0; i < data[0].length; i++) {
+                                    self.reportToDet.push({'value': data[0][i][0],'label': data[0][i][1]});
+                                }
+                            } else {
+                                console.log("No data received from backend.");
+                            }
+                        }
+                    })
+                }
+                self.reportTo_List = new ArrayDataProvider(this.reportToDet, { keyAttributes: "value"});
 
                 self.getStaff = ()=>{
                     document.getElementById('loaderView').style.display='block';
@@ -670,6 +767,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.employee_type(result[0][23])
                             self.termination_date(result[0][24])
                             self.line_manager2(result[0][25])
+                            self.reportTo(result[0][26])
+                            self.responsibilities(result[0][27])
                             if(data[2] != ''){
                                 self.profilePhotoShow('data:image/jpeg;base64,'+data[2]);
                                 self.fileContent(self.profilePhotoShow())
@@ -737,7 +836,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 self.formSubmit = ()=>{
-                    // Check if self.line_manager() is an integer
                     const lineManagerValue = self.line_manager();
                     if (Number.isInteger(Number(lineManagerValue))) {
                         self.line_manager2(lineManagerValue);
@@ -781,7 +879,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     gender : self.gender(),
                                     roles : self.roles(),
                                     employee_type : self.employee_type(),
-                                    termination_date : self.termination_date()
+                                    termination_date : self.termination_date(),
+                                    report_to : self.reportTo(),
+                                    responsibilities : self.responsibilities()
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
@@ -827,7 +927,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     gender : self.gender(),
                                     roles : self.roles(),
                                     employee_type : self.employee_type(),
-                                    termination_date : self.termination_date()
+                                    termination_date : self.termination_date(),
+                                    report_to : self.reportTo(),
+                                    responsibilities : self.responsibilities()
                                 }),
                                 dataType: 'json',
                                 timeout: sessionStorage.getItem("timeInetrval"),
@@ -868,41 +970,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         return false;
                     }
                 };
-                
-                self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
-                        self.router.go({path : 'signin'});
-                    }
-                    else {
-                        app.onAppSuccess();
-                        self.getRoles();
-                        self.getStaff();
-                        self.getLeaves();
-                        self.getWorkPattern();
-                        self.getEmployees();
-
-                        if(window.location.pathname=='/Hr'){
-                            document.querySelectorAll('link').forEach(function(link){
-                                    const baseUrl = 'https://uanglobal.com/';
-                                    if (link.href.startsWith(baseUrl) && !link.href.includes("redwood.css")){
-                                        link.href = self.rewriteUrl(link.href);
-                                    }
-                            });
-                            document.querySelectorAll('script').forEach(function(script) {
-                                    script.src = self.rewriteUrl(script.src);
-                            });
-                            document.querySelectorAll('img').forEach(function(img) {
-                                    img.src = self.rewriteUrl(img.src);
-                            });
-                            document.querySelectorAll('oj-avatar').forEach(function(avatar) {
-                                    const currentSrc = avatar.getAttribute('src');
-                                    const newSrc = self.rewriteUrl(currentSrc);
-                                    avatar.setAttribute('src', newSrc);
-                            });
-                        }
-
-                    }
-                }
 
                 self.uploadProfilePhoto = function (event) {
                     var file = event.detail.files[0];
@@ -924,34 +991,30 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
               }
 
               self.sendCredentials = ()=>{
-                let formValid = self._checkValidationGroup("formValidation");
-                formValid = true;
-                if (formValid) {
-                        let popup = document.getElementById("popup1");
-                        popup.open();
-                        
-                        $.ajax({
-                            url: BaseURL+"/HRModuleStaffCredentialSend",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                staffId : sessionStorage.getItem("staffId"),
-                                username : self.username(),
-                                password : self.password(),
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function (xhr, textStatus, errorThrown) {
-                                console.log(textStatus);
-                            },
-                            success: function (data) {
-                                let popup = document.getElementById("popup1");
-                                popup.close();
-                                let popup1 = document.getElementById("popupMail");
-                                popup1.open();
-                            }
-                        })
-                    }
+                    let popup = document.getElementById("popup1");
+                    popup.open();
+                    
+                    $.ajax({
+                        url: BaseURL+"/HRModuleStaffCredentialSend",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("staffId"),
+                            username : self.username(),
+                            password : self.password(),
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            let popup = document.getElementById("popup1");
+                            popup.close();
+                            let popup1 = document.getElementById("popupMail");
+                            popup1.open();
+                        }
+                    })
                 }
 
                 self.selectedTabAction = ko.computed(() => { 
@@ -963,6 +1026,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#absence").hide();
                         $("#clock-in").hide();
                         $("#overtime").hide();
+                        $("#workReport").hide();
                     }else if(self.selectedTab() == 'password'){
                         $("#basic-info").hide();
                         $("#update-password").show();
@@ -971,6 +1035,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#absence").hide();
                         $("#clock-in").hide();
                         $("#overtime").hide();
+                        $("#workReport").hide();
                     }
                     else if(self.selectedTab() == 'absence'){
                         $("#basic-info").hide();
@@ -983,6 +1048,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#absence").show();
                         $("#clock-in").hide();
                         $("#overtime").hide();
+                        $("#workReport").hide();
                     }
                     else if(self.selectedTab() == 'employment'){
                         $("#basic-info").hide();
@@ -1001,6 +1067,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#documents").hide();
                         $("#absence").hide();
                         $("#overtime").hide();
+                        $("#workReport").hide();
                     }else if(self.selectedTab() == 'clock-in'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
@@ -1010,6 +1077,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.getClockinDetails();
                         $("#clock-in").show();
                         $("#overtime").hide();
+                        $("#workReport").hide();
                     }else if(self.selectedTab() == 'overtime'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
@@ -1018,6 +1086,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#absence").hide();
                         $("#clock-in").hide();
                         $("#overtime").show();
+                        self.getOverTimeData();
+                        $("#workReport").hide();
                     }else if(self.selectedTab() == 'documents'){
                         $("#basic-info").hide();
                         $("#update-password").hide();
@@ -1027,6 +1097,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $("#absence").hide();
                         $("#clock-in").hide();
                         $("#overtime").hide();
+                        $("#workReport").hide();
+                    }else if(self.selectedTab() == 'workReport'){
+                        $("#basic-info").hide();
+                        $("#update-password").hide();
+                        $("#employment").hide();
+                        $("#documents").hide();
+                        $("#absence").hide();
+                        $("#clock-in").hide();
+                        $("#overtime").hide();
+                        self.getWorkReport();
+                        $("#workReport").show();
                     }
                 });
 
@@ -1077,54 +1158,29 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.employeeListLine = new ArrayDataProvider(this.EmployeeDet, { keyAttributes: "value"});
 
                 self.crediantialUpdate = function (event,data) {
-                    const formValid = self._checkValidationGroup("formValidationPassword"); 
-                    if (formValid) {
-                        let popup3 = document.getElementById("popup1");
-                        popup3.open();
-                        $.ajax({
-                            url: BaseURL + "/HRModuleCredentialUpdate",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                staffId : sessionStorage.getItem("staffId"),
-                                password : self.password()
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function (xhr, textStatus, errorThrown) {
-                                console.log(textStatus);
-                            },
-                            success: function (data) {
-                                let popup3 = document.getElementById("popup1");
-                                popup3.close();
-                                let popup4 = document.getElementById("popupPassword");
-                                popup4.open();
-                            }
-                        }) 
-                    }
-                }
-
-                self.getRoles = ()=>{
+                    let popup3 = document.getElementById("popup1");
+                    popup3.open();
                     $.ajax({
-                        url: BaseURL+"/HRModuleGetRoles2",
-                        type: 'GET',
+                        url: BaseURL + "/HRModuleCredentialUpdate",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("staffId"),
+                            password : self.password()
+                        }),
+                        dataType: 'json',
                         timeout: sessionStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
-                            console.log("Error fetching roles:", textStatus); // Log any error
+                            console.log(textStatus);
                         },
                         success: function (data) {
-                            if(data[0].length != 0){ 
-                                for (var i = 0; i < data[0].length; i++) {
-                                    self.RolesDet.push({'value': data[0][i][0],'label': data[0][i][1]});
-                                }
-                            } else {
-                                console.log("No data received from backend."); // Log if no data is received
-                            }
+                            let popup3 = document.getElementById("popup1");
+                            popup3.close();
+                            let popup4 = document.getElementById("popupPassword");
+                            popup4.open();
                         }
-                    })
+                    }) 
                 }
-                self.rolesList = new ArrayDataProvider(this.RolesDet, { keyAttributes: "value"});
 
                 self.documentName = ko.observable();
                 self.documentText = ko.observable('Upload your documents as PDF Format');
@@ -1251,9 +1307,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     const documentLink = e.target.closest('a').getAttribute('data-document-link');
                     console.log(documentLink); // Log the document link to verify
                 
-                    // // Display loader (optional)
-                    // let popup = document.getElementById("loaderView");
-                    // popup.open();
+                    document.getElementById('loaderView').style.display = 'block';
                 
                     $.ajax({
                         url: BaseURL + "/HRModulePdfView",
@@ -1264,11 +1318,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         dataType: 'json',
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
-                            // Hide loader (optional)
-                            //let popup = document.getElementById("loaderView");
-                            //popup.close();
+                            document.getElementById('loaderView').style.display = 'none';
                 
                             var fileType = data[1];
                             var base64Code = data[0][0];
@@ -1341,9 +1394,34 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.CancelBehaviorOpt = ko.observable('icon');
 
                 self.amount = ko.observable();
-                self.hourly_rate = ko.observable();
-                self.payment_frequency = ko.observable();
-                self.effective_date = ko.observable();
+                self.hourly_rate = ko.observable('');
+                self.payment_frequency = ko.observable('Monthly');
+
+                self.amountError = ko.observable('');
+
+                self.PatternValidatorSalary = (event) => {
+                    var amount = event.detail.value.toString();  // Convert to string
+                    
+                    // pattern to allow numbers like 0.12, 30.5 but not just 0
+                    var pattern = /^(?!0$)(0|[1-9]\d*)(\.\d{1,2})?$/;
+                
+                    if (amount.match(pattern)) {
+                        self.amountError(''); // Clear any previous error
+                    } else {
+                        self.amountError('Invalid Amount. Enter a valid amount (e.g., 30, 30.5).');
+                    }
+                };
+
+                self.paymentFrequencyList = ko.observableArray([]);
+                self.paymentFrequencyList.push(
+                    {"label":"Monthly","value":"Monthly"},
+                    {"label":"Four weekly","value":"Four weekly"},
+                    {"label":"Biweekly","value":"Biweekly"},
+                    {"label":"Weekly","value":"Weekly"},
+                );
+                self.paymentFrequencyList = new ArrayDataProvider(self.paymentFrequencyList, {
+                    keyAttributes: 'value'
+                }); 
 
                 self.EditSalary = (event, data) => {
                     var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
@@ -1379,7 +1457,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.amount(salaryDetails[0]); // amount
                                 self.hourly_rate(salaryDetails[1]); // hourly_rate
                                 self.payment_frequency(salaryDetails[2]); // payment_frequency
-                                self.effective_date(salaryDetails[3]); // effective_date
                                 document.querySelector('#openEditSalary').open(); // Open the edit popup
                             }
                         }
@@ -1412,7 +1489,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.amount(salaryDetails[0]); // amount
                                 self.hourly_rate(salaryDetails[1]); // hourly_rate
                                 self.payment_frequency(salaryDetails[2]); // payment_frequency
-                                self.effective_date(salaryDetails[3]); // effective_date
                             }
                         }
                     });
@@ -1432,7 +1508,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 amount: self.amount(),
                                 hourly_rate: self.hourly_rate(),
                                 payment_frequency: self.payment_frequency(),
-                                effective_date: self.effective_date()
                             }),
                             contentType: "application/json",
                             dataType: 'json',
@@ -1569,7 +1644,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
 
                 self.payroll_number = ko.observable();
-                self.pension_eligible = ko.observable();
+                self.pension_eligible = ko.observable('No');
 
                 self.EditPayroll = (event, data) => {
                     var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
@@ -1782,8 +1857,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.job_title = ko.observable();
                 self.contract_type = ko.observable();
                 self.teams = ko.observable();
-                self.report_to = ko.observableArray([]);
-                self.report_to2 = ko.observableArray([]);
                 self.probation_details = ko.observable();
                 self.notice_period = ko.observable();
 
@@ -1797,32 +1870,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         console.error("No staff_id found in sessionStorage");
                     }
                 };
-
-
-                self.EmployeeList = ko.observableArray([]); // Observable array to store employee list
-
-                self.getEmployees = () => {
-                    $.ajax({
-                        url: BaseURL + "/HRModuleGetEmployeesList", // Endpoint to fetch employee data
-                        type: 'GET',
-                        timeout: sessionStorage.getItem("timeInterval"),
-                        context: self,
-                        error: function (xhr, textStatus, errorThrown) {
-                            console.log("Error fetching Employees:", textStatus); // Log any error
-                        },
-                        success: function (data) {
-                            if (data[0].length != 0) { 
-                                for (var i = 0; i < data[0].length; i++) {
-                                    self.EmployeeList.push({'value': data[0][i][0], 'label': data[0][i][1]});
-                                }
-                            } else {
-                                console.log("No data received from backend."); // Log if no data is received
-                            }
-                        }
-                    });
-                }
-
-                self.employer_List = new ArrayDataProvider(self.EmployeeList, { keyAttributes: "value" }); // Data provider for combobox
 
                 self.employee_type_List2 = ko.observableArray([]);
                 self.employee_type_List2.push(
@@ -1890,12 +1937,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 var roleInfo = data[0]; // Assuming the first element contains the role information details
                                 self.job_title(roleInfo[0]); // job_title
                                 self.contract_type(roleInfo[1]); // contract_type
-
-                                // Convert the report_to IDs to an array
-                                self.report_to(roleInfo[2]); // report_to
-
-                                self.probation_details(roleInfo[3]); // probation_details
-                                self.notice_period(roleInfo[4]); // notice_period
+                                self.probation_details(roleInfo[2]); // probation_details
+                                self.notice_period(roleInfo[3]); // notice_period
                                 document.querySelector('#openEditRoleInformation').open(); // Open the edit popup
                             }
                         }
@@ -1929,9 +1972,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 var roleInfo = data[0]; // Assuming the first element contains the role information details
                                 self.job_title(roleInfo[0]); // job_title
                                 self.contract_type(roleInfo[1]); // contract_type
-                                self.report_to2(roleInfo[2]); // report_to
-                                self.probation_details(roleInfo[3]); // probation_details
-                                self.notice_period(roleInfo[4]); // notice_period
+                                self.probation_details(roleInfo[2]); // probation_details
+                                self.notice_period(roleInfo[3]); // notice_period
                             }
                         }
                     });
@@ -1950,7 +1992,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 staff_id: sessionStorage.getItem("staffId"),
                                 job_title: self.job_title(),
                                 contract_type: self.contract_type(),
-                                report_to: self.report_to(),  // Ensure this is an array of IDs
                                 probation_details: self.probation_details(),
                                 notice_period: self.notice_period()
                             }),
@@ -2447,6 +2488,163 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 self.clockInDataProvider = new ArrayDataProvider(self.clockinData, { keyAttributes: "id" });
+
+                const now = new Date(); 
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                self.overtimeFromDate=ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(startOfMonth));
+                self.overtimeToDate=ko.observable(ojconverterutils_i18n_1.IntlConverterUtils.dateToLocalIsoDateString(new Date()))
+                self.overTimeData=ko.observableArray([])
+
+                self.getOverTimeData=()=>{
+                    $.ajax({
+                        url: BaseURL + "/getOverTimeData",
+                        type: 'POST',
+                        data: JSON.stringify({ 
+                            staffId: sessionStorage.getItem("staffId"),
+                            fromDate: self.overtimeFromDate(),
+                            toDate: self.overtimeToDate()
+                        }),
+                        contentType: "application/json", // Specify the content type as JSON
+                        timeout: sessionStorage.getItem("timeInterval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            if(data.length!=0){
+                                self.overTimeData([]);
+                                for(var i=0;i<data.length;i++){
+                                    let date = new Date(data[i].clockin_date);
+                                    let day = date.getDate();
+                                    let month = date.getMonth() + 1;
+                                    let year = date.getFullYear();
+                                    let formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+                                    self.overTimeData.push({
+                                        "slno":i+1,
+                                        "date":formattedDate,
+                                        "clockInTime": data[i].clockin_time,
+                                        "clockOutTime": data[i].clockout_time,
+                                        "actualWorkingTime": data[i].actual_working_time,
+                                        "expectedWorkingTime": data[i].expected_working_time,
+                                        "overTime": data[i].overtime
+                                    })
+                                }
+                            }
+                        }
+                    });
+                }
+
+                self.overTimeDataProvider = new ArrayDataProvider(self.overTimeData, { keyAttributes: "id" });
+
+                //Work Report Section
+                self.workReportData = ko.observableArray([]);
+                self.getWorkReport = ()=>{
+                    $.ajax({
+                        url: BaseURL+"/getStaffWorkReport",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId : sessionStorage.getItem("staffId"),
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            self.workReportData.removeAll();
+                            if (data.length != 0) { 
+                                for (var i = 0; i < data.length; i++) {
+                                    self.workReportData.push({
+                                        slNo: i+1,
+                                        id: data[i].id,
+                                        date: data[i].created_date,
+                                        subject: data[i].subject,
+                                        report: data[i].report,
+                                        status: data[i].status
+                                    })
+                                }
+                            }
+                        }
+                    })
+                }
+                self.workReportDataProvider = new ArrayDataProvider(self.workReportData, {
+                    keyAttributes: "id",
+                });
+
+                self.workReportView=ko.observable();
+                self.workReportViewSubject=ko.observable();
+                self.showReportContent=(e,row)=>{
+                    self.workReportViewSubject(row.data.subject)
+                    let content = row.data.report;
+                    document.getElementById("reportView").innerHTML=content
+                    let popUpContent = document.getElementById("viewWorkReport");
+                    popUpContent.open();
+                }
+
+                self.closeViewWorkReport=()=>{
+                    let popUpContent = document.getElementById("viewWorkReport");
+                    popUpContent.close();
+                }
+
+                self.reportSendAgain=(e,row)=>{
+                    let loader = document.getElementById("loaderPopup");
+                    loader.open();
+                    const requestId=row.data.id;
+                    let btn = e.currentTarget
+                    $.ajax({
+                        url: BaseURL+"/sendAgainReport",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            reportId : requestId,
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            let loader = document.getElementById("loaderPopup");
+                            loader.close();
+                            const targetCell = e.target.closest('td');
+                            btn.style.display="none"
+                            if (targetCell) {
+                                const reportSendDoneButton = targetCell.querySelector('#report-send-done');
+                                if (reportSendDoneButton) {
+                                    reportSendDoneButton.style.display = 'block'; 
+                                }
+                            }
+                        }
+                    })
+                }
+
+                self.lineManagerRole = ko.observable('');
+
+                self.getRoleForLineManager = () => {
+                    document.getElementById('loaderView').style.display = 'block';              
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetRoleForLineManager",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            staffId: sessionStorage.getItem("staffId")
+                        }),
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInterval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            document.getElementById('loaderView').style.display = 'none';
+                            self.lineManagerRole(data[0][0]);
+                        }
+                    });
+                }
 
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {

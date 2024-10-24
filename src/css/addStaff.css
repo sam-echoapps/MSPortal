@@ -2,7 +2,7 @@
     padding: 50px;
     display: flex;
     flex-direction: column;
-    justify-self: center;
+    justify-content: center;
     align-items: center;
     margin-top: 20px;
     background-color: #ffffff;
@@ -15,7 +15,7 @@
     padding-bottom: 50px;
     display: flex;
     flex-direction: column;
-    justify-self: center;
+    justify-content: center;
     align-items: center;
     margin-top: 30px;
     background-color: #ffffff;
@@ -33,7 +33,7 @@
     padding-bottom: 50px;
     display: flex;
     flex-direction: column;
-    justify-self: center;
+    justify-content: center;
     align-items: center;
     margin-top: 30px;
     background-color: #ffffff;
@@ -71,7 +71,7 @@
     padding-left: 200px;
     display: flex;
     flex-direction: column;
-    justify-self: center;
+    justify-content: center;
     align-items: center;
     margin-top: 20px;
     background-color: #ffffff;
@@ -125,6 +125,10 @@
 #employment-grid .employment-sm-6 {
     flex: 1 1 50%;
     max-width: 50%;
+}
+
+#yearFilter{
+    width: 25%;
 }
 
 #yearFilterLeave{
@@ -313,7 +317,22 @@
     outline: none;              /* Remove outline on focus */
 }
 
+#unclikable {
+    pointer-events: none;
+}
 
+.info-bar {
+    background-color: #e8f4fd; /* Light blue background */
+    color: #0275d8; /* Dark blue text */
+    padding: 10px 15px; /* Padding inside the info bar */
+    border-left: 4px solid #0275d8; /* Blue bar on the left side */
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 20px; /* Space below the info bar */
+    font-size: 14px; /* Text size */
+    font-weight: 500; /* Semi-bold text */
+    text-align: left; /* Left-align the text */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+}
 
 
 

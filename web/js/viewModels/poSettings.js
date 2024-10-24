@@ -18,7 +18,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.currencies = [
                     {"label":"USD","value":"USD"},
                     {"label":"INR","value":"INR"},
-                    {"label":"GBP","value":"GBP"}
+                    {"label":"GBP","value":"GBP"},
+                    {"label":"AED","value":"AED"}
                 ]
 
                 self.currencyList = new ArrayDataProvider(self.currencies, {

@@ -115,58 +115,116 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     }
 
-                    self.leaveFormSubmit = ()=>{
-                        const formValid = self._checkValidationGroup("formValidationLeave"); 
-                        if (formValid) {
-                                let popup = document.getElementById("loaderPopup");
-                                popup.open();
-                                
-                                $.ajax({
-                                    url: BaseURL+"/HRModuleAddLeaveType",
-                                    type: 'POST',
-                                    data: JSON.stringify({
-                                        leave_type : self.leaveType(),
-                                    }),
-                                    dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
-                                    context: self,
-                                    error: function (xhr, textStatus, errorThrown) {
-                                        console.log(textStatus);
-                                    },
-                                    success: function (data) {
-                                        document.querySelector('#openAddLeaveType').close();
-                                        let popup = document.getElementById("loaderPopup");
-                                        popup.close();
-                                        let popup2 = document.getElementById("popup2");
-                                        popup2.open();
-                                    }
-                                })
-                            }
+                self.leaveFormSubmit = ()=>{
+                    const formValid = self._checkValidationGroup("formValidationLeave"); 
+                    if (formValid) {
+                            let popup = document.getElementById("loaderPopup");
+                            popup.open();
+                            
+                            $.ajax({
+                                url: BaseURL+"/HRModuleAddLeaveType",
+                                type: 'POST',
+                                data: JSON.stringify({
+                                    leave_type : self.leaveType(),
+                                }),
+                                dataType: 'json',
+                                timeout: sessionStorage.getItem("timeInetrval"),
+                                context: self,
+                                error: function (xhr, textStatus, errorThrown) {
+                                    console.log(textStatus);
+                                },
+                                success: function (data) {
+                                    document.querySelector('#openAddLeaveType').close();
+                                    let popup = document.getElementById("loaderPopup");
+                                    popup.close();
+                                    let popup2 = document.getElementById("popup2");
+                                    popup2.open();
+                                }
+                            })
                         }
-
-                    self.messageClose = ()=>{
-                        location.reload();
                     }
 
-                    self._checkValidationGroup = (value) => {
-                        const tracker = document.getElementById(value);
-                        if (tracker.valid === "valid") {
-                            return true;
-                        }
-                        else {
-                            tracker.showMessages();
-                            tracker.focusOn("@firstInvalidShown");
-                            return false;
-                        }
-                    };
+                self.messageClose = ()=>{
+                    location.reload();
+                }
 
-                    self.deleteLeaveType = (event,data)=>{
-                        var rowId = data.item.data.id
+                self._checkValidationGroup = (value) => {
+                    const tracker = document.getElementById(value);
+                    if (tracker.valid === "valid") {
+                        return true;
+                    }
+                    else {
+                        tracker.showMessages();
+                        tracker.focusOn("@firstInvalidShown");
+                        return false;
+                    }
+                };
+
+                self.rowIdToDelete = ko.observable('');
+
+                self.deleteType= (event, data) => {
+                    self.rowIdToDelete(data.item.data.id);
+                    document.querySelector('#confirmPopup').open();
+                };
+
+                self.deleteLeaveType = (event,data)=>{
+                    var rowId = self.rowIdToDelete();
+                    $.ajax({
+                        url: BaseURL+"/HRModuleDeleteLeaveType",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            leaveTypeId : rowId
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            location.reload()
+                        }
+                    })
+                }
+
+                self.start_month = ko.observable('');
+
+                self.month_List = ko.observableArray([]);
+                self.month_List.push(
+                    {"label":"January","value":"January"},
+                    {"label":"February","value":"February"},
+                    {"label":"March","value":"March"},
+                    {"label":"April","value":"April"},
+                    {"label":"May","value":"May"},
+                    {"label":"June","value":"June"},
+                    {"label":"July","value":"July"},
+                    {"label":"August","value":"August"},
+                    {"label":"September","value":"September"},
+                    {"label":"October","value":"October"},
+                    {"label":"November","value":"November"},
+                    {"label":"December","value":"December"}
+                );
+                self.month_List = new ArrayDataProvider(self.month_List, {
+                    keyAttributes: 'value'
+                });
+
+
+                self.addLeaveMonth = ()=>{
+                    document.querySelector('#openAddLeaveMonth').open();
+                }
+
+                self.formSubmitMonth = ()=>{
+                    const formValid = self._checkValidationGroup("formValidationMonth"); 
+                    if (formValid) {
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                        
                         $.ajax({
-                            url: BaseURL+"/HRModuleDeleteLeaveType",
+                            url: BaseURL+"/HRModuleAddLeaveMonth",
                             type: 'POST',
                             data: JSON.stringify({
-                                leaveTypeId : rowId
+                                total_leave_id : self.totalLeaveId(),
+                                start_month : self.start_month(),
                             }),
                             dataType: 'json',
                             timeout: sessionStorage.getItem("timeInetrval"),
@@ -175,92 +233,40 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(textStatus);
                             },
                             success: function (data) {
-                                location.reload()
+                                document.querySelector('#openAddLeaveMonth').close();
+                                let popup = document.getElementById("loaderPopup");
+                                popup.close();
+                                let popup1 = document.getElementById("successView");
+                                popup1.open();
                             }
                         })
                     }
+                }
 
-                    self.start_month = ko.observable('');
-
-                    self.month_List = ko.observableArray([]);
-                    self.month_List.push(
-                        {"label":"January","value":"January"},
-                        {"label":"February","value":"February"},
-                        {"label":"March","value":"March"},
-                        {"label":"April","value":"April"},
-                        {"label":"May","value":"May"},
-                        {"label":"June","value":"June"},
-                        {"label":"July","value":"July"},
-                        {"label":"August","value":"August"},
-                        {"label":"September","value":"September"},
-                        {"label":"October","value":"October"},
-                        {"label":"November","value":"November"},
-                        {"label":"December","value":"December"}
-                    );
-                    self.month_List = new ArrayDataProvider(self.month_List, {
-                        keyAttributes: 'value'
-                    });
-    
-
-                    self.addLeaveMonth = ()=>{
-                        document.querySelector('#openAddLeaveMonth').open();
-                    }
-
-                    self.formSubmitMonth = ()=>{
-                        const formValid = self._checkValidationGroup("formValidationMonth"); 
-                        if (formValid) {
-                                let popup = document.getElementById("loaderPopup");
-                                popup.open();
-                                
-                                $.ajax({
-                                    url: BaseURL+"/HRModuleAddLeaveMonth",
-                                    type: 'POST',
-                                    data: JSON.stringify({
-                                        total_leave_id : self.totalLeaveId(),
-                                        start_month : self.start_month(),
-                                    }),
-                                    dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
-                                    context: self,
-                                    error: function (xhr, textStatus, errorThrown) {
-                                        console.log(textStatus);
-                                    },
-                                    success: function (data) {
-                                        document.querySelector('#openAddLeaveMonth').close();
-                                        let popup = document.getElementById("loaderPopup");
-                                        popup.close();
-                                        let popup1 = document.getElementById("successView");
-                                        popup1.open();
-                                    }
-                                })
-                            }
-                        }
-
-                    self.rewriteUrl=(url)=> {
-                        if (url.includes('/Hr')) {
-                            return url;
-                        }
-                        const cssRegex = /\/css\//g;
-                        const jsRegex = /\/js\//g;
-                        const imgRegex = /\/img\//g;
-                        const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
-                        const baseUrl = 'https://uanglobal.com/';
-                        if (url.startsWith(baseUrl)||url.startsWith('..')){
-                            if (cssRegex.test(url)){
-                                    url = url.replace(cssRegex, '/Hr/css/');
-                                    return url;
-                            } else if (jsRegex.test(url)) {
-                                    url = url.replace(jsRegex, '/Hr/js/');
-                                    return url;
-                            } else if (imgRegex.test(url)) {
-                                    url = url.replace(imgRegex, '/Hr/img/');
-                                    return url;
-                            }
-                        }
+                self.rewriteUrl=(url)=> {
+                    if (url.includes('/Hr')) {
                         return url;
+                    }
+                    const cssRegex = /\/css\//g;
+                    const jsRegex = /\/js\//g;
+                    const imgRegex = /\/img\//g;
+                    const backImgregex = /url\((['"]?)(\.\.\/\.\.\/css\/|\.\.\/css\/|\/css\/)(.*?)(['"]?)\)/g;
+                    const baseUrl = 'https://uanglobal.com/';
+                    if (url.startsWith(baseUrl)||url.startsWith('..')){
+                        if (cssRegex.test(url)){
+                                url = url.replace(cssRegex, '/Hr/css/');
+                                return url;
+                        } else if (jsRegex.test(url)) {
+                                url = url.replace(jsRegex, '/Hr/js/');
+                                return url;
+                        } else if (imgRegex.test(url)) {
+                                url = url.replace(imgRegex, '/Hr/img/');
+                                return url;
+                        }
+                    }
+                    return url;
                 }
                 
-    
             }
         }
         return  LeaveSettings;

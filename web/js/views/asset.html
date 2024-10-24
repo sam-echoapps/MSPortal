@@ -20,13 +20,6 @@
 
 <div id="report" class="oj-panel oj-xl-margin-4x" style="display:none;margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
   <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
-    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-input-text id="filterReport" label-hint="Search" label-edge="inside"
-            placeholder="Search.." on-raw-value-changed="[[handleValueAssetReport]]" value="{{filterReport}}" clear-icon="always">
-            </oj-input-text>
-        </div>
-    </div> 
     <div class="oj-flex oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
       <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
         <oj-input-date id="from" label-hint="Select From date" value="{{fromDate}}" date-picker="[[datePicker]]"
@@ -71,6 +64,18 @@
           <oj-bind-text value="[[priceMissing]]"></oj-bind-text>
       </div>
       </div>
+      <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+        <oj-select-many 
+          label-hint="Select Status"
+          label-edge="inside" 
+          options="[[statusFilterList]]" 
+          value="{{statusFilter}}"
+          on-value-changed="[[statusFilterCheck]]">
+        </oj-select-many>
+        <div style="color:red;">
+          <oj-bind-text value="[[statusMissing]]"></oj-bind-text>
+      </div>
+      </div>
   </div>
   <br>
   <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
@@ -85,6 +90,13 @@
 </div>
 <br>
 <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+  <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+    <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <oj-input-text id="filterReport" label-hint="Search" label-edge="inside"
+        placeholder="Search.." on-raw-value-changed="[[handleValueAssetReport]]" value="{{filterReport}}" clear-icon="always">
+        </oj-input-text>
+    </div>
+</div> 
     <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
       <oj-table id='assetTable' aria-label='All Table' data='[[AssetReportList]]' display='list'
           selection-mode='{"row": "single"}'  columns='[
@@ -102,6 +114,8 @@
             "headerText": "Owner Name", "field": "owner", "id": "owner_name" },
           { "headerClassName" : "table-header-style",
             "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+          { "headerClassName" : "table-header-style",
+            "headerText": "Status", "field": "asset_status", "id": "asset_status", "template": "statusTemplate" },
           { "headerClassName" : "table-header-style",
             "headerText": "Total Amount", "field": "total_amount", "id": "total_amount", "template": "totalAmountTemplate", "headerTemplate": "totalAmountHeaderTemplate" }
           ]' style='width: 100%;' class="demo-table-container">
@@ -123,6 +137,14 @@
           </template>
           <template slot="totalAmountHeaderTemplate">
             <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
+        </template>
+        <template slot="statusTemplate" data-oj-as="cell">
+          <oj-bind-if test="[[cell.row.asset_status == 'Active' ]]">
+              <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+          </oj-bind-if>
+          <oj-bind-if test="[[cell.row.asset_status == 'Inactive' ]]">
+              <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+          </oj-bind-if>
         </template>
           </oj-table>
       </div>
@@ -166,7 +188,9 @@
             { "headerClassName" : "table-header-style",
             "headerText": "PO No", "field": "po_no", "id": "po_no"},
             { "headerClassName" : "table-header-style",
-            "headerText": "Product Name", "field": "product_name", "id": "product_name"}
+            "headerText": "Product Name", "field": "product_name", "id": "product_name"},
+            { "headerClassName" : "table-header-style",
+            "headerText": "Status", "field": "asset_status", "id": "asset_status", "template": "statusTemplate" }
             ]' style='width: 100%;' class="demo-table-container">
             <template slot="actionTemplate" data-oj-as="cell">
               <oj-bind-if test="[[cell.row.po_no  != null]]">
@@ -180,6 +204,14 @@
               </a>
             </oj-bind-if>
              </template>
+             <template slot="statusTemplate" data-oj-as="cell">
+              <oj-bind-if test="[[cell.row.asset_status == 'Active' ]]">
+                  <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+              </oj-bind-if>
+              <oj-bind-if test="[[cell.row.asset_status == 'Inactive' ]]">
+                  <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+              </oj-bind-if>
+            </template>
             </oj-table>
         </div>
         </div>

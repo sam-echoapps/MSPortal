@@ -94,6 +94,19 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     {'value' : 'Exhausted ', 'label' : 'Exhausted '},  
                 );
                 self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
+                self.assetStatus = ko.observable('');
+                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencies = [
+                    {"label":"USD","value":"USD"},
+                    {"label":"INR","value":"INR"},
+                    {"label":"GBP","value":"GBP"},
+                    {"label":"AED","value":"AED"}
+                ]
+
+                self.currencyList = new ArrayDataProvider(self.currencies, {
+                    keyAttributes: 'value'
+                });
+                self.totalAmountConvert = ko.observable('');
 
                 self.connected = function () {
                     if (sessionStorage.getItem("userName") == null) {
@@ -149,6 +162,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             console.log(data)
                             self.assetNumber("AS"+data[0][0])
                             self.assetName(data[0][2])
+                            self.assetStatus(data[0][13])
                             if(data[0][4] != 'NULL'){
                                 self.category(data[0][4])
                                 self.selectedCategory(data[0][11])
@@ -184,6 +198,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.warrentyEndDate(data2[11])
                             self.warrentyReminder(data2[12]),
                             self.totalAmount(data2[13])
+                            self.totalAmountConvert(data2[13])
                             self.selectedOptions(data2[14])
                             self.extraSecondaryText(data2[15])
                             if(data2[15] !=''){
@@ -198,7 +213,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data3= result[2]
                             console.log(data3)
                             if(data3.length !=0){
-                                self.categoryList.push({'value': '0', 'label': 'N/A'});
                                 for (var i = 0; i < data3.length; i++) {
                                     self.categoryList.push({'value': data3[i][1],'label': data3[i][1]  });
                                 }
@@ -270,29 +284,63 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.assetRemove = ()=>{
                     document.getElementById('loaderView').style.display='block';
-                    if((self.assetType() != 'Currently Usable') || self.owner_name() != 'N/A'){
+                    if (self.assetType() == 'Currently Usable') {
+                        document.getElementById('loaderView').style.display='none';
                         let popup1 = document.getElementById("warningView");
                         popup1.open();
+                    }else if (self.owner_name() != 'N/A') {
+                        document.getElementById('loaderView').style.display='none';
+                        let popup1 = document.getElementById("warningView");
+                        popup1.open();
+                    }else{
+                        document.getElementById('loaderView').style.display='none';
+                        let popup1 = document.getElementById("confirmView");
+                        popup1.open();
                     }
-                    // $.ajax({
-                    //     url: BaseURL+"/HRModuleDeleteAsset",
-                    //     type: 'POST',
-                    //     data: JSON.stringify({
-                    //         assetId: sessionStorage.getItem("assetId"),
-                    //     }),
-                    //     timeout: sessionStorage.getItem("timeInetrval"),
-                    //     context: self,
-                        
-                    //     error: function (xhr, textStatus, errorThrown) {
-                    //         console.log(textStatus);
-                    //     },
-                    //     success: function (data) {
-                    //         console.log(data)
-                    //         self.router.go({path:'asset'})
-                    //     }  
-                    // });
                 }
 
+
+                self.confirmAssetRemove = ()=>{
+                    $.ajax({
+                        url: BaseURL+"/HRModuleRemoveAsset",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            assetId: sessionStorage.getItem("assetId"),
+                        }),
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            self.router.go({path:'asset'})
+                        }  
+                    });
+                }
+
+
+                // self.assetRemove = ()=>{
+                //     document.getElementById('loaderView').style.display='block';
+                //     $.ajax({
+                //         url: BaseURL+"/HRModuleDeleteAsset",
+                //         type: 'POST',
+                //         data: JSON.stringify({
+                //             assetId: sessionStorage.getItem("assetId"),
+                //         }),
+                //         timeout: sessionStorage.getItem("timeInetrval"),
+                //         context: self,
+                        
+                //         error: function (xhr, textStatus, errorThrown) {
+                //             console.log(textStatus);
+                //         },
+                //         success: function (data) {
+                //             console.log(data)
+                //             self.router.go({path:'asset'})
+                //         }  
+                //     });
+                // }
 
                 self.formSubmit = () => {
                     //alert(self.category())
@@ -323,7 +371,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     const formValid = self._checkValidationGroup("formValidation");
                     // Validation for guarantee file
-                    if (self.have_guarantee() == 'Yes' && self.guaranteeFile() == '') {
+                    if (self.have_guarantee_card() == 'Yes' && self.guaranteeFile() == '') {
                         self.guaranteeManadatory('Upload');
                     } else {
                         self.guaranteeManadatory('');
@@ -438,16 +486,56 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     });
                 }
 
-                self.priceValidate = (event)=>{
+                self.priceValidate = async (event)=>{
                     var ASCIICode= event.detail.value
                     console.log(ASCIICode)
                     var check = /^\d+(\.\d+)?$/.test(ASCIICode);
                     console.log(check)
                     if (check == true){
                         self.numError('')
+                        await convertCurrency(ASCIICode,self.currencySelected());  // Pass the input value to the conversion function
                     }else{
+                        self.totalAmount('')
                         self.numError("Please enter a number. Decimals are allowed (e.g., 12.34).");
                     }
+                }
+
+                async function convertCurrency(amount, sourceCurrency) {
+                    const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                    const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
+                
+                    try {
+                        let response = await fetch(url); // Use browser's fetch API
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        let data = await response.json();
+                
+                        console.log(data.rates);
+                
+                        // Check if the target currency exists in the rates
+                        if (targetCurrency in data.rates) {
+                            const conversionRate = data.rates[targetCurrency];
+                            console.log(`1 ${sourceCurrency} = ${conversionRate} ${targetCurrency}`);
+                
+                            // Convert the entered amount from source currency to target currency
+                            let amountInConvertedCurrency = amount * conversionRate;
+                            console.log(`${amount} ${sourceCurrency} = ${amountInConvertedCurrency.toFixed(2)} ${targetCurrency}`);
+                
+                            // Update the UI with the converted value
+                            self.totalAmount(`${amountInConvertedCurrency.toFixed(2)}`);
+                        } else {
+                            throw new Error(`Currency ${targetCurrency} is not supported.`);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching exchange rate:', error);
+                        self.numError('Failed to fetch exchange rate. Please try again later.');
+                    }
+                }
+
+                self.clearText = () => {
+                    self.totalAmount('')
+                    self.totalAmountConvert('')
                 }
 
 

@@ -84,13 +84,18 @@
                 <div>
                        
                 </div>  
+                <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
+                data="[[currencyList]]" value="{{currencySelected}}" on-value-changed="[[clearText]]"></oj-select-single>
+                <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
+                    <oj-input-text id="totalAmountConvert" label-hint="Total Amount" value="{{totalAmountConvert}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
+
+                    <div style="color:red;margin-top:-20px">
+                        <oj-bind-text value="[[numError]]"></oj-bind-text>
+                    </div>
+                </div>
                  <div class="oj-flex">
                     <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
-                        <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
-
-                        <div style="color:red;margin-top:-20px">
-                            <oj-bind-text value="[[numError]]"></oj-bind-text>
-                        </div>
+                        <oj-input-text id="totalAmount" label-hint="Total Amount" value="{{totalAmount}}" readonly="true"></oj-input-text>
                     </div>
                     <div class="oj-flex-item oj-sm-4 oj-sm-padding-2x-start oj-md-padding-3x-start">
                     </br>
@@ -157,7 +162,8 @@
                  label-edge="inside" 
                  options="{{DepartmentList}}" 
                  value="{{selectedDepartment}}"
-                 required>
+                 required
+                 on-value-changed="[[getStaffFilter]]">
                </oj-combobox-one>
                <oj-combobox-one 
                label-hint="Select Owner"

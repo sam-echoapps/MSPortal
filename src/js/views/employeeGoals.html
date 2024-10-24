@@ -4,17 +4,21 @@
         <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-list-check icon"></i></span>&nbsp;Employee Goals </span><span class="hint-note">(Manage employee goals.)</span></div> 
         <div class="oj-flex-item oj-sm-padding-2x-horizontal  oj-sm-margin-4x">
             <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
-            <div class="oj-flex-item oj-xl-3  oj-md-3 oj-sm-4 oj-md-padding-2x-horizontal  oj-sm-padding-2x-horizontal">
-                <oj-select-single label-hint="Select Year" class="oj-sm-padding-2x-vertical"
-                label-edge="inside" data="[[yearList]]" value="{{yearFilter}}" on-value-changed="[[filterYear]]">
-                </oj-select-single>
-            </div>
+                <oj-input-date id="from" label-hint="Select From date" value="{{fromDate}}" date-picker="[[datePicker]]"
+                class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 10px;">
+                </oj-input-date>&nbsp;&nbsp;
+                <oj-input-date id="to" label-hint="Select To date" value="{{toDate}}" date-picker="[[datePicker]]"
+                    class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 10px;"></oj-input-date>&nbsp;&nbsp;
+                <oj-button id="show" chroming="borderless" on-oj-action="[[showData]]" 
+                    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top: 13px;">
+                    <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+                </oj-button>
             </div>
         </div>
     </div>
 </div>
 
-<div style="display:none;" class="oj-xl-margin-4x" id="actionView"> 
+<div class="oj-xl-margin-4x" id="actionView"> 
 <div class="oj-panel oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
     <oj-table id='goalTable' aria-label='All Table' data='[[dataProvider]]' display='list'
         selection-mode='{"row": "single"}'  columns='[

@@ -26,7 +26,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
-                        getHoliday();
+                        self.getHoliday();
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -51,7 +51,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 }
 
-                function getHoliday(){
+                self.getHoliday = ()=>{
                     self.HolidayDet([]);
                     document.getElementById('loaderView').style.display='none';
                     $.ajax({
@@ -61,27 +61,28 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
+                            document.getElementById('loaderView').style.display='none';
                         },
                         success: function (data) {
                             console.log(data)
-                            // document.getElementById('loaderView').style.display='none';
-                            // document.getElementById('actionView').style.display='block';
+                            document.getElementById('loaderView').style.display='none';
+                            document.getElementById('actionView').style.display='block';
                             if(data[0].length !=0){ 
                                 for (var i = 0; i < data[0].length; i++) {
-                                    self.HolidayDet.push({'no': i+1,'id': data[0][i][0],'holiday_name': data[0][i][1],'holiday_date': data[0][i][2],'comments': data[0][i][3]  });
+                                    self.HolidayDet.push({
+                                        'no': i+1,
+                                        'id': data[0][i][0],
+                                        'holiday_name': data[0][i][1],
+                                        'holiday_date': data[0][i][2],
+                                        'comments': data[0][i][3]  
+                                    });
                                 }
-                            }
-                            if(data[1].length !=0){ 
-                                for (var i = 0; i < data[1].length; i++) {
-                                    self.HolidayYearDet.push({"label":data[1][i][0],"value":data[1][i][0]});
-                                }
-                                self.HolidayYearDet.unshift({ value: 'All', label: 'All' });
                             }
                         }
                     })
                 }
 
-                self.yearList = new ArrayDataProvider(this.HolidayYearDet, { keyAttributes: "value"});
+                self.dataProvider = new ArrayDataProvider(this.HolidayDet, { keyAttributes: "id"});
 
                 self.formSubmit = ()=>{
                     const formValid = self._checkValidationGroup("formValidation"); 
@@ -154,70 +155,112 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.querySelector('#openAddHoliday').open();
                 }
 
-                self.filterYearCallCount = 0; // Initialize counter
-                // Debounce function to limit calls to filterYear
-                function debounce(func, wait) {
-                    let timeout;
-                    return function (...args) {
-                        const context = this;
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => func.apply(context, args), wait);
-                    };
-                }
+                // self.filterYearCallCount = 0; // Initialize counter
+                // // Debounce function to limit calls to filterYear
+                // function debounce(func, wait) {
+                //     let timeout;
+                //     return function (...args) {
+                //         const context = this;
+                //         clearTimeout(timeout);
+                //         timeout = setTimeout(() => func.apply(context, args), wait);
+                //     };
+                // }
 
-                self.filterYear = debounce(function () {
-                    self.HolidayDet([]);
-                    self.filterYearCallCount++; // Increment counter
-                    if(self.yearFilter() == ''){
-                        const currentYear = new Date().getFullYear();
-                        console.log(currentYear);
-                        self.yearFilter(currentYear)
-                    }
-                    if (self.yearFilter() != '' ) {
-                        if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                            self.HolidayDet([]);
-                        }
-                        document.getElementById('loaderView').style.display='block';
-                        $.ajax({
-                            url: BaseURL  + "/HRModuleGetYearHolidayFilterList",
-                            type: 'POST',
-                            data: JSON.stringify({
-                                year : self.yearFilter()
-                            }),
-                            dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
-                            context: self,
-                            error: function (xhr, textStatus, errorThrown) {
-                                if(textStatus == 'timeout' || textStatus == 'error'){
-                                    document.querySelector('#TimeoutSup').open();
-                                }
-                            },
-                            success: function (data) {
-                                document.getElementById('loaderView').style.display='none';
-                                document.getElementById('actionView').style.display='block';
-                                console.log(data)
-                                if(data[0].length !=0){ 
-                                    if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
-                                        self.HolidayDet([]);
-                                    }
+                // self.filterYear = debounce(function () {
+                //     self.HolidayDet([]);
+                //     self.filterYearCallCount++; // Increment counter
+                //     if(self.yearFilter() == ''){
+                //         const currentYear = new Date().getFullYear();
+                //         console.log(currentYear);
+                //         self.yearFilter(currentYear)
+                //     }
+                //     if (self.yearFilter() != '' ) {
+                //         if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
+                //             self.HolidayDet([]);
+                //         }
+                //         document.getElementById('loaderView').style.display='block';
+                //         $.ajax({
+                //             url: BaseURL  + "/HRModuleGetYearHolidayFilterList",
+                //             type: 'POST',
+                //             data: JSON.stringify({
+                //                 year : self.yearFilter()
+                //             }),
+                //             dataType: 'json',
+                //             timeout: sessionStorage.getItem("timeInetrval"),
+                //             context: self,
+                //             error: function (xhr, textStatus, errorThrown) {
+                //                 if(textStatus == 'timeout' || textStatus == 'error'){
+                //                     document.querySelector('#TimeoutSup').open();
+                //                 }
+                //             },
+                //             success: function (data) {
+                //                 document.getElementById('loaderView').style.display='none';
+                //                 document.getElementById('actionView').style.display='block';
+                //                 console.log(data)
+                //                 if(data[0].length !=0){ 
+                //                     if (self.filterYearCallCount <= 3) { // Clear only on first 3 calls
+                //                         self.HolidayDet([]);
+                //                     }
 
-                                    for (var i = 0; i < data[0].length; i++) {
-                                        self.HolidayDet.push({
-                                            'no': i+1,
-                                            'id': data[0][i][0],
-                                            'holiday_name': data[0][i][1],
-                                            'holiday_date': data[0][i][2],
-                                            'comments': data[0][i][3]  
-                                        });
-                                    }
-                                }
-                        }
-                        })
-                    }
+                //                     for (var i = 0; i < data[0].length; i++) {
+                //                         self.HolidayDet.push({
+                //                             'no': i+1,
+                //                             'id': data[0][i][0],
+                //                             'holiday_name': data[0][i][1],
+                //                             'holiday_date': data[0][i][2],
+                //                             'comments': data[0][i][3]  
+                //                         });
+                //                     }
+                //                 }
+                //         }
+                //         })
+                //     }
                        
-                    }, 10); // 1-second debounce delay
+                //     }, 10); // 1-second debounce delay
 
-                self.dataProvider = new ArrayDataProvider(this.HolidayDet, { keyAttributes: "id"});
+                // self.dataProvider = new ArrayDataProvider(this.HolidayDet, { keyAttributes: "id"});
+
+                self.fromDate = ko.observable('')
+                self.toDate = ko.observable('')
+
+                self.datePicker = {
+                    numberOfMonths: 1
+                };
+                self.showData = ()=>{
+                    self.HolidayDet([]);
+                    document.getElementById('loaderView').style.display='block';
+                    let fromDate = self.fromDate()
+                    let toDate = self.toDate();
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetHolidayListFilter",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            fromDate : fromDate,
+                            toDate : toDate
+                        }),
+                        dataType: 'json',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            document.getElementById('loaderView').style.display='none';
+                            if(data[0].length !=0){
+                                for (var i = 0; i < data[0].length; i++) {
+                                    self.HolidayDet.push({
+                                        'no': i+1,
+                                        'id': data[0][i][0],
+                                        'holiday_name': data[0][i][1],
+                                        'holiday_date': data[0][i][2],
+                                        'comments': data[0][i][3]                                  
+                                    }); 
+                                } 
+                            }
+                        }
+                    })
+                }
 
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {

@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="../../css/addStaff.css">
+<div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
+        <div><span class="hint-title"> <span class="icon-container"><i class="fas fa-calendar-alt icon"></i></span>&nbsp;Expense Report </span><span class="hint-note">(View and export the employee expense report.)</span></div>
+        <div class="oj-flex oj-sm-flex-items-initial oj-sm-justify-content-flex-end">
+            <div class="oj-flex-item oj-sm-padding-2x-horizontal">
+              <oj-button chroming="solid" on-oj-action="[[back]]"  class="oj-sm-padding-2x-vertical">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;Finance
+              </oj-button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="report" class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px;box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+
+    <div class="oj-flex oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-select-many 
+            label-hint="Select Department"
+            label-edge="inside" 
+            options="[[departmentList]]" 
+            value="{{departmentFilter}}"
+            on-value-changed="[[getDesignationFilter]]">
+          </oj-select-many>
+        </div>
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-select-many 
+            label-hint="Select Designation"
+            label-edge="inside" 
+            options="[[designationList]]" 
+            value="{{designationFilter}}"
+            on-value-changed="[[getStaffList]]">
+          </oj-select-many>
+          <div style="color:red;">
+            <oj-bind-text value="[[designationMissing]]"></oj-bind-text>
+        </div>
+        </div>
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-select-many 
+            label-hint="Select Staff"
+            label-edge="inside" 
+            options="[[staffList]]" 
+            value="{{staffFilter}}"
+            on-value-changed="[[clearStaffError]]">
+          </oj-select-many>
+          <div style="color:red;">
+            <oj-bind-text value="[[staffMissing]]"></oj-bind-text>
+        </div>
+        </div>
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-select-many 
+            label-hint="Select Payment Status"
+            label-edge="inside" 
+            options="[[statusList]]" 
+            value="{{statusFilter}}">
+          </oj-select-many>
+        </div>
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-input-date id="from" label-hint="Select From date" value="{{fromDate}}" date-picker="[[datePicker]]"
+          class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;">
+          </oj-input-date>
+        </div>
+        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
+          <oj-input-date id="to" label-hint="Select To date" value="{{toDate}}" date-picker="[[datePicker]]"
+                class="oj-form-control-max-width-sm" autocomplete="off" style="margin-top: 5px;"></oj-input-date>
+        </div>
+    </div>
+      <br>
+      <div class="oj-flex oj-md-justify-content-center" style="gap: 30px; padding-bottom: 10px;">
+        <oj-button id="show" chroming="borderless" on-oj-action="[[showData]]" 
+            style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
+            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
+        </oj-button>
+        <oj-button id="export"chroming="borderless" on-oj-action="[[downloadExcel]]" 
+            style="background-color: #34b53a;color: #fff;border-radius: 10px;">
+            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-download"></i> Export</span>
+        </oj-button>
+      </div>
+      
+    <div style="display:none;" class="oj-panel oj-xl-margin-4x" id="actionView"> 
+        <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+            <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+                <oj-input-text id="ReportFilter" label-hint="Search" label-edge="inside"
+                placeholder="Search.." on-raw-value-changed="[[handleValueStaff]]" value="{{ReportFilter}}" clear-icon="always">
+                </oj-input-text>
+            </div>
+        </div>
+        <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+            <oj-table id='ReportTable' aria-label='All Table' data='[[ExpenseList]]' display='list'
+            selection-mode='{"row": "single"}'  columns='[
+            { "headerClassName" : "table-header-style",
+            "headerText": "Expense No", "field": "expense_no", "id": "expense_no" },
+            { "headerText": "Name", "field": "name", "id": "name",
+            "headerClassName" : "table-header-style"},
+            { "headerClassName" : "table-header-style",
+            "headerText": "Department", "field": "department", "id": "department" },
+            { "headerClassName" : "table-header-style",
+            "headerText": "Designation", "field": "designation", "id": "designation" },
+            { "headerText": "Expense Name", "field": "expense_name", "id": "expense_name",
+            "headerClassName" : "table-header-style"},
+            { "headerText": "Amount", "field": "amount", "id": "amount",
+            "headerClassName" : "table-header-style", "template": "totalAmountTemplate", "headerTemplate": "AmountHeaderTemplate" },
+            { "headerText": "Date of request", "field": "date_of_request", "id": "date_of_request",
+            "headerClassName" : "table-header-style"},
+            { "headerText": "Payment Status", "field": "payment_status", "id": "payment_status",
+            "headerClassName" : "table-header-style", "template": "pyTemplate"}]' style='width: 100%;' class="demo-table-container">
+            <template slot="pyTemplate" data-oj-as="cell">
+                <oj-bind-if test="[[cell.row.payment_status == 'Unpaid' ]]">
+                    <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+                </oj-bind-if>
+                <oj-bind-if test="[[cell.row.payment_status == 'Paid' ]]">
+                    <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.payment_status]]"></oj-bind-text></div>
+                </oj-bind-if>
+            </template>
+            <template slot="totalAmountTemplate" data-oj-as="cell">
+                <!-- Use the html binding to interpret the HTML content correctly -->
+                <span data-bind="html: cell.row.amount"></span>
+            </template>
+            <template slot="AmountHeaderTemplate">
+                <oj-bind-text value="[[AmountHeaderText]]"></oj-bind-text>
+            </template>
+            </oj-table>
+        </div>
+    </div>
+
+</div>
+
+<div class="centered-container" id="loaderView">
+    <div class="loader"></div>
+</div> 

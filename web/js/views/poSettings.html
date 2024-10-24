@@ -38,11 +38,11 @@
     <div id="form-container">
         <oj-form-layout id="task-information" class="form" direction="row" max-columns="1">
             <oj-bind-if test="[[actionCheck()  == 'No']]">
-            <oj-select-single required id="select" label-hint="Currenncy" label-edge="inside"
+            <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
                     data="[[currencyList]]" value="{{currency}}" readonly="true"></oj-select-single>
             </oj-bind-if>
             <oj-bind-if test="[[actionCheck()  != 'No']]">
-                <oj-select-single required id="select" label-hint="Currenncy" label-edge="inside"
+                <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
                         data="[[currencyList]]" value="{{currency}}"></oj-select-single>
                 </oj-bind-if>
         </oj-form-layout>

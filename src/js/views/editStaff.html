@@ -1,4 +1,8 @@
 <link rel="stylesheet" href="../../css/addStaff.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+  integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  
 <div style="display:none;" id="contentView">
     <!---
     <div class="oj-flex oj-sm-justify-content-space-between oj-sm-align-items-center" style="width: 100%;padding: 10px;">
@@ -192,7 +196,7 @@
                     </oj-bind-if>
 
                     <!-- Line Manager Combobox -->
-                    <oj-bind-if test="[[userrole() != 'employee']]">
+                    <oj-bind-if test="[[lineManagerRole() == 'director']]">
                         <oj-combobox-one 
                             id="line_manager" 
                             label-hint="Line Manager" 
@@ -203,7 +207,7 @@
                         </oj-combobox-one>
                     </oj-bind-if>
 
-                    <oj-bind-if test="[[userrole() == 'employee']]">
+                    <oj-bind-if test="[[lineManagerRole() != 'director']]">
                         <oj-combobox-one 
                             id="line_manager" 
                             label-hint="Line Manager" 
@@ -211,9 +215,19 @@
                             class="oj-form-control-max-width-md" 
                             value="{{line_manager}}" 
                             options="[[employeeListLine]]" 
-                            readonly="true">
+                            required="true">
                         </oj-combobox-one>
                     </oj-bind-if>
+
+                    <!-- Report Combobox -->
+                    <oj-combobox-many
+                    id="ReportTo"
+                    value="{{reportTo}}"
+                    options="{{reportTo_List}}"
+                    label-edge="inside"
+                    label-hint="Choose the reporting managers"
+                    class="oj-form-control-max-width-md">      
+                    </oj-combobox-many>
 
                     <!-- Joining Date Input Date -->
                     <oj-bind-if test="[[userrole() != 'employee']]">
@@ -295,6 +309,9 @@
                     <oj-text-area id="address" value="{{address}}" label-hint="Address" raw-valuenewE=""
                     rows="3" clear-icon="always">
                     </oj-text-area>
+                    <oj-text-area id="responsibilities" value="{{responsibilities}}" label-hint="Responsibilities" raw-valuenewE=""
+                    rows="3" clear-icon="always">
+                    </oj-text-area>
                     <div class="oj-flex">
                         <div class="oj-flex-item oj-sm-3 oj-sm-padding-2x-end oj-md-padding-3x-end" style="padding-top:10px">
                             <oj-avatar
@@ -337,19 +354,17 @@
             </div>
         </div>
     </div>
-    <oj-validation-group id="formValidationPassword" class="form-container" role="group">
         <div id="form-container-employee" class="">  
-            <oj-form-layout id="personal-information" class="form" direction="row" max-columns="2">
+            <oj-form-layout id="password-information" class="form" direction="row" max-columns="2">
                 <oj-input-text id="username" label-hint="Username" required="true" value="{{username}}" disabled></oj-input-text>
                 <oj-input-text id="password" label-hint="Password" required="true" value="{{password}}"></oj-input-text>
             </oj-form-layout>
             <div class="oj-flex">
                 <div class="oj-flex-item oj-sm-6 oj-sm-padding-2x-end oj-md-padding-12x-end">
-                    <oj-button id="save" chroming="solid" on-oj-action="[[crediantialUpdate]]"><i class="fas fa-save"></i> Update</oj-button>
+                    <oj-button id="savePassword" chroming="solid" on-oj-action="[[crediantialUpdate]]"><i class="fas fa-save"></i> Update</oj-button>
                 </div>
             </div>
         </div>
-    </oj-validation-group>>
 </div>
 
 
@@ -395,7 +410,7 @@
     <div class="oj-table-color oj-sm-padding-4x-horizontal oj-sm-padding-8x-vertical" style="display:none;" id="document_view">
     <div class="oj-panel">
     <oj-table id="documentTable" aria-label="All Table" accessibility.row-header="name" data="[[documentData]]"
-        columns-default.sortable="enabled" layout="fixed"
+        columns-default.sortable="disabled" layout="fixed"
         columns='[
             {"headerClassName" : "table-header-style","headerText": "SL.No", "id": "no"},
             {"headerClassName" : "table-header-style","headerText": "Document Name", "id": "document_name"}, 
@@ -480,7 +495,6 @@
                         <p><strong>Amount/Rate: </strong><oj-bind-text value="[[amount]]"></oj-bind-text></p>
                         <p><strong>Hourly Rate: </strong><oj-bind-text value="[[hourly_rate]]"></oj-bind-text></p>
                         <p><strong>Payment Frequency: </strong><oj-bind-text value="[[payment_frequency]]"></oj-bind-text></p>
-                        <p><strong>Effective Date: </strong><oj-bind-text value="[[effective_date]]"></oj-bind-text></p>
                     </div>
                 </oj-collapsible>
             </oj-accordion>
@@ -502,7 +516,6 @@
                         <p><strong>Job Title: </strong><oj-bind-text value="[[job_title]]"></oj-bind-text></p>
                         <p><strong>Contract Type: </strong><oj-bind-text value="[[contract_type]]"></oj-bind-text></p>
                         <p><strong>Team(s): </strong><oj-bind-text value="[[teams]]"></oj-bind-text></p>
-                        <p><strong>Report to: </strong><oj-bind-text value="[[report_to2]]"></oj-bind-text></p>
                         <p><strong>Probation Details: </strong><oj-bind-text value="[[probation_details]]"></oj-bind-text></p>
                         <p><strong>Notice Period: </strong><oj-bind-text value="[[notice_period]]"></oj-bind-text></p>
                     </div>
@@ -600,11 +613,11 @@
             label-edge="inside" options="[[yearList]]" value="{{yearFilter}}" on-value-changed="[[filterYear]]">
             </oj-combobox-one>
 
-            <oj-button id="save" chroming="solid"  class="oj-sm-padding-3x-vertical oj-md-padding-4x-horizontal">            
+            <oj-button id="unclikable" chroming="solid"  class="oj-sm-padding-3x-vertical oj-md-padding-4x-horizontal">            
             <h9 class="oj-xl-margin-4x"><i class="fa-solid fa">
             </i>&nbsp;Leave Taken : <oj-bind-text value="[[leaveTaken]]"></oj-bind-text></h9></oj-button>
 
-            <oj-button id="save" chroming="solid"  class="oj-sm-padding-3x-vertical">            
+            <oj-button id="unclikable" chroming="solid"  class="oj-sm-padding-3x-vertical">            
             <h9 class="oj-xl-margin-4x"><i class="fa-solid fa">
             </i>&nbsp;Leave Remaining : <oj-bind-text value="[[leaveRemaining]]"></oj-bind-text></h9></oj-button>
         </div>
@@ -681,10 +694,87 @@
     </div>
 </div>
 
-<div id="overtime" class="oj-sm-margin-4x">
-    <!-- <div class="oj-panel oj-flex oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad; border-radius: 10px;">
-        Over Time Data
-    </div> -->
+<div id="overtime" class="oj-sm-margin-4x" style="display: none;">
+    <div class="oj-panel oj-flex oj-sm-margin-4x" style="border-radius: 10px;">
+        <div class="oj-flex oj-sm-justify-content-center oj-sm-align-items-center" style="width: 100%;">
+            <oj-label for="from">From :- </oj-label>
+            &nbsp;&nbsp;&nbsp;
+            <oj-input-date id="from" value="{{overtimeFromDate}}" max="[[overtimeToDate]]" class="oj-form-control-max-width-sm"></oj-input-date>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <oj-label for="to">To :- </oj-label>
+            &nbsp;&nbsp;&nbsp;
+            <oj-input-date id="to" value="{{overtimeToDate}}" min="[[overtimeFromDate]]" class="oj-form-control-max-width-sm"></oj-input-date>
+            <!-- <oj-button id="save" chroming="solid" on-oj-action="[[getOverTimeData]]" class="oj-sm-padding-3x-vertical oj-md-padding-4x-horizontal">
+                <oj-bind-text value="Submit"></oj-bind-text>
+            </oj-button> -->
+        </div>
+    </div>
+    <div class="oj-panel oj-flex oj-xl-margin-4x" style="border-radius: 10px;">
+        <oj-table id="table" aria-label="Task Table" accessibility.row-header="name" data="[[overTimeDataProvider]]"
+            columns-default.sortable="enabled"
+            columns='[{"headerClassName" : "table-header-style","headerText": "Sl No", "id": "slno"},
+                      {"headerClassName" : "table-header-style","headerText": "Date", "id": "date"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockin Time", "id": "clockintime"},
+                      {"headerClassName" : "table-header-style","headerText": "Clockout Time", "id": "clockouttime"},
+                      {"headerClassName" : "table-header-style","headerText": "Actual Working Time", "id": "workingtime"},
+                      {"headerClassName" : "table-header-style","headerText": "Expected Working Time", "id": "expectedWorkingTime"},
+                      {"headerClassName" : "table-header-style","headerText": "Over Time", "id": "overTime", "minWidth":"8rem"}]'
+            class="demo-table-container" style="width: 100%;">
+            <template slot="rowTemplate" data-oj-as="row">
+              <tr>
+                <td><oj-bind-text value="[[row.data.slno]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.date]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockInTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.clockOutTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.actualWorkingTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.expectedWorkingTime]]"></oj-bind-text></td>
+                <td><oj-bind-text value="[[row.data.overTime]]"></oj-bind-text></td>
+              </tr>
+            </template>
+        </oj-table>
+    </div>
+</div>
+
+
+<div id="workReport" class="oj-sm-margin-4x" style="display: none;">
+    <div class="oj-sm-margin-4x" style="border-radius: 10px;">
+        <oj-table id="table" aria-label="Departments Table" accessibility.row-header="depName" data="[[workReportDataProvider]]"
+            dnd='{"reorder": {"columns": "enabled"}}' scroll-policy="loadMoreOnScroll" 
+            scroll-policy-options='{"fetchSize": 10}'columns-default.sortable="disabled" 
+            columns='[{"headerClassName" : "table-header-style","headerText": "Sl No", "SlNo": "slno", "width":"5rem"},
+                    {"headerClassName" : "table-header-style","headerText": "Date", "id": "date", "width":"10rem"},
+                    {"headerClassName" : "table-header-style","headerText": "Subject", "id": "subject", "width":"20rem"},
+                    {"headerClassName" : "table-header-style","headerText": "Report", "id": "report", "width":"10rem"},
+                    {"headerClassName" : "table-header-style","headerText": "Action", "id": "action", "width":"8rem"}]'
+            class="demo-table-container" style="width: 100%;">
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td><oj-bind-text value="[[row.data.slNo]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.date]]"></oj-bind-text></td>
+                    <td><oj-bind-text value="[[row.data.subject]]"></oj-bind-text></td>
+                    <td>
+                        <div class="report-content" style="display: none;">
+                            <oj-bind-text value="[[row.data.report]]"></oj-bind-text>
+                        </div>
+                        <oj-button chroming="borderless" id="borderlessPushIcon" display="icons" on-oj-action="[[showReportContent]]">
+                            <span slot="startIcon"  class="fa-solid fa-eye" style="color: #007BFF;"></span>
+                            Show Content
+                        </oj-button>
+                    </td>
+                    <td>
+                        <oj-button chroming="borderless" id="borderlessPushIcon" display="icons" on-oj-action="[[reportSendAgain]]">
+                            <span slot="startIcon"  class="fa-solid fa-paper-plane" style="color: #34B53A;"></span>
+                            Send Again
+                        </oj-button>
+                        <oj-button chroming="borderless" id="report-send-done" display="icons" style="display: none;">
+                            <span slot="startIcon"  class="fa-regular fa-circle-check" style="color: #34B53A;"></span>
+                            Done
+                        </oj-button>
+                    </td>
+                </tr>
+            </template>
+        </oj-table>
+    </div>    
 </div>
 
 <oj-dialog id="openEditSalary" class="popupGoal" dialog-title="Edit Salary" modality="modeless" drag-affordance="title-bar"
@@ -692,10 +782,11 @@
     <oj-validation-group id="formValidation3" class="form-container" role="group" style="padding-bottom: 50px;">
       <div id="form-container">
         <oj-form-layout id="salary-information" class="form" direction="row" max-columns="1">
-          <oj-input-text id="amount" label-hint="Amount/Rate" required="true" value="{{amount}}"></oj-input-text>
-          <oj-input-text id="hourly_rate" label-hint="Hourly Rate" value="{{hourly_rate}}"></oj-input-text>
-          <oj-input-text id="payment_frequency" label-hint="Payment Frequency" value="{{payment_frequency}}"></oj-input-text>
-          <oj-input-date id="effective_date" label-hint="Effective Date" value="{{effective_date}}"></oj-input-date>
+          <oj-input-text id="amount" label-hint="Amount/Rate" required="true" value="{{amount}}" on-value-changed="[[PatternValidatorSalary]]"></oj-input-text>
+          <div class="oj-text-color-danger"><oj-bind-text value='[[amountError]]'></oj-bind-text></div>
+          <oj-input-text id="hourly_rate" label-hint="Hourly Rate" value="{{hourly_rate}}" on-value-changed="[[PatternValidatorSalary]]"></oj-input-text>
+          <oj-select-single id="payment_frequency" label-hint="Payment Frequency" label-edge="inside"
+          data="[[paymentFrequencyList]]" value="{{payment_frequency}}"></oj-select-single>
         </oj-form-layout>
         <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit3]]"><i class="fas fa-save"></i> Update</oj-button>
       </div>
@@ -724,7 +815,10 @@
         <div id="form-container">
             <oj-form-layout id="payroll-information" class="form" direction="row" max-columns="1">
                 <oj-input-text id="payroll_number" label-hint="Payroll Number" required="true" value="{{payroll_number}}"></oj-input-text>
-                <oj-input-text id="pension_eligible" label-hint="Pension Eligible" value="{{pension_eligible}}"></oj-input-text>
+                <oj-radioset id="rowDirectionEnabledRadioset" value="{{pension_eligible}}" class="oj-choice-direction-row" label-hint="Pension Eligible">
+                    <oj-option value="No">No</oj-option>
+                    <oj-option value="Yes">Yes</oj-option>
+                </oj-radioset>
             </oj-form-layout>
             <oj-button id="save" chroming="solid" on-oj-action="[[formSubmit5]]"><i class="fas fa-save"></i> Update</oj-button>
         </div>
@@ -751,14 +845,6 @@
             <oj-form-layout id="role-information-form" class="form" direction="row" max-columns="1">
                 <oj-input-text id="job_title" label-hint="Job Title" value="{{job_title}}"></oj-input-text>
                 <oj-select-single id="contract_type" label-hint="Contract Type" label-edge="inside" data="[[employee_type_List2]]" value="{{contract_type}}"></oj-select-single>
-                <oj-combobox-many
-                id="select1"
-                value="{{report_to}}"
-                options="{{employer_List}}"
-                label-edge="inside"
-                label-hint="Report to"
-                class="oj-form-control-max-width-md">      
-                </oj-combobox-many>
                 <oj-input-text id="probation_details" label-hint="Probation Details" value="{{probation_details}}"></oj-input-text>
                 <oj-input-text id="notice_period" label-hint="Notice Period" value="{{notice_period}}"></oj-input-text>
             </oj-form-layout>
@@ -803,95 +889,133 @@
     </div>
 </oj-popup>
     
-<oj-dialog id="popup2">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Staff updated successfully</p>
+<oj-popup id="popup2" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Staff updated successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
         </div>
     </div>
-</oj-dialog>
+</oj-popup>
 
-<oj-dialog id="popup3">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Document updated successfully</p>
+<oj-popup id="popup3" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Document updated successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
         </div>
     </div>
-</oj-dialog>
+</oj-popup>
 
-<oj-dialog id="popupMail">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully sent</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Staff credentials sent via mail successfully</p>
+<oj-popup id="popupMail" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Staff credentials sent via mail successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
         </div>
     </div>
-</oj-dialog>
-<oj-dialog id="popupPassword">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Successfully updated</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Password updated successfully</p>
-        </div>
-    </div>
-</oj-dialog>
+</oj-popup>
 
-<oj-dialog id="successView">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Document delete</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Document deleted successfully</p>
+<oj-popup id="popupPassword" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Password updated successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
         </div>
     </div>
-</oj-dialog>
+</oj-popup>
 
-<oj-dialog id="successView2">
-    <div slot="header" style="display: contents;">
-        <p id="dialogTitleId" class="oj-dialog-title">Details updated</p>
-        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-            <span slot="startIcon" class="oj-ux-ico-close"></span>
-            Cancel
-        </oj-button>
-    </div>
-    <div slot="body">
-        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-            <p style="font-weight: 500;text-align: left">Details updated successfully</p>
+<oj-popup id="successView" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Document deleted successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
         </div>
     </div>
-</oj-dialog>
+</oj-popup>
+
+<oj-popup id="successView2" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Details updated successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
+            </oj-button>
+        </div>
+    </div>
+</oj-popup>
 
 <div class="centered-container" id="loaderView">
     <div class="loader"></div>
 </div> 
+
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
+        </div>
+    </div>
+</oj-popup>
+
+<oj-dialog id="viewWorkReport">
+    <div slot="header" style="display: contents;">
+        <p id="dialogTitleId" class="oj-dialog-title">
+            <oj-bind-text value="[[workReportViewSubject]]"></oj-bind-text>
+        </p>
+        <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[closeViewWorkReport]]">
+            <span slot="startIcon" class="oj-ux-ico-close"></span>
+            Cancel
+        </oj-button>
+    </div>
+    <div slot="body">
+        <div id="reportView"></div>
+        <oj-bind-text value="[[workReportView]]"></oj-bind-text>
+    </div>
+</oj-dialog>

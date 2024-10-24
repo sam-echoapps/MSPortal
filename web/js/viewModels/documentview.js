@@ -143,9 +143,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     const documentLink = e.target.closest('a').getAttribute('data-document-link');
                     console.log(documentLink); // Log the document link to verify
                 
-                    // // Display loader (optional)
-                    // let popup = document.getElementById("loaderView");
-                    // popup.open();
+                    document.getElementById('loaderView').style.display = 'block';
                 
                     $.ajax({
                         url: BaseURL + "/HRModulePdfView",
@@ -156,11 +154,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         dataType: 'json',
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
                         },
                         success: function (data) {
-                            // Hide loader (optional)
-                            //let popup = document.getElementById("loaderView");
-                            //popup.close();
+                            document.getElementById('loaderView').style.display = 'none';
                 
                             var fileType = data[1];
                             var base64Code = data[0][0];

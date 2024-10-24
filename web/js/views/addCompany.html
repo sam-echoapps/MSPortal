@@ -176,105 +176,131 @@
         "headerText": "SL.No", "field": "no", "id": "no",
         "maxWidth" : "8rem" },
         { "headerClassName" : "table-header-style",
-            "headerText": "Roles", "field": "roles", "id": "roles" }]' style='width: 100%;' class="demo-table-container">
-            <!--<template slot="actionTemplate" data-oj-as="cell">
+        "headerText": "Roles", "field": "roles", "id": "roles" },
+        { "headerClassName" : "table-header-style",
+        "headerText": "Privilege",
+        "maxWidth" : "15rem",
+        "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
+        "template": "pTemplate", "id": "paction","sortable": "disabled" }]' style='width: 100%;' class="demo-table-container">
+            <template slot="pTemplate" data-oj-as="cell">
                 <oj-button
                 chroming="borderless"
                 display="icons"
-                on-oj-action="[[deleteRoles]]">
-                <span slot="startIcon" class="fa-solid fa-trash delete-btn"></span>
-                Delete
-            </oj-button> 
-            </template>-->
+                on-oj-action="[[viewPrivilege]]">
+                <span slot="startIcon" class="fa-solid fa-info info-btn"></span>
+                View
+                </oj-button> 
+            </template>
         </oj-table>
     </div>
 </div>
 <!--yaseen-->
 
-
-
-    <oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
-        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
-        <div class="demo-popup-body">
-            <div class="demo-popup-content oj-sm-padding-2x">
-                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
-            </div>
+<oj-popup id="popup1" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
         </div>
-    </oj-popup>
-    
-    <oj-dialog id="popup2">
-        <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
-            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]">
-                <span slot="startIcon" class="oj-ux-ico-close"></span>
-                Cancel
+    </div>
+</oj-popup>
+
+<oj-popup id="popup2" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Company details saved successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
             </oj-button>
         </div>
-        <div slot="body">
-            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-                <p style="font-weight: 500;text-align: left">Company details saved successfully</p>
-            </div>
-        </div>
-    </oj-dialog>
+    </div>
+</oj-popup>
 
-    <oj-dialog id="popup3">
-        <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
-            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseDepartment]]">
-                <span slot="startIcon" class="oj-ux-ico-close"></span>
-                Cancel
+<oj-popup id="popup3" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Department saved successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseDepartment]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
             </oj-button>
         </div>
-        <div slot="body">
-            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-                <p style="font-weight: 500;text-align: left">Department saved successfully</p>
-            </div>
-        </div>
-    </oj-dialog>
+    </div>
+</oj-popup>
 
-    <oj-dialog id="popup4">
-        <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
-            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseDesignation]]">
-                <span slot="startIcon" class="oj-ux-ico-close"></span>
-                Cancel
+<oj-popup id="popup4" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Designation saved successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseDesignation]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
             </oj-button>
         </div>
-        <div slot="body">
-            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-                <p style="font-weight: 500;text-align: left">Designation saved successfully</p>
-            </div>
-        </div>
-    </oj-dialog>
+    </div>
+</oj-popup>
 
-
-    <!--Yaseen-->
-    <oj-dialog id="popup5">
-        <div slot="header" style="display: contents;">
-            <p id="dialogTitleId" class="oj-dialog-title">Successfully saved</p>
-            <oj-button id="btnCancel" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseRoles]]">
-                <span slot="startIcon" class="oj-ux-ico-close"></span>
-                Cancel
+<oj-popup id="popup5" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+    position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+    position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+    <div class="demo-popup-body oj-sm-padding-2x">
+        <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+            oj-sm-justify-content-center oj-sm-align-items-center">
+            <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
+            <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Roles saved successfully</p>
+            <br>
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageCloseRoles]]"
+            style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
+                <span style="color: #fff;font-size: 20px;">Okay</span>
             </oj-button>
         </div>
-        <div slot="body">
-            <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column oj-sm-justify-content-center">
-                <p style="font-weight: 500;text-align: left">Roles saved successfully</p>
-            </div>
+    </div>
+</oj-popup>
+
+<oj-dialog id="openPrivilege" class="popupGoal" dialog-title="View privileges" modality="modeless" drag-affordance="title-bar"
+    cancel-behavior="[[CancelBehaviorOpt]]">
+      <div id="form-container">
+        <div class="info-bar">
+            Please select a module to view the specific functionalities and permissions available for the role.
         </div>
-    </oj-dialog>
-    <!--Yaseen-->
+          <oj-form-layout id="Privilege-information" class="form" direction="row" max-columns="1">
+            <oj-select-single
+            id="select1"
+            value="{{privilege}}"
+            data="{{privilege_List}}"
+            label-edge="inside"
+            label-hint="Select the module"
+            on-value-changed="[[getPrivilege]]">      
+            </oj-select-single>
+            <oj-text-area id="description" value="{{description}}" label-hint="Available functionalities" rows="5" readonly="true"></oj-text-area>
+          </oj-form-layout>
+      </div>
+</oj-dialog>
 
-
-
-    <oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
-        position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
-        <div class="demo-popup-body">
-            <div class="demo-popup-content oj-sm-padding-2x">
-                <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
-            </div>
+<oj-popup id="loaderPopup" class="demo-popup" auto-dismiss="none" modality="modal" position.my.horizontal="center"
+    position.my.vertical="center" position.at.horizontal="center" position.at.vertical="center" position.of="window" tail="none">
+    <div class="demo-popup-body">
+        <div class="demo-popup-content oj-sm-padding-2x">
+            <oj-progress-circle id="progressCircle" value="-1"></oj-progress-circle>
         </div>
-    </oj-popup>
+    </div>
+</oj-popup>
 
 <div class="centered-container" id="loaderView">
     <div class="loader"></div>
