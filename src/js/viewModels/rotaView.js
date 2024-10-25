@@ -55,7 +55,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.ShiftDet = ko.observableArray([]);
                 self.StaffDet = ko.observableArray([]);
                 self.OffStaffDet = ko.observableArray([]);
-
+                self.allocationExistVal = ko.observable('No');
+                
                 self.selectDiv2 = () => {
                     const selectedValue = self.edit_rota_duration();
                     
@@ -75,6 +76,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.edit_rota_date = ko.observable('');
                 self.edit_rota_month = ko.observable('');
                 self.shift_date = ko.observable('');
+                self.shift_date_format = ko.observable('');
 
                 self.durations = [
                     {"label":"4 days","value":"4"},
@@ -178,144 +180,253 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     })
                 }
-
                 self.tableGet = (duration, start) => {
                     const options = { weekday: 'short', day: 'numeric', month: 'short' };
-                    const shiftData = []; // Declare the array outside the loop
+                    const shiftData = []; // Declare the array to hold shift data
                 
                     // Convert start (string or other format) to a Date object
                     const startDate = new Date(start);
+                
+                    // Create a promise array to handle all AJAX calls
+                    const ajaxCalls = [];
+                
+                    const colors = ['#007BFF', '#FF6F61', '#28A745', '#FF00FF'];
                 
                     for (let i = 0; i < duration; i++) {
                         // Calculate the next date
                         const shiftDate = new Date(startDate);
                         shiftDate.setDate(startDate.getDate() + i);
+                        const formattedDateISO = shiftDate.toISOString().split('T')[0];
                 
                         // Format the date as 'Mon 21 Oct'
                         const formattedDate = shiftDate.toLocaleDateString('en-GB', options);
+                        const dayShifts = [];
+                        const weekOff = [];
                 
-                        // Push the date into the shiftData array
-                        shiftData.push({
-                            date: formattedDate,
-                            shifts: [
-                                { employees: ['Kannan M', 'Manju Mathew'], startTime: '03:00', endTime: '24:00', color: '#4395e7' },
-                                { employees: ['Sam Thomas'], startTime: '09:00', endTime: '19:00', color: '#f37c58' },
-                                { employees: ['Mohammed Yaseen'], startTime: '05:00', endTime: '12:00', color: '#7aef7ed9' }
-                            ],
+                        // Create a promise for each AJAX call
+                        const ajaxCall = $.ajax({
+                            url: BaseURL + "/HRModuleGetAssignStaffList",
+                            type: 'GET',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                data = JSON.parse(data[0]);
+                                console.log(data);
+                
+                                // Populate the employeeShifts array
+                                const employeeShifts = []; // Declare it here for each call
+                                const offEmployeeShifts = []; // Declare it here for each call
+                                for (var j = 0; j < data.length; j++) {
+                                    var employeeNames = data[j][7].split(',').map(name => name.trim()); // Clean up any extra whitespace
+                                    var offEmployeeNames = data[j][9].split(',').map(name => name.trim()); // Clean up any extra whitespace
+                                    var colorIndex = j % colors.length;
+                                    employeeShifts.push({
+                                        'date': data[j][1],
+                                        'employees': employeeNames,
+                                        'startTime': data[j][5],
+                                        'endTime': data[j][6],
+                                        'color': colors[colorIndex]
+                                    });
+                                    offEmployeeShifts.push({
+                                        'date': data[j][1],
+                                        'offEmployees': offEmployeeNames,
+                                        'color': colors[colorIndex]
+                                    });
+                                }
+
+                
+                                // Process the shifts to find matching dates
+                                employeeShifts.forEach(shift => {
+                                    // If the shift date matches the formatted date, add the shift to the day's shifts
+                                    if (shift.date === formattedDate) {
+                                        dayShifts.push({
+                                            employees: shift.employees,
+                                            startTime: shift.startTime,
+                                            endTime: shift.endTime,
+                                            color: shift.color
+                                        });
+                                    }
+                                });
+                
+                                offEmployeeShifts.forEach(off => {
+                                    // If the shift date matches the formatted date, add the week off to the day's weekOff
+                                    if (off.date === formattedDate) {
+                                        weekOff.push({
+                                            offEmployees: off.offEmployees,
+                                            color: "#FF0000"
+                                        });
+                                    }
+                                });
+                
+                                // Push the shift data for the current date
+                                shiftData.push({
+                                    fullDate : formattedDateISO,
+                                    date: formattedDate,
+                                    shifts: dayShifts,
+                                    weekOff: weekOff
+                                });
+                            }
                         });
+                
+                        // Collect each AJAX call promise
+                        ajaxCalls.push(ajaxCall);
                     }
                 
-                    console.log(shiftData);
+                    // Wait for all AJAX calls to complete
+                    Promise.all(ajaxCalls).then(() => {
+                        // Now all shift data is populated
+                        console.log(shiftData);
                 
-                    const tableBody = document.querySelector('#shift-table tbody');
+                        const tableBody = document.querySelector('#shift-table tbody');
                 
-                    shiftData.forEach(day => {
-                        // Sanitize the date string to use it in the class name (remove commas and replace spaces with dashes)
-                        const sanitizedDate = day.date.replace(/,/g, '').replace(/\s+/g, '-');
-                
-                        // Create a row for the date
-                        let dateRow = document.createElement('tr');
-                        dateRow.classList.add('date-row'); // Add date row class
-                
-                        // Create the date cell
-                        let dateCell = document.createElement('td');
-                        dateCell.textContent = day.date; // Only the date is displayed
-                        dateRow.appendChild(dateCell);
-                
-                        // Create the button cell
-                        let buttonCell = document.createElement('div');
-                        buttonCell.style.display = 'flex'; // Flexbox for button alignment
-                        buttonCell.style.alignItems = 'center';
-                
-                        // Create the button to assign employees
-                        let addShiftButton = document.createElement('button');
-                        addShiftButton.textContent = 'View Allocation';
-                        addShiftButton.classList.add('btn');
+                        shiftData.forEach(day => {
+                            // Sanitize the date string to use it in the class name (remove commas and replace spaces with dashes)
+                            const sanitizedDate = day.date.replace(/,/g, '').replace(/\s+/g, '-');
+                            const sanitizedFullDate = day.fullDate.replace(/,/g, '').replace(/\s+/g, '-');
 
-                        // Add event listener to toggle only the shifts for the clicked date
-                        addShiftButton.addEventListener('click', () => {
-                            // First, select all rows for the specific day
-                            const shiftRowsForDay = document.querySelectorAll(`.shift-row-${sanitizedDate}`);
+                            // Create a row for the date
+                            let dateRow = document.createElement('tr');
+                            dateRow.classList.add('date-row'); // Add date row class
+                
+                            // Create the date cell
+                            let dateCell = document.createElement('td');
+                            dateCell.textContent = day.date; // Only the date is displayed
+                            dateRow.appendChild(dateCell);
+                
+                            // Create the button cell
+                            let buttonCell = document.createElement('div');
+                            buttonCell.style.display = 'flex'; // Flexbox for button alignment
+                            buttonCell.style.alignItems = 'center';
+                
+                            // Create the button to assign employees
+                            let addShiftButton = document.createElement('button');
+                            addShiftButton.classList.add('btn');
+                            
+                            // Create an <i> element for the icon
+                            let icon = document.createElement('i');
+                            icon.classList.add('fas', 'fa-eye'); // Replace 'fa-eye' with your desired icon class
+                            
+                            // Append the icon to the button
+                            addShiftButton.appendChild(icon);
+                
+                            // Add event listener to toggle only the shifts for the clicked date
+                            addShiftButton.addEventListener('click', () => {
+                                const shiftRowsForDay = document.querySelectorAll(`.shift-row-${sanitizedDate}`);
+                                const weekOffRowsForDay = document.querySelectorAll(`.weekoff-row-${sanitizedDate}`);
+                
+                                const isAnyVisible = Array.from(shiftRowsForDay).some(row => !row.classList.contains('hidden')) ||
+                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden'));
+                
+                                if (isAnyVisible) {
+                                    shiftRowsForDay.forEach(row => row.classList.add('hidden'));
+                                    weekOffRowsForDay.forEach(row => row.classList.add('hidden'));
+                                } else {
+                                    document.querySelectorAll('.shift-row').forEach(row => row.classList.add('hidden'));
+                                    document.querySelectorAll('.weekoff-row').forEach(row => row.classList.add('hidden'));
+                                    shiftRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                    weekOffRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                }
+                            });
+                
+                            buttonCell.appendChild(addShiftButton);
+                
+                            // Create the second button
+                                                        let anotherButton = document.createElement('button');
+                            anotherButton.classList.add('btn');
 
-                            // Check if any shift rows for this day are currently visible
-                            const isAnyVisible = Array.from(shiftRowsForDay).some(row => !row.classList.contains('hidden'));
+                            // Create an <i> element for the icon
+                            let iconPlus = document.createElement('i');
+                            iconPlus.classList.add('fas', 'fa-user-plus'); // Replace 'fa-user-plus' with your desired icon class
 
-                            if (isAnyVisible) {
-                                // If visible, hide all shift rows for this day
-                                shiftRowsForDay.forEach(row => row.classList.add('hidden'));
-                            } else {
-                                // If not visible, hide all shift rows first
-                                document.querySelectorAll('.shift-row').forEach(row => row.classList.add('hidden'));
+                            // Append the icon to the button
+                            anotherButton.appendChild(iconPlus);
 
-                                // Show only the shift rows for this specific day
-                                shiftRowsForDay.forEach(row => row.classList.remove('hidden'));
-                            }
-                        });
+                            anotherButton.addEventListener('click', () => {
+                                self.shift_date(`${day.date}`);
+                                self.shift_date_format(`${day.fullDate}`);
+                                self.getShiftList();
+                                self.getAllocateStaffList();
+                                self.selectedEmployees([])
+                                self.selectedOffEmployees([])
+                                self.allocationExistVal('No')
+                                document.querySelector('#openAssignEmployees').open();
+                            });
                 
-                        buttonCell.appendChild(addShiftButton);
-
-                    // Create the second button
-                        let anotherButton = document.createElement('button');
-                        anotherButton.textContent = 'Assign Employee';
-                        anotherButton.classList.add('btn');
-                        // Add an event listener to the second button
-                        anotherButton.addEventListener('click', () => {
-                            self.shift_date(`${day.date}`); // Alert the date and any associated shifts
-                            self.getShiftList()
-                            self.getAllocateStaffList()
-                            document.querySelector('#openAssignEmployees').open();
-                        });
-        
-                        buttonCell.appendChild(anotherButton);
-                        dateRow.appendChild(buttonCell); // Append button cell to the date row
+                            buttonCell.appendChild(anotherButton);
+                            dateRow.appendChild(buttonCell); // Append button cell to the date row
                 
-                        // Create empty hour cells
-                        for (let i = 0; i < 22; i++) {
-                            let hourCell = document.createElement('td');
-                            dateRow.appendChild(hourCell);
-                        }
-                
-                        // Append the date row to the table
-                        tableBody.appendChild(dateRow);
-                
-                        // Create rows for each shift and hide initially
-                        day.shifts.forEach(shift => {
-                            const startHour = parseInt(shift.startTime.split(':')[0], 10);
-                            const endHour = parseInt(shift.endTime.split(':')[0], 10);
-                            const colspan = endHour - startHour;
-                
-                            let shiftRow = document.createElement('tr');
-                            shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row', 'hidden'); // Initially hidden
-                
-                            // Create an empty cell for the shift time
-                            let shiftTimeCell = document.createElement('td');
-                            shiftRow.appendChild(shiftTimeCell);
-                
-                            // Create empty cells for hours before the start hour
-                            for (let hour = 0; hour < startHour; hour++) {
-                                let emptyCell = document.createElement('td');
-                                shiftRow.appendChild(emptyCell);
+                            // Create empty hour cells
+                            for (let i = 0; i < 23; i++) {
+                                let hourCell = document.createElement('td');
+                                dateRow.appendChild(hourCell);
                             }
                 
-                            // Create a cell that spans the duration of the shift and apply the color
-                            let shiftCell = document.createElement('td');
-                            shiftCell.colSpan = colspan;
-                            shiftCell.classList.add('shift');
-                            shiftCell.textContent = shift.employees.join(', ');
-                            shiftCell.style.backgroundColor = shift.color; // Set the background color
-                            shiftRow.appendChild(shiftCell);
+                            // Append the date row to the table
+                            tableBody.appendChild(dateRow);
                 
-                            // Fill empty cells for hours after the shift
-                            for (let hour = endHour; hour < 24; hour++) {
-                                let emptyCell = document.createElement('td');
-                                shiftRow.appendChild(emptyCell);
-                            }
+                            // Create rows for each shift and hide initially
+                            day.shifts.forEach(shift => {
+                                const startHour = parseInt(shift.startTime.split(':')[0], 10);
+                                const endHour = parseInt(shift.endTime.split(':')[0], 10);
+                                const colspan = endHour - startHour;
                 
-                            // Append shift row to the table (hidden initially)
-                            tableBody.appendChild(shiftRow);
+                                let shiftRow = document.createElement('tr');
+                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row', 'hidden'); // Initially hidden
+                
+                                // Create an empty cell for the shift time
+                                let shiftTimeCell = document.createElement('td');
+                                shiftRow.appendChild(shiftTimeCell);
+                
+                                // Create empty cells for hours before the start hour
+                                for (let hour = 0; hour < startHour; hour++) {
+                                    let emptyCell = document.createElement('td');
+                                    shiftRow.appendChild(emptyCell);
+                                }
+                
+                                // Create a cell that spans the duration of the shift and apply the color
+                                let shiftCell = document.createElement('td');
+                                shiftCell.colSpan = colspan;
+                                shiftCell.classList.add('shift');
+                                shiftCell.textContent = shift.employees.join(', ');
+                                shiftCell.style.backgroundColor = shift.color; // Set the background color
+                                shiftCell.style.color = '#FFFFFF'; // Set text color to white
+                                shiftRow.appendChild(shiftCell);
+                
+                                // Fill empty cells for hours after the shift
+                                for (let hour = endHour; hour < 24; hour++) {
+                                    let emptyCell = document.createElement('td');
+                                    shiftRow.appendChild(emptyCell);
+                                }
+                
+                                // Append shift row to the table (hidden initially)
+                                tableBody.appendChild(shiftRow);
+                            });
+                
+                            // Create rows for week-off and hide initially
+                            day.weekOff.forEach(off => {
+                                let weekOffRow = document.createElement('tr');
+                                weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row', 'hidden'); // Initially hidden
+                
+                                // Create a cell for week off employees
+                                let weekOffCell = document.createElement('td');
+                                weekOffCell.colSpan = 25; // Span the entire row
+                                weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
+                                weekOffCell.style.backgroundColor = off.color; // Set the background color for week off
+                                weekOffCell.style.color = '#FFFFFF'; // Set text color to white
+                                weekOffRow.appendChild(weekOffCell);
+                
+                                // Append week off row to the table (hidden initially)
+                                tableBody.appendChild(weekOffRow);
+                            });
                         });
+                    }).catch(err => {
+                        console.error("Error occurred while fetching shifts:", err);
                     });
-                }
+                };
+                
                 
                 
 
@@ -352,22 +463,32 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     document.getElementById('loaderView').style.display='block';
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAllocateStaffList",
-                        type: 'GET',
+                        type: 'POST',
                         timeout: sessionStorage.getItem("timeInetrval"),
                         context: self,
+                        data: JSON.stringify({
+                            shift_date: self.shift_date(),
+                            shift_date_format: self.shift_date_format()
+                        }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
                         },
-                        success: function (data) {
-                            data = data[0]
+                        success: function (result) {
+                            let data,data2;
+                            data = result[0]
                             console.log(data)
                             document.getElementById('loaderView').style.display='none';
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
                                     self.StaffDet.push({'value': data[i][0],'label': data[i][1] + " " +  data[i][2] + " " +  data[i][3] }); 
                                 }
-                                self.OffStaffDet(self.StaffDet().slice()); 
-                                 }
+                            }
+                            data2 = result[1]
+                            if(data2.length!=0){
+                                for (var i = 0; i < data2.length; i++) {
+                                    self.OffStaffDet.push({'value': data2[i][0],'label': data2[i][1] + " " +  data2[i][2] + " " +  data2[i][3] }); 
+                                }
+                            }
 
                         }
                     })
@@ -463,35 +584,63 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.selectedEmployees = ko.observableArray([]); 
             self.selectedOffEmployees = ko.observableArray([]); 
 
+            self._checkValidationGroup = (value) => {
+                const tracker = document.getElementById(value);
+                if (tracker.valid === "valid") {
+                    return true;
+                }
+                else {
+                    tracker.showMessages();
+                    tracker.focusOn("@firstInvalidShown");
+                    return false;
+                }
+            };
+
             self.assignEmployees = ()=>{
-                let popup = document.getElementById("loaderPopup");
-                popup.open();
-                $.ajax({
-                    url: BaseURL+"/HRModuleAssignEmployees",
-                    type: 'POST',
-                    data: JSON.stringify({
-                        rotaId : sessionStorage.getItem("rotaId"),
-                        shift_date: self.shift_date(),            
-                        shiftId: self.shift(),            
-                        selectedEmployees: self.selectedEmployees(),
-                        selectedOffEmployees: self.selectedOffEmployees(),
-                    }),
-                    dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
-                    context: self,
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log(textStatus);
-                    },
-                    success: function (data) {
-                        console.log(data)
-                        document.querySelector('#openAssignEmployees').close();
-                        let popup = document.getElementById("loaderPopup");
-                        popup.close();
-                        let popup1 = document.getElementById("successView");
-                        popup1.open();
+                let duplicate=0;
+                for (let id of self.selectedEmployees()) {
+                    if (self.selectedOffEmployees().includes(id)) {
+                        duplicate = 1;
+                    }else{
+                        duplicate = 0;
                     }
-                })      
-            }
+                }
+                if(duplicate==0){
+                        const formValid = self._checkValidationGroup("formValidation"); 
+                        if (formValid) {
+                        let popup = document.getElementById("loaderPopup");
+                        popup.open();
+                        $.ajax({
+                            url: BaseURL+"/HRModuleAssignEmployees",
+                            type: 'POST',
+                            data: JSON.stringify({
+                                rotaId : sessionStorage.getItem("rotaId"),
+                                shift_date: self.shift_date(),            
+                                shiftId: self.shift(),            
+                                selectedEmployees: self.selectedEmployees(),
+                                selectedOffEmployees: self.selectedOffEmployees(),
+                            }),
+                            dataType: 'json',
+                            timeout: sessionStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                console.log(data)
+                                document.querySelector('#openAssignEmployees').close();
+                                let popup = document.getElementById("loaderPopup");
+                                popup.close();
+                                let popup1 = document.getElementById("successView");
+                                popup1.open();
+                            }
+                        }) 
+                    }     
+                    }else{
+                        let popup1 = document.getElementById("warningView");
+                        popup1.open();
+                    } 
+                }
 
             
             self.goToEditShift = (event,data)=>{
@@ -527,6 +676,97 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.messageClose = ()=>{
                 location.reload();
             }
+
+            self.goToPage = (event)=>{
+                self.router.go({path:'rota'})
+            }
+
+            self.allocationExist = ()=>{
+                self.selectedEmployees([])
+                if(self.shift()!=""){
+                    $.ajax({
+                        url: BaseURL+"/HRModuleGetAllocationExist",
+                        type: 'POST',
+                        timeout: sessionStorage.getItem("timeInetrval"),
+                        context: self,
+                        data: JSON.stringify({
+                            shift_date: self.shift_date(),
+                            shift: self.shift()
+                        }),
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (result) {
+                            console.log(result)
+                            let data1,data2;
+                            data1 = result[0]
+                            data2 = result[1]
+                            console.log(data2)
+                            if(data1.length != 0){
+                                let selectedEmployee = data1[0][0].split(',').map(Number);
+                                self.selectedEmployees(selectedEmployee)
+                            }
+                            if(data2.length != 0){
+                                let selectedOffEmployees = data2[0][0].split(',').map(Number);
+                                self.selectedOffEmployees(selectedOffEmployees)
+                            }
+                            if(data1.length != 0){
+                                self.allocationExistVal('Yes')
+                            }
+                        }
+                    })
+                }
+            }
+
+            self.assignEmployeesUpdate = ()=>{
+                let duplicate;
+                for (let id of self.selectedEmployees()) {
+                    if (self.selectedOffEmployees().includes(id)) {
+                        duplicate = 1;
+                    }else{
+                        duplicate = 0;
+                    }
+                }
+                if(duplicate==0){
+                const formValid = self._checkValidationGroup("formValidation");
+                if (formValid) {
+                let popup = document.getElementById("loaderPopup");
+                popup.open();
+                $.ajax({
+                    url: BaseURL+"/HRModuleUpdateAssignEmployees",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        shift_date: self.shift_date(),            
+                        selectedEmployees: self.selectedEmployees(),
+                        selectedOffEmployees: self.selectedOffEmployees(),
+                    }),
+                    dataType: 'json',
+                    timeout: sessionStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        document.querySelector('#openAssignEmployees').close();
+                        let popup = document.getElementById("loaderPopup");
+                        popup.close();
+                        let popup1 = document.getElementById("successView");
+                        popup1.open();
+                    }
+                }) 
+            } 
+        }else{
+            let popup1 = document.getElementById("warningView");
+            popup1.open();
+        }    
+            }
+
+            self.warnMsgClose = ()=>{
+                let popup1 = document.getElementById("warningView");
+                popup1.close();
+            }
+
 
             self.rewriteUrl=(url)=> {
                 if (url.includes('/Hr')) {
