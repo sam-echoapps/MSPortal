@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<div id="draft_rotas">
+<div id="draft_rotas" style="display:none;">
 <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
         <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
@@ -93,138 +93,6 @@
        </template>
     </oj-table>
     </div>
-  <!--
-  <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
-    <div id="collapsiblePage" data-oj-binding-provider="none">
-      <oj-collapsible id="c1">
-        <h6 id="h" slot="header">Test Rota 1</h6>
-        <div id="c">
-          <table id="shift-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>00:00</th>
-                <th>01:00</th>
-                <th>02:00</th>
-                <th>03:00</th>
-                <th>04:00</th>
-                <th>05:00</th>
-                <th>06:00</th>
-                <th>07:00</th>
-                <th>08:00</th>
-                <th>09:00</th>
-                <th>10:00</th>
-                <th>11:00</th>
-                <th>12:00</th>
-                <th>13:00</th>
-                <th>14:00</th>
-                <th>15:00</th>
-                <th>16:00</th>
-                <th>17:00</th>
-                <th>18:00</th>
-                <th>19:00</th>
-                <th>20:00</th>
-                <th>21:00</th>
-                <th>22:00</th>
-                <th>23:00</th>
-              </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-          </table>
-        </div>
-
-
-      </oj-collapsible>
-    </div>
-    <div id="collapsiblePage" data-oj-binding-provider="none">
-      <oj-collapsible id="c1">
-        <h6 id="h" slot="header">Test Rota 2</h6>
-        <div id="c">
-          <table id="shift-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>00:00</th>
-                <th>01:00</th>
-                <th>02:00</th>
-                <th>03:00</th>
-                <th>04:00</th>
-                <th>05:00</th>
-                <th>06:00</th>
-                <th>07:00</th>
-                <th>08:00</th>
-                <th>09:00</th>
-                <th>10:00</th>
-                <th>11:00</th>
-                <th>12:00</th>
-                <th>13:00</th>
-                <th>14:00</th>
-                <th>15:00</th>
-                <th>16:00</th>
-                <th>17:00</th>
-                <th>18:00</th>
-                <th>19:00</th>
-                <th>20:00</th>
-                <th>21:00</th>
-                <th>22:00</th>
-                <th>23:00</th>
-              </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-          </table>
-        </div>
-
-
-      </oj-collapsible>
-    </div>
-    <div id="collapsiblePage" data-oj-binding-provider="none">
-      <oj-collapsible id="c1">
-        <h6 id="h" slot="header">Test Rota 3</h6>
-        <div id="c">
-          <table id="shift-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>00:00</th>
-                <th>01:00</th>
-                <th>02:00</th>
-                <th>03:00</th>
-                <th>04:00</th>
-                <th>05:00</th>
-                <th>06:00</th>
-                <th>07:00</th>
-                <th>08:00</th>
-                <th>09:00</th>
-                <th>10:00</th>
-                <th>11:00</th>
-                <th>12:00</th>
-                <th>13:00</th>
-                <th>14:00</th>
-                <th>15:00</th>
-                <th>16:00</th>
-                <th>17:00</th>
-                <th>18:00</th>
-                <th>19:00</th>
-                <th>20:00</th>
-                <th>21:00</th>
-                <th>22:00</th>
-                <th>23:00</th>
-              </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-          </table>
-        </div>
-
-
-      </oj-collapsible>
-    </div>
- </div> -->
 </div>
 
 <oj-dialog id="openAddRota" class="popupRota" dialog-title="Add Rota" modality="modeless" drag-affordance="title-bar"
@@ -233,8 +101,13 @@
     <div id="form-container">
         <oj-form-layout id="rota-information" class="form" direction="row" max-columns="1">
           <div>
-            <oj-input-text id="rotaName" value="{{rota_name}}" label-hint="Enter a Rota Name" label-edge="inside" required>
+            <oj-input-text id="rotaName" value="{{rota_name}}" label-hint="Enter a Rota Name" label-edge="inside" required on-value-changed="[[rotaExistCheck]]">
             </oj-input-text>
+            <oj-bind-if test="[[existRota() != '' ]]">
+              <div style="color:red;margin-top:-25px">
+                <oj-bind-text value="[[existRota]]"></oj-bind-text>
+              </div>
+            </oj-bind-if>
             <oj-select-single id="selectDuration" label-hint="Rota Duration" label-edge="inside"
             data="[[durationList]]" value="{{rota_duration}}" on-value-changed="[[selectDiv]]" required></oj-select-single>    
           </div>  
@@ -273,63 +146,31 @@
 </oj-dialog>
 
 <div id="old_rotas" style="display:none;">
-   <!-- <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
-        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
-            <oj-button id="export"chroming="borderless" on-oj-action="[[showCreateRota]]" 
-            style="background-color: #34b53a;color: #fff;border-radius: 5px;">
-            <span id="buttonText" style="color: #fff;"> Create New Rota</span>
-        </oj-button>
-        </div>
-      </div> 
-    <div class="oj-flex oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical oj-md-justify-content-center">
-        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
-            <oj-input-date id="rangeDate" label-hint="Select Range" class="oj-form-control-max-width-sm"></oj-input-date>
-        </div>
-        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
-            <oj-input-text id="rotaName" label-hint="Rota Name" label-edge="inside"
-            placeholder="Rota Name..">
-            </oj-input-text>
-        </div>
-        <div class="oj-flex-item oj-flex oj-sm-12 oj-md-2 oj-md-padding-1x-horizontal">
-            <oj-select-single id="select" label-hint="Start Date (Newest First)" label-edge="inside"
-                    data="[[priorityList]]" value="{{priority}}"></oj-select-single>
-          </div> 
-    </div>
-      <br>
-      <div class="oj-flex oj-md-justify-content-center" style="gap: 30px; padding-bottom: 10px;">
-        <oj-button id="show" chroming="borderless" on-oj-action="[[messageClose]]" 
-            style="background-color: #6c5ffc;color: #fff;border-radius: 10px; margin-top: 5px; margin-left: 15px;">
-            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-search"></i> Show</span>
-            </oj-button>
-      </div> -->
       <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
         <oj-table id='RotaTable' aria-label='All Table' data='[[RotaList]]' display='list'
-          selection-mode='{"row": "single"}'  columns='[
-          { "headerText": "SL.No", "field": "slno", "id": "slno",
-          "headerClassName" : "table-header-style"	 },
-          { "headerText": "Rota Name", "field": "rota_name", "id": "rota_name",
-            "headerClassName" : "table-header-style"	 },  
-          { "headerClassName" : "table-header-style",
-          "headerText": "Created Date", "field": "created_date", "id": "created_date" },
-          { "headerClassName" : "table-header-style",
-          "headerText": "Created By", "field": "created_by", "id": "created_by" },
-          { "headerClassName" : "table-header-style",
-            "headerText": "Action",
-            "maxWidth" : "10rem",
-            "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-            "template": "actionTemplate", "id": "action","sortable": "disabled" }
-            ]' style='width: 100%;' class="demo-table-container" on-selection-changed="[[rowClick]]">
-            <template slot="actionTemplate" data-oj-as="cell">
-              <oj-button
-              chroming="borderless"
-              display="icons"
-              on-oj-action="[[messageClose]]">
-              <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
-              Edit
-            </oj-button>
-             </template>
-          </oj-table>
-          </div>
+      selection-mode='{"row": "single"}'  columns='[
+      { "headerText": "SL.No", "field": "slno", "id": "slno",
+      "headerClassName" : "table-header-style"	 },
+      { "headerText": "Rota Name", "field": "rota_name", "id": "rota_name",
+        "headerClassName" : "table-header-style","template": "viewTemplate"	 },  
+      { "headerText": "Rota Duration", "field": "rota_duration", "id": "rota_duration",
+        "headerClassName" : "table-header-style"	 },  
+        { "headerText": "Rota Start Date", "field": "rota_date", "id": "rota_date",
+        "headerClassName" : "table-header-style"	 },  
+        { "headerText": "Rota Month", "field": "rota_month", "id": "rota_month",
+        "headerClassName" : "table-header-style"	 },  
+      { "headerClassName" : "table-header-style",
+      "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+      { "headerClassName" : "table-header-style",
+      "headerText": "Created By", "field": "created_by", "id": "created_by" }
+        ]' style='width: 100%;' class="demo-table-container"> 
+           <template slot="viewTemplate" data-oj-as="cell">
+              <a :id="[[cell.row.id]]" on-click= "[[rowClick]]">
+                <oj-bind-text value="[[cell.row.rota_name]]"></oj-bind-text>
+            </a>
+         </template>
+      </oj-table>
+    </div>
 </div>
 
 
@@ -350,7 +191,7 @@
     { "headerText": "SL.No", "field": "slno", "id": "slno",
     "headerClassName" : "table-header-style"	 },
     { "headerText": "Shift Name", "field": "shift_name", "id": "shift_name",
-      "headerClassName" : "table-header-style"	 },  
+      "headerClassName" : "table-header-style","template": "actionTemplate"	 },  
     { "headerText": "Start Time", "field": "start_time", "id": "start_time",
       "headerClassName" : "table-header-style"	 },  
     { "headerText": "End Time", "field": "end_time", "id": "end_time",
@@ -358,21 +199,12 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
-    "headerText": "Created By", "field": "created_by", "id": "created_by" },
-    { "headerClassName" : "table-header-style",
-              "headerText": "Action",
-              "maxWidth" : "10rem",
-              "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-              "template": "actionTemplate", "id": "action","sortable": "disabled" }
+    "headerText": "Created By", "field": "created_by", "id": "created_by" }
       ]' style='width: 100%;' class="demo-table-container">
       <template slot="actionTemplate" data-oj-as="cell">
-        <oj-button
-        chroming="borderless"
-        display="icons"
-        on-oj-action="[[goToEditShift]]">
-        <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
-        Edit
-      </oj-button>
+        <a :id="[[cell.row.id]]" on-click= "[[goToEditShift]]">
+          <oj-bind-text value="[[cell.row.shift_name]]"></oj-bind-text>
+      </a>
      <!--  <oj-button
           chroming="borderless"
           display="icons"
@@ -389,30 +221,26 @@
 <div id="active_rotas" style="display:none;">
   <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <oj-table id='RotaTable' aria-label='All Table' data='[[RotaList]]' display='list'
-      selection-mode='{"row": "single"}'  c3
-      olumns='[
+      selection-mode='{"row": "single"}'  columns='[
       { "headerText": "SL.No", "field": "slno", "id": "slno",
       "headerClassName" : "table-header-style"	 },
       { "headerText": "Rota Name", "field": "rota_name", "id": "rota_name",
+        "headerClassName" : "table-header-style","template": "viewTemplate"	 },  
+      { "headerText": "Rota Duration", "field": "rota_duration", "id": "rota_duration",
+        "headerClassName" : "table-header-style"	 },  
+        { "headerText": "Rota Start Date", "field": "rota_date", "id": "rota_date",
+        "headerClassName" : "table-header-style"	 },  
+        { "headerText": "Rota Month", "field": "rota_month", "id": "rota_month",
         "headerClassName" : "table-header-style"	 },  
       { "headerClassName" : "table-header-style",
       "headerText": "Created Date", "field": "created_date", "id": "created_date" },
       { "headerClassName" : "table-header-style",
-      "headerText": "Created By", "field": "created_by", "id": "created_by" },
-      { "headerClassName" : "table-header-style",
-                "headerText": "Action",
-                "maxWidth" : "10rem",
-                "className":"oj-helper-text-align-center oj-sm-padding-0-vertical",
-                "template": "actionTemplate", "id": "action","sortable": "disabled" }
-        ]' style='width: 100%;' class="demo-table-container" on-selection-changed="[[rowClick]]">
-        <template slot="actionTemplate" data-oj-as="cell">
-          <oj-button
-          chroming="borderless"
-          display="icons"
-          on-oj-action="[[messageClose]]">
-          <span slot="startIcon" class="fa-solid fa-edit edit-btn"></span>
-          Edit
-        </oj-button>
+      "headerText": "Created By", "field": "created_by", "id": "created_by" }
+        ]' style='width: 100%;' class="demo-table-container"> 
+           <template slot="viewTemplate" data-oj-as="cell">
+              <a :id="[[cell.row.id]]" on-click= "[[rowClick]]">
+                <oj-bind-text value="[[cell.row.rota_name]]"></oj-bind-text>
+            </a>
          </template>
       </oj-table>
       </div>

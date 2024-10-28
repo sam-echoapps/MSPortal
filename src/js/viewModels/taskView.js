@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
                 
                 self.taskName = ko.observable();
                 self.dueDate = ko.observable();
@@ -55,15 +55,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.doneCount = ko.observable('');
                 self.droppedCount = ko.observable('');
                 self.editReminderDate = ko.observable('');
-                let userrole = sessionStorage.getItem("userRole")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
-                self.userId = ko.observable(sessionStorage.getItem("userId"));
+                self.userId = ko.observable(localStorage.getItem("userId"));
                 self.ownerId = ko.observable('');
                 self.description = ko.observable();
                 self.editDescription = ko.observable();
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -98,10 +98,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaffTaskList",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId")
+                            staffId : localStorage.getItem("staffId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -210,16 +210,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleAddTask",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId: sessionStorage.getItem("staffId"),
+                                    staffId: localStorage.getItem("staffId"),
                                     task_name : self.taskName(),
                                     due_date : self.dueDate(),
                                     reminder_date : self.reminderDate(),
                                     priority : self.priority(),
-                                    userId: sessionStorage.getItem("userId"),
+                                    userId: localStorage.getItem("userId"),
                                     description : self.description(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -246,16 +246,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     url: BaseURL+"/HRModuleAddTaskWithMail",
                                     type: 'POST',
                                     data: JSON.stringify({
-                                        staffId: sessionStorage.getItem("staffId"),
+                                        staffId: localStorage.getItem("staffId"),
                                         task_name : self.taskName(),
                                         due_date : self.dueDate(),
                                         reminder_date : self.reminderDate(),
                                         priority : self.priority(),
-                                        userId: sessionStorage.getItem("userId"),
+                                        userId: localStorage.getItem("userId"),
                                         description : self.description(),
                                     }),
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    timeout: localStorage.getItem("timeInetrval"),
                                     context: self,
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);
@@ -296,7 +296,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.goToEditTask = (event,data)=>{
                     console.log(data)
                     var clickedTaskId = data.item.data.id
-                    sessionStorage.setItem("taskId", clickedTaskId);
+                    localStorage.setItem("taskId", clickedTaskId);
                     document.querySelector('#openEditTask').open();
                     self.getTaskInfo();
                 }
@@ -305,10 +305,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetTaskInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            taskId: sessionStorage.getItem("taskId")
+                            taskId: localStorage.getItem("taskId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -341,7 +341,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleUpdateTask",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    taskId: sessionStorage.getItem("taskId"),
+                                    taskId: localStorage.getItem("taskId"),
                                     task_name : self.editTaskName(),
                                     due_date : self.editDueDate(),
                                     priority : self.editPriority(),
@@ -350,7 +350,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     description : self.editDescription(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -380,7 +380,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 status : status
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);

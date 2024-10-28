@@ -8,10 +8,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -83,7 +83,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetGoalMonth",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching Goal month:", textStatus); // Log any error
@@ -110,7 +110,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 month: self.month(),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);

@@ -11,7 +11,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             var self = this;
 
             self.router = args.parentRouter;
-            let BaseURL = sessionStorage.getItem("BaseURL")
+            let BaseURL = localStorage.getItem("BaseURL")
             
             var routerLength = args.parentRouter._routes.length;
             if(routerLength!=42){
@@ -25,7 +25,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
             self.yearFilter = ko.observable(date.getFullYear())
             //Top Banner section
-            self.userName=ko.observable(sessionStorage.getItem("userName"))
+            self.userName=ko.observable(localStorage.getItem("userName"))
             self.currentDate=`${daysOfWeek[date.getDay()]} ${day}/${month}/${date.getFullYear()}`
             self.currentTime=ko.observable()
             self.liveShowTime=ko.observable()
@@ -82,7 +82,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 $.ajax({
                     url: BaseURL+"/HRModuleChangeLeaveBalance",
                     type: 'GET',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log("Error fetching :", textStatus); // Log any error
@@ -105,11 +105,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/checkEmployeeClockedIn",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
+                        staffId: localStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -165,11 +165,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/getTaskCount",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
+                        staffId: localStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -192,11 +192,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/getEmployeeWorkingPattern",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
+                        staffId: localStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -295,7 +295,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 let output = document.getElementById('lateClockinOutput');
                 let content = "<p>Hi,</p>"
                 content+=`<p>This is to inform you that ${self.userName()} clocked in late today. Below are the details:</p>`
-                content+=`<p>Employee Id : ${sessionStorage.getItem("userId")}`
+                content+=`<p>Employee Id : ${localStorage.getItem("userId")}`
 
                 let reasonHTML = output.innerHTML;
                 const currentDate = new Date();
@@ -340,7 +340,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL+"/sendLateClockinReason",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId"),
+                            staffId : localStorage.getItem("userId"),
                             content : content,
                             subject : contentSubject,
                             clockinTime: `${hours}:${minutes}:${seconds}`,
@@ -350,7 +350,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                             clockInStatus: "clockIn"
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -397,7 +397,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/ClockinActivity",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId"),
+                        staffId: localStorage.getItem("userId"),
                         clockinTime: `${hours}:${minutes}:${seconds}`,
                         clockinLocation: location,
                         clockinLongitude: longitude,
@@ -406,7 +406,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -452,7 +452,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     let output = document.getElementById('earlyClockOutOutput');
                     let content = "<p>Hi,</p>"
                     content+=`<p>This is to inform you that ${self.userName()} clocked out early today. Below are the details:</p>`
-                    content+=`<p>Employee Id : ${sessionStorage.getItem("userId")}`
+                    content+=`<p>Employee Id : ${localStorage.getItem("userId")}`
 
                     let reasonHTML = output.innerHTML;
                     const currentDate = new Date();
@@ -482,12 +482,12 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                             url: BaseURL+"/sendEarlyClockOut",
                             type: 'POST',
                             data: JSON.stringify({
-                                staffId : sessionStorage.getItem("userId"),
+                                staffId : localStorage.getItem("userId"),
                                 content : content,
                                 subject : contentSubject,
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -547,7 +547,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/ClockoutActivity",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId"),
+                        staffId: localStorage.getItem("userId"),
                         clockOutTime: `${hours}:${minutes}:${seconds}`,
                         clockOutLocation: location,
                         clockOutLongitude: longitude,
@@ -557,7 +557,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -590,11 +590,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL + "/getTotalBreakTime",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId: sessionStorage.getItem("userId")
+                            staffId: localStorage.getItem("userId")
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -669,13 +669,13 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL + "/addBreakInDetails",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId: sessionStorage.getItem("userId"),
+                            staffId: localStorage.getItem("userId"),
                             breakInTime: `${hours}:${minutes}:${seconds}`,
                             breakStatus: "break"
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -709,14 +709,14 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL + "/addBreakOutDetails",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId: sessionStorage.getItem("userId"),
+                            staffId: localStorage.getItem("userId"),
                             breakOutTime: `${hours}:${minutes}:${seconds}`,
                             breakStatus: "breakOut",
                             totalBreakTime: totalBreakTime
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -740,11 +740,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/getBreakDetails",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
+                        staffId: localStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -784,11 +784,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     url: BaseURL + "/getLeavesDetails",
                     type: 'POST',
                     data: JSON.stringify({
-                        staffId: sessionStorage.getItem("userId")
+                        staffId: localStorage.getItem("userId")
                     }),
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -827,11 +827,11 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL+"/addWeekOffDetails",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId"),
+                            staffId : localStorage.getItem("userId"),
                             weekOffDay : self.weekoffDay()
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -875,7 +875,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     type: 'GET',
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -884,7 +884,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     success: function (data) {
                         if (data.length != 0) { 
                             for (var i = 0; i < data.length; i++) {
-                                if(data[i][0]==sessionStorage.getItem("userId")){
+                                if(data[i][0]==localStorage.getItem("userId")){
                                     let userName = `${data[i][1]} ${data[i][2]}`
                                     userName = userName.charAt(0).toUpperCase() + userName.slice(1)
                                     self.userName(userName)
@@ -903,7 +903,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 $.ajax({
                     url: BaseURL+"/getCurrentMonthHolidays",
                     type: 'GET',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log("Error fetching :", textStatus); // Log any error
@@ -933,7 +933,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 $.ajax({
                     url: BaseURL+"/getAbsentEmployess",
                     type: 'GET',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log("Error fetching :", textStatus); // Log any error
@@ -966,7 +966,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     type: 'GET',
                     contentType: 'application/json',
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInterval"),
+                    timeout: localStorage.getItem("timeInterval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -1023,10 +1023,10 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 $.ajax({
                     url: BaseURL+"/HRModuleGetStaffTaskList",
                     type: 'POST',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     data: JSON.stringify({
-                        staffId : sessionStorage.getItem("userId")
+                        staffId : localStorage.getItem("userId")
                     }),
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -1082,10 +1082,10 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                 $.ajax({
                     url: BaseURL+"/getLinemanagerEmployeeTaskCount",
                     type: 'POST',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     data: JSON.stringify({
-                        staffId : sessionStorage.getItem("userId")
+                        staffId : localStorage.getItem("userId")
                     }),
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -1115,7 +1115,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
 
             self.goToTaskView = (event,data)=>{
                 var clickedStaffId = data.item.data.id
-                sessionStorage.setItem("staffId", clickedStaffId);
+                localStorage.setItem("staffId", clickedStaffId);
                 self.router.go({path:'taskView'})
             }
 
@@ -1128,10 +1128,10 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                     type: 'POST',
                     data: JSON.stringify({
                         year: self.yearFilter(),
-                        userId: sessionStorage.getItem("userId")
+                        userId: localStorage.getItem("userId")
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log("Error fetching :", textStatus); // Log any error
@@ -1172,7 +1172,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         status : "Reject",
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -1194,7 +1194,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         status : "Approve",
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -1229,10 +1229,10 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL+"/getDoneTaskReports",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId"),
+                            staffId : localStorage.getItem("userId"),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1284,12 +1284,12 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
                         url: BaseURL+"/sendDailyReport",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId"),
+                            staffId : localStorage.getItem("userId"),
                             content : reportHTML,
                             subject : contentSubject
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1331,7 +1331,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             }
 
             self.connected = function () {
-                if (sessionStorage.getItem("userName") == null) {
+                if (localStorage.getItem("userName") == null) {
                     self.router.go({ path: 'signin' });
                 }
                 else {

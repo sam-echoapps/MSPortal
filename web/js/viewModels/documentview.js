@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
 
                 self.tabData = [
                     { id: "documents", label: "Public Documents" },
@@ -41,7 +41,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
                 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -78,14 +78,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.DocumentsDet([]);
                     document.getElementById('loaderView').style.display = 'block'; 
                     document.getElementById('employee_documents').style.display = 'none';                           
-                    const userId = sessionStorage.getItem("userId");
+                    const userId = localStorage.getItem("userId");
                     $.ajax({
                         url: BaseURL + "/HRModuleGetDocuments3",
                         type: 'POST',
                         data: JSON.stringify({ userId: userId }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -192,13 +192,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetDocuments",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId"),
-                            userRole: sessionStorage.getItem("userRole"),
-                            staffId: sessionStorage.getItem("staffId")  // Pass the staffId here
+                            userId: localStorage.getItem("userId"),
+                            userRole: localStorage.getItem("userRole"),
+                            staffId: localStorage.getItem("staffId")  // Pass the staffId here
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

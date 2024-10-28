@@ -1778,7 +1778,7 @@ define(['ojs/ojcore', 'knockout', 'jquery', 'appController',"ojs/ojoffcanvas", '
 
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({ path: 'signin' });
                     }
                     else {

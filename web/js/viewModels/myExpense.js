@@ -8,12 +8,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -109,7 +109,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching company code:", textStatus);
@@ -189,7 +189,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     url: BaseURL + "/HRModuleExpenseUpload",
                                     type: 'POST',
                                     data: JSON.stringify({
-                                        staffId: sessionStorage.getItem("userId"),
+                                        staffId: localStorage.getItem("userId"),
                                         expense_name: self.expenseName(),
                                         description: self.description(),
                                         total_amount: self.totalAmount(),
@@ -199,7 +199,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     }),
                                     contentType: 'application/json',
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInterval"),
+                                    timeout: localStorage.getItem("timeInterval"),
                                     context: self,
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);
@@ -220,7 +220,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL + "/HRModuleExpenseUpload",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId: sessionStorage.getItem("userId"),
+                                    staffId: localStorage.getItem("userId"),
                                     expense_name: self.expenseName(),
                                     description: self.description(),
                                     total_amount: self.totalAmount(),
@@ -230,7 +230,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 }),
                                 contentType: 'application/json',
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInterval"),
+                                timeout: localStorage.getItem("timeInterval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -264,11 +264,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetMyExpense",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId")
+                            userId: localStorage.getItem("userId")
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -424,11 +424,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetAllExpense",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId")
+                            userId: localStorage.getItem("userId")
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -508,7 +508,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetTotalExpense",
                         type: 'GET',
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -587,7 +587,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetDesignation",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -616,7 +616,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({
                             departmentId : self.departmentFilter()
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -658,7 +658,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             departmentId : self.departmentFilter(),
                             designationId : self.designationFilter()
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -698,7 +698,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAllExpenseReport",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -808,7 +808,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             status : status
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -953,14 +953,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.editMyExpense = (event,data)=>{
                     var clickedExpenseId = data.item.data.id
-                    sessionStorage.setItem("expenseId", clickedExpenseId);
+                    localStorage.setItem("expenseId", clickedExpenseId);
                     self.getMyExpenseInfo();
                     document.querySelector('#openEditMyExpense').open();
                 }
 
                 self.reviewedExpense = (event,data)=>{
                     var clickedExpenseId = data.item.data.id
-                    sessionStorage.setItem("expenseId", clickedExpenseId);
+                    localStorage.setItem("expenseId", clickedExpenseId);
                     self.getMyExpenseInfo();
                     document.querySelector('#reviewedExpense').open();
                 }
@@ -970,10 +970,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetMyExpenseInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            expenseId: sessionStorage.getItem("expenseId")
+                            expenseId: localStorage.getItem("expenseId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1019,7 +1019,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     url: BaseURL + "/HRModuleUpdateMyExpense",
                                     type: 'POST',
                                     data: JSON.stringify({
-                                        expenseId: sessionStorage.getItem("expenseId"),
+                                        expenseId: localStorage.getItem("expenseId"),
                                         expense_name : self.expenseName2(),
                                         description : self.description2(),
                                         total_amount : self.totalAmount2(),
@@ -1029,7 +1029,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     }),
                                     contentType: 'application/json',
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInterval"),
+                                    timeout: localStorage.getItem("timeInterval"),
                                     context: self,
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);
@@ -1050,7 +1050,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL + "/HRModuleUpdateMyExpense",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    expenseId: sessionStorage.getItem("expenseId"),
+                                    expenseId: localStorage.getItem("expenseId"),
                                     expense_name : self.expenseName2(),
                                     description : self.description2(),
                                     total_amount : self.totalAmount2(),
@@ -1060,7 +1060,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 }),
                                 contentType: 'application/json',
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInterval"),
+                                timeout: localStorage.getItem("timeInterval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -1081,7 +1081,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.editAllExpense = (event,data)=>{
                     var clickedExpenseId = data.item.data.id
-                    sessionStorage.setItem("expenseId", clickedExpenseId);
+                    localStorage.setItem("expenseId", clickedExpenseId);
                     self.getMyExpenseInfo();
                     document.querySelector('#reviewAllExpense').open();
                 }
@@ -1096,12 +1096,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateAllExpense",
                             type: 'POST',
                             data: JSON.stringify({
-                                expenseId: sessionStorage.getItem("expenseId"),
+                                expenseId: localStorage.getItem("expenseId"),
                                 editMyStatus : self.editMyStatus(),
                                 deny_note : self.deniedNotes(),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1120,8 +1120,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusUpdateList = (event,data)=>{
                     let expenseId =  data.item.data.id;
                     let status = event.detail.value;
-                    sessionStorage.setItem('expenseId',expenseId) 
-                    sessionStorage.setItem('status',status) 
+                    localStorage.setItem('expenseId',expenseId) 
+                    localStorage.setItem('status',status) 
                     if(status == 'Denied'){
                         document.querySelector('#openEditMyStatus').open();                            
                     }else{
@@ -1135,11 +1135,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.statusUpdate = ()=>{
                     var formValidNote = self._checkValidationGroup("formValidationNote"); 
-                    if(sessionStorage.getItem('status') == 'Denied'){
-                        sessionStorage.setItem('denyNote',self.deniedNotes()) 
+                    if(localStorage.getItem('status') == 'Denied'){
+                        localStorage.setItem('denyNote',self.deniedNotes()) 
                     }else{
                         formValidNote=true;
-                        sessionStorage.setItem('denyNote','') 
+                        localStorage.setItem('denyNote','') 
                     }
                     if (formValidNote) {
                         let popup = document.getElementById("popup");
@@ -1148,12 +1148,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleUpdateExpenseList",
                             type: 'POST',
                             data: JSON.stringify({
-                                expenseId: sessionStorage.getItem('expenseId'),
-                                status : sessionStorage.getItem('status'),
-                                deny_note : sessionStorage.getItem('denyNote'),
+                                expenseId: localStorage.getItem('expenseId'),
+                                status : localStorage.getItem('status'),
+                                deny_note : localStorage.getItem('denyNote'),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1180,12 +1180,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetExpenseListFilter",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId : sessionStorage.getItem("userId"),
+                            userId : localStorage.getItem("userId"),
                             fromDate : fromDate,
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1215,8 +1215,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusUpdateAllFunction = (event,data)=>{
                     let expenseId =  data.item.data.id;
                     let status = event.detail.value;
-                    sessionStorage.setItem('expenseId',expenseId) 
-                    sessionStorage.setItem('status',status) 
+                    localStorage.setItem('expenseId',expenseId) 
+                    localStorage.setItem('status',status) 
                     if(status == 'Denied'){
                         document.querySelector('#openEditAllStatus').open();                            
                     }else{
@@ -1230,11 +1230,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.statusUpdateAll = ()=>{
                     var formValidNote = self._checkValidationGroup("formValidationNote2"); 
-                    if(sessionStorage.getItem('status') == 'Denied'){
-                        sessionStorage.setItem('denyNote',self.deniedNotes()) 
+                    if(localStorage.getItem('status') == 'Denied'){
+                        localStorage.setItem('denyNote',self.deniedNotes()) 
                     }else{
                         formValidNote=true;
-                        sessionStorage.setItem('denyNote','') 
+                        localStorage.setItem('denyNote','') 
                     }
                     if (formValidNote) {
                         let popup = document.getElementById("popup");
@@ -1243,12 +1243,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleUpdateAllExpense",
                             type: 'POST',
                             data: JSON.stringify({
-                                expenseId: sessionStorage.getItem('expenseId'),
-                                editMyStatus : sessionStorage.getItem('status'),
-                                deny_note : sessionStorage.getItem('denyNote'),
+                                expenseId: localStorage.getItem('expenseId'),
+                                editMyStatus : localStorage.getItem('status'),
+                                deny_note : localStorage.getItem('denyNote'),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1275,12 +1275,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetAllExpenseListFilter",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId : sessionStorage.getItem("userId"),
+                            userId : localStorage.getItem("userId"),
                             fromDate : fromDate,
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

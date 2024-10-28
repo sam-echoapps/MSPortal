@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
                 
                 self.taskName = ko.observable();
                 self.dueDate = ko.observable();
@@ -83,10 +83,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $.ajax({
                             url: BaseURL+"/HRModuleGetStaffTaskList",
                             type: 'POST',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             data: JSON.stringify({
-                                staffId : sessionStorage.getItem("userId")
+                                staffId : localStorage.getItem("userId")
                             }),
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -163,7 +163,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     };
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -199,10 +199,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaffTaskCountList",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            userId : sessionStorage.getItem("userId")
+                            userId : localStorage.getItem("userId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -284,16 +284,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleAddTask",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId: sessionStorage.getItem("userId"),
+                                    staffId: localStorage.getItem("userId"),
                                     task_name : self.taskName(),
                                     due_date : self.dueDate(),
                                     reminder_date : self.reminderDate(),
                                     priority : self.priority(),
-                                    userId: sessionStorage.getItem("userId"),
+                                    userId: localStorage.getItem("userId"),
                                     description : self.description(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -338,14 +338,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.goToTaskView = (event,data)=>{
                     var clickedStaffId = data.item.data.id
-                    sessionStorage.setItem("staffId", clickedStaffId);
+                    localStorage.setItem("staffId", clickedStaffId);
                     self.router.go({path:'taskView'})
                 }
 
                 self.goToEditTask = (event,data)=>{
                     console.log(data)
                     var clickedTaskId = data.item.data.id
-                    sessionStorage.setItem("taskId", clickedTaskId);
+                    localStorage.setItem("taskId", clickedTaskId);
                     document.querySelector('#openEditTask').open();
                     self.getTaskInfo();
                 }
@@ -354,10 +354,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetTaskInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            taskId: sessionStorage.getItem("taskId")
+                            taskId: localStorage.getItem("taskId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -389,7 +389,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleUpdateTask",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    taskId: sessionStorage.getItem("taskId"),
+                                    taskId: localStorage.getItem("taskId"),
                                     task_name : self.editTaskName(),
                                     due_date : self.editDueDate(),
                                     priority : self.editPriority(),
@@ -398,7 +398,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     description : self.editDescription(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -428,7 +428,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 status : status
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);

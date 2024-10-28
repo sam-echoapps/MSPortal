@@ -9,18 +9,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
                         app.onAppSuccess();
-                        self.getRotaList();
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -52,54 +51,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
 
-                self.selectedTab = ko.observable('draft_rotas');
-
-                self.tabData = [
-                    { id: "draft_rotas", label: "Draft Rotas" },
-                    { id: "active_rotas", label: "Active Rotas" },
-                    { id: "old_rotas", label: "Old Rotas" },
-                    { id: "shifts", label: "Shifts" },
-                    { id: "rota_settings", label: "Rota Settings" },
-                ];
-
-                self.selectedTabAction = ko.computed(() => { 
-                    if(self.selectedTab() == 'active_rotas'){
-                        $("#active_rotas").show();
-                        $("#old_rotas").hide();
-                        $("#shifts").hide();
-                        $("#draft_rotas").hide();
-                        $("#rota_settings").hide();
-                    }
-                    else if(self.selectedTab() == 'old_rotas'){
-                        $("#active_rotas").hide();
-                        $("#old_rotas").show();
-                        $("#shifts").hide();
-                        $("#draft_rotas").hide();
-                        $("#rota_settings").hide();
-                    }
-                    else if(self.selectedTab() == 'rota_settings'){
-                        $("#active_rotas").hide();
-                        $("#old_rotas").hide();
-                        $("#shifts").hide();
-                        $("#draft_rotas").hide();
-                        $("#rota_settings").show();
-                    }
-                    else if(self.selectedTab() == 'shifts'){
-                        $("#active_rotas").hide();
-                        $("#old_rotas").hide();
-                        $("#shifts").show();
-                        $("#draft_rotas").hide();
-                        $("#rota_settings").hide();
-                        self.getShiftList();
-                    }
-                    else if(self.selectedTab() == 'draft_rotas'){
-                        $("#active_rotas").hide();
-                        $("#old_rotas").hide();
-                        $("#shifts").hide();
-                        $("#draft_rotas").show();
-                        $("#rota_settings").hide();
-                    }
-                });
+                
 
                 self.priority = ko.observable('');
                 self.checkboxValue = ko.observable('');
@@ -143,7 +95,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.rowClick = function (event, data) {
                     var clickedRotaId = data.item.data.id
-                    sessionStorage.setItem("rotaId", clickedRotaId);
+                    localStorage.setItem("rotaId", clickedRotaId);
                     self.router.go({ path: 'rotaView' }); 
                   };
                 
@@ -152,7 +104,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 const currentDate = new Date();
                 const options = { year: 'numeric', month: 'short' };
 
-                for (let i = 0; i < 12; i++) {
+                for (let i = 1; i < 12; i++) {
                     const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i);
                     const year = nextMonth.getFullYear();
                     const month = String(nextMonth.getMonth() + 1).padStart(2, '0'); 
@@ -217,6 +169,69 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.editStartTime = ko.observable('');
                 self.editEndTime = ko.observable('');
                 self.editNotes = ko.observable('');
+                self.existRota = ko.observable('');
+
+                self.selectedTab = ko.observable('');
+
+                if(localStorage.getItem("shiftTab")=="Yes"){
+                    self.selectedTab('shifts')
+                    localStorage.removeItem('shiftTab')
+                } else if(localStorage.getItem("activeRotaTab")=="Yes"){
+                    self.selectedTab('active_rotas')
+                    localStorage.removeItem('activeRotaTab')
+                }else{
+                    self.selectedTab('draft_rotas')
+                }
+
+                self.tabData = [
+                    { id: "draft_rotas", label: "Draft Rotas" },
+                    { id: "active_rotas", label: "Active Rotas" },
+                    { id: "old_rotas", label: "Old Rotas" },
+                    { id: "shifts", label: "Shifts" },
+                    { id: "rota_settings", label: "Rota Settings" },
+                ];
+
+                self.selectedTabAction = ko.computed(() => { 
+                    if(self.selectedTab() == 'active_rotas'){
+                        $("#active_rotas").show();
+                        $("#old_rotas").hide();
+                        $("#shifts").hide();
+                        $("#draft_rotas").hide();
+                        $("#rota_settings").hide();
+                        getActiveRotaList();
+                    }
+                    else if(self.selectedTab() == 'old_rotas'){
+                        $("#active_rotas").hide();
+                        $("#old_rotas").show();
+                        $("#shifts").hide();
+                        $("#draft_rotas").hide();
+                        $("#rota_settings").hide();
+                        getOldRotaList();
+                    }
+                    else if(self.selectedTab() == 'rota_settings'){
+                        $("#active_rotas").hide();
+                        $("#old_rotas").hide();
+                        $("#shifts").hide();
+                        $("#draft_rotas").hide();
+                        $("#rota_settings").show();
+                    }
+                    else if(self.selectedTab() == 'shifts'){
+                        $("#active_rotas").hide();
+                        $("#old_rotas").hide();
+                        $("#shifts").show();
+                        $("#draft_rotas").hide();
+                        $("#rota_settings").hide();
+                        getShiftList();
+                    }
+                    else if(self.selectedTab() == 'draft_rotas'){
+                        $("#active_rotas").hide();
+                        $("#old_rotas").hide();
+                        $("#shifts").hide();
+                        $("#draft_rotas").show();
+                        $("#rota_settings").hide();
+                        getRotaList();
+                    }
+                });
 
                 self._checkValidationGroup = (value) => {
                     const tracker = document.getElementById(value);
@@ -230,18 +245,20 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 };
 
-                self.getShiftList = ()=>{
+                function getShiftList(){
                     self.ShiftDet([]);
-                    document.getElementById('loaderView').style.display='block';
+                    $("#loaderView").show();
                     $.ajax({
                         url: BaseURL+"/HRModuleGetShiftList",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
                         },
                         success: function (data) {
+                            $("#shifts").show();
+                            $("#draft_rotas").hide();
                             data = JSON.parse(data[0]);
                             console.log(data)
                             document.getElementById('loaderView').style.display='none';
@@ -286,10 +303,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             rota_duration: self.rota_duration(),
                             rota_date: self.rota_date(),
                             rota_month: self.rota_month(),
-                            userId: sessionStorage.getItem("userId"),
+                            userId: localStorage.getItem("userId"),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -313,14 +330,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleUpdateRota",
                         type: 'POST',
                         data: JSON.stringify({
-                            rotaId: sessionStorage.getItem("rotaId"),
+                            rotaId: localStorage.getItem("rotaId"),
                             rota_name: self.edit_rota_name(),            
                             rota_duration: self.edit_rota_duration(),
                             rota_date: self.edit_rota_date(),
                             rota_month: self.edit_rota_month(),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -338,7 +355,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.goToEditRota = (event,data)=>{
                     var clickedRotaId = data.item.data.id
-                    sessionStorage.setItem("rotaId", clickedRotaId);
+                    localStorage.setItem("rotaId", clickedRotaId);
                     document.querySelector('#openEditRota').open();
                     self.getRotaInfo();
                 }
@@ -346,10 +363,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetRotaInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            rotaId: sessionStorage.getItem("rotaId")
+                            rotaId: localStorage.getItem("rotaId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -404,10 +421,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             start_time: self.startTime().split('+')[0],
                             end_time: self.endTime().split('+')[0],
                             notes: self.notes(),
-                            userId: sessionStorage.getItem("userId"),
+                            userId: localStorage.getItem("userId"),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -424,18 +441,19 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
             }
 
-            self.getRotaList = ()=>{
+            function getRotaList(){
                 self.RotaDet([]);
-                document.getElementById('loaderView').style.display='block';
+                $("#loaderView").show();
                 $.ajax({
                     url: BaseURL+"/HRModuleGetRotaList",
                     type: 'GET',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
                     },
                     success: function (data) {
+                        $("#draft_rotas").show();
                         data = JSON.parse(data[0]);
                         console.log(data)
                         document.getElementById('loaderView').style.display='none';
@@ -486,7 +504,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
             self.goToEditShift = (event,data)=>{
                 var clickedShiftId = data.item.data.id
-                sessionStorage.setItem("shiftId", clickedShiftId);
+                localStorage.setItem("shiftId", clickedShiftId);
                 document.querySelector('#openEditShift').open();
                 self.getShiftInfo();
             }
@@ -494,10 +512,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 $.ajax({
                     url: BaseURL + "/HRModuleGetShiftInfo",
                     type: 'POST',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     data: JSON.stringify({
-                        shiftId: sessionStorage.getItem("shiftId")
+                        shiftId: localStorage.getItem("shiftId")
                     }),
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -532,14 +550,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     url: BaseURL+"/HRModuleUpdateShift",
                     type: 'POST',
                     data: JSON.stringify({
-                        shiftId: sessionStorage.getItem("shiftId"),
+                        shiftId: localStorage.getItem("shiftId"),
                         shift_name: self.editShiftName(),            
                         start_time: self.editStartTime().split('+')[0],
                         end_time: self.editEndTime().split('+')[0],
                         notes: self.editNotes(),
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -559,8 +577,156 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 popup1.close();
                 let popup2 = document.getElementById("updateSuccessView2");
                 popup2.close();
-                self.getShiftList();
+                getShiftList();
             }
+
+            self.rotaExistCheck = (event)=> {
+                let valueCheck = event.detail.value
+                $.ajax({
+                    url: BaseURL+"/HRModuleRotaExistCheck",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        checkRotaName: valueCheck
+                    }),
+                    dataType: 'json',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        console.log(data[0].length)
+
+                         if(data[0].length !=0){
+                                self.existRota("Oops! This rota name is already taken. Please try a different one.");
+                        }else{
+                            self.existRota('');
+                        }
+                    }
+                })
+            }
+
+            function getActiveRotaList(){
+                self.RotaDet([]);
+                $("#loaderView").show();
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetActiveRotaList",
+                    type: 'GET',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        $("#active_rotas").show();
+                        data = JSON.parse(data[0]);
+                        console.log(data)
+                        document.getElementById('loaderView').style.display='none';
+                        if(data.length!=0){
+                            for (var i = 0; i < data.length; i++) {
+                                console.log(data[i][1])
+                                let dateCreated = new Date(data[i][7]);
+                                // Get only the date part (YYYY-MM-DD)
+                                let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
+                                let duration;
+                                let rotaMonth;
+                                if(data[i][2] !='month'){
+                                    duration = data[i][2] + " days"
+                                }else{
+                                    duration = "Calendar month"
+                                }
+                                if(data[i][4]){
+                                    const dateStr = data[i][4];  // Assuming "YYYY-MM" format
+                                    const [year, month] = dateStr.split('-'); // Create a Date object from the parsed year and month
+                                    const date = new Date(year, month - 1, 1);  // month - 1 because JavaScript months are 0-indexed
+                                    // Generate label (like "Apr 2025") using the same formatting options
+                                    const label = date.toLocaleDateString('en-US', options);
+                                    // Update the edit_rota_month observable with the formatted label
+                                    rotaMonth = label;
+                                    }
+                                self.RotaDet.push({
+                                    'slno': i+1,
+                                    'id': data[i][0],
+                                    'rota_name': data[i][1], 
+                                    'rota_duration': duration,
+                                    'rota_date': data[i][3],
+                                    'rota_month': rotaMonth,
+                                    'created_by': data[i][6], 
+                                    'created_date': dateCreatedOnly,
+                                    'updated_at': data[i][8]                                                                                                 
+                                });
+                                
+                            }
+                            
+                             }
+
+                    }
+                })
+            }
+
+            self.RotaList = new ArrayDataProvider(this.RotaDet, { keyAttributes: "id"});
+
+            function getOldRotaList(){
+                self.RotaDet([]);
+                $("#loaderView").show();
+                $.ajax({
+                    url: BaseURL+"/HRModuleGetOldRotaList",
+                    type: 'GET',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        $("#old_rotas").show();
+                        data = JSON.parse(data[0]);
+                        console.log(data)
+                        document.getElementById('loaderView').style.display='none';
+                        if(data.length!=0){
+                            for (var i = 0; i < data.length; i++) {
+                                console.log(data[i][1])
+                                let dateCreated = new Date(data[i][7]);
+                                // Get only the date part (YYYY-MM-DD)
+                                let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
+                                let duration;
+                                let rotaMonth;
+                                if(data[i][2] !='month'){
+                                    duration = data[i][2] + " days"
+                                }else{
+                                    duration = "Calendar month"
+                                }
+                                if(data[i][4]){
+                                    const dateStr = data[i][4];  // Assuming "YYYY-MM" format
+                                    const [year, month] = dateStr.split('-'); // Create a Date object from the parsed year and month
+                                    const date = new Date(year, month - 1, 1);  // month - 1 because JavaScript months are 0-indexed
+                                    // Generate label (like "Apr 2025") using the same formatting options
+                                    const label = date.toLocaleDateString('en-US', options);
+                                    // Update the edit_rota_month observable with the formatted label
+                                    rotaMonth = label;
+                                    }
+                                self.RotaDet.push({
+                                    'slno': i+1,
+                                    'id': data[i][0],
+                                    'rota_name': data[i][1], 
+                                    'rota_duration': duration,
+                                    'rota_date': data[i][3],
+                                    'rota_month': rotaMonth,
+                                    'created_by': data[i][6], 
+                                    'created_date': dateCreatedOnly,
+                                    'updated_at': data[i][8]                                                                                                 
+                                });
+                                
+                            }
+                            
+                             }
+
+                    }
+                })
+            }
+
+            self.RotaList = new ArrayDataProvider(this.RotaDet, { keyAttributes: "id"});
+
             self.rewriteUrl=(url)=> {
                 if (url.includes('/Hr')) {
                     return url;

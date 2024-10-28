@@ -8,12 +8,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -89,7 +89,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching company code:", textStatus);
@@ -118,7 +118,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'GET',
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -208,7 +208,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -311,7 +311,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetTotalExpense",
                         type: 'GET',
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -339,7 +339,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'GET',
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -416,7 +416,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -460,18 +460,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusUpdateExpense = (event,data)=>{
                     let expenseId =  data.item.data.id;
                     let paymentStatus = event.detail.value;
-                    sessionStorage.setItem('expenseId',expenseId) 
-                    sessionStorage.setItem('paymentStatus',paymentStatus)
+                    localStorage.setItem('expenseId',expenseId) 
+                    localStorage.setItem('paymentStatus',paymentStatus)
 
                     $.ajax({
                         url: BaseURL+"/HRModuleUpdateExpensePaidStatus",
                         type: 'POST',
                         data: JSON.stringify({
-                            expenseId: sessionStorage.getItem('expenseId'),
-                            paymentStatus : sessionStorage.getItem('paymentStatus'),
+                            expenseId: localStorage.getItem('expenseId'),
+                            paymentStatus : localStorage.getItem('paymentStatus'),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -488,18 +488,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.statusUpdatePurchase = (event,data)=>{
                     let purchaseId =  data.item.data.id;
                     let paymentStatus = event.detail.value;
-                    sessionStorage.setItem('purchaseId',purchaseId) 
-                    sessionStorage.setItem('paymentStatus',paymentStatus)
+                    localStorage.setItem('purchaseId',purchaseId) 
+                    localStorage.setItem('paymentStatus',paymentStatus)
 
                     $.ajax({
                         url: BaseURL+"/HRModuleUpdatePurchasePaidStatus",
                         type: 'POST',
                         data: JSON.stringify({
-                            purchaseId: sessionStorage.getItem('purchaseId'),
-                            paymentStatus : sessionStorage.getItem('paymentStatus'),
+                            purchaseId: localStorage.getItem('purchaseId'),
+                            paymentStatus : localStorage.getItem('paymentStatus'),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -546,7 +546,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.reviewedExpense = (event,data)=>{
                     var clickedExpenseId = data.item.data.id
-                    sessionStorage.setItem("expenseId", clickedExpenseId);
+                    localStorage.setItem("expenseId", clickedExpenseId);
                     self.getMyExpenseInfo();
                     document.querySelector('#reviewedExpense').open();
                 }
@@ -556,10 +556,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetMyExpenseInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            expenseId: sessionStorage.getItem("expenseId")
+                            expenseId: localStorage.getItem("expenseId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -586,11 +586,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     });
                 };
 
-                self.userId = ko.observable(sessionStorage.getItem("userId"));
+                self.userId = ko.observable(localStorage.getItem("userId"));
 
                 self.goToPOClosure = (event,data)=>{
                     var clickedRowId = data.item.data.id
-                    sessionStorage.setItem("purchaseId", clickedRowId);
+                    localStorage.setItem("purchaseId", clickedRowId);
                     self.router.go({path:'purchaseClosure'})
                 }
 
@@ -603,7 +603,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.viewPurchase = (event,data)=>{
                     var clickedPurchaseId = data.item.data.id
-                    sessionStorage.setItem("purchaseId", clickedPurchaseId);
+                    localStorage.setItem("purchaseId", clickedPurchaseId);
                     self.getPurchaseInfo();
                     document.querySelector('#openEditPurchase').open();
                 }
@@ -612,10 +612,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetPurchaseInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            purchaseId: sessionStorage.getItem("purchaseId")
+                            purchaseId: localStorage.getItem("purchaseId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

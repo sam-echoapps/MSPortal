@@ -9,14 +9,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 
                 self.CancelBehaviorOpt = ko.observable('icon'); 
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -72,9 +72,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetWorkingPatternTime",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
-                        data: JSON.stringify({ patternId: sessionStorage.getItem("patternId") }),
+                        data: JSON.stringify({ patternId: localStorage.getItem("patternId") }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
                             document.getElementById('loaderView').style.display = 'none';
@@ -128,7 +128,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.edit = (event, data) => {
                     var clickedTimeId = data.item.data.id;
-                    sessionStorage.setItem("timeId", clickedTimeId);
+                    localStorage.setItem("timeId", clickedTimeId);
                     self.getTimeDetails(clickedTimeId);
                     document.querySelector('#openEditTime').open();
                 }
@@ -143,7 +143,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ id: timeId }), // Send team ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -172,13 +172,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleAddPatternTime",
                             type: 'POST',
                             data: JSON.stringify({
-                                time_id: sessionStorage.getItem("timeId"),
+                                time_id: localStorage.getItem("timeId"),
                                 start_time : self.start_time(),
                                 finish_time : self.finish_time(),
                                 break_time : self.break_time(),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -201,9 +201,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetWorkPatternDetails",
                         type: 'POST',
-                        data: JSON.stringify({ patternId: sessionStorage.getItem("patternId") }),
+                        data: JSON.stringify({ patternId: localStorage.getItem("patternId") }),
                         contentType: "application/json", 
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -228,12 +228,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleEditWorkPattern",
                             type: 'POST',
                             data: JSON.stringify({
-                                patternId: sessionStorage.getItem("patternId"),
+                                patternId: localStorage.getItem("patternId"),
                                 pattern_Name : self.pattern_Name(),
                                 holiday : self.holiday(),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -276,7 +276,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             patternId : rowId
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

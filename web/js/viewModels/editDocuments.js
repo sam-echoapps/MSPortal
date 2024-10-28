@@ -8,8 +8,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.tabData = [
@@ -50,7 +50,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
                 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -130,9 +130,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL + "/HRModuleDocumentUpload2",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    userId: sessionStorage.getItem("userId"),
-                                    staffId: sessionStorage.getItem("userId"),
-                                    userRole: sessionStorage.getItem("userRole"),
+                                    userId: localStorage.getItem("userId"),
+                                    staffId: localStorage.getItem("userId"),
+                                    userRole: localStorage.getItem("userRole"),
                                     document_name: documentName,
                                     file_name: documentFileName,
                                     file: fileContent,
@@ -140,7 +140,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 }),
                                 contentType: 'application/json',
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInterval"),
+                                timeout: localStorage.getItem("timeInterval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -169,7 +169,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'GET',
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -254,7 +254,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({ document_id: documentId }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -274,7 +274,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({ document_id: documentId }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -317,10 +317,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleMembers2",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId")
+                            userId: localStorage.getItem("userId")
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching Member:", textStatus); // Log any error
@@ -354,7 +354,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             }),
                             contentType: 'application/json',
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -419,7 +419,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetRolesForDocument",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

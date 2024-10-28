@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
                 
                 self.GoalDet = ko.observableArray([]); 
                 self.CancelBehaviorOpt = ko.observable('icon'); 
@@ -16,7 +16,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.GoalYearDet = ko.observableArray([]);
                 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -52,10 +52,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetEmployeeGoalStaff",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId")
+                            staffId : localStorage.getItem("staffId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -111,7 +111,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.viewGoal = (event,data)=>{
                     var rowId = data.item.data.id
                     console.log(rowId)
-                    sessionStorage.setItem("goalId", rowId);
+                    localStorage.setItem("goalId", rowId);
                     self.router.go({path:'goalsView'})
                 }
 
@@ -131,12 +131,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetSelfGoalListFilter",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId"),
+                            staffId : localStorage.getItem("staffId"),
                             fromDate : fromDate,
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

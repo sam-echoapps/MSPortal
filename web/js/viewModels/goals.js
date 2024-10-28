@@ -8,8 +8,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 
                 self.goalSubject = ko.observable();
@@ -22,7 +22,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.GoalYearDet = ko.observableArray([]);
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -58,10 +58,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetGoal",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId")
+                            staffId : localStorage.getItem("userId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -108,14 +108,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleAddGoal",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId : sessionStorage.getItem("userId"),
+                                    staffId : localStorage.getItem("userId"),
                                     goal_subject : self.goalSubject(),
                                     description : self.description(),
                                     start_date : self.startDate(),
                                     end_date : self.endDate(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -166,7 +166,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.viewGoal = (event,data)=>{
                     var rowId = data.item.data.id
                     console.log(rowId)
-                    sessionStorage.setItem("goalId", rowId);
+                    localStorage.setItem("goalId", rowId);
                     self.router.go({path:'goalsView'})
                 }
 
@@ -186,12 +186,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetGoalListFilter",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("userId"),
+                            staffId : localStorage.getItem("userId"),
                             fromDate : fromDate,
                             toDate : toDate
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

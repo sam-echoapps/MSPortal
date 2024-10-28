@@ -8,8 +8,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 
                 self.comments = ko.observable('');
@@ -56,7 +56,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.billFile = ko.observable('');
                 self.fileBill = ko.observable('');
                 self.typeErrorGuarantee = ko.observable('');
-                self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
+                self.purchaseId = ko.observable(localStorage.getItem("purchaseId"));
                 self.selectedOptions = ko.observable('No');
                 self.billManadatory = ko.observable('');
                 self.guaranteeManadatory = ko.observable('');
@@ -94,7 +94,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     {'value' : 'Exhausted ', 'label' : 'Exhausted '},  
                 );
                 self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
-                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencySelected = ko.observable(localStorage.getItem("currency"));
                 self.currencies = [
                     {"label":"USD","value":"USD"},
                     {"label":"INR","value":"INR"},
@@ -108,7 +108,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.totalAmountConvert = ko.observable('');
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -144,7 +144,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAddAssetInfo",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -204,7 +204,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({
                             departmentId : departmentId,
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -297,7 +297,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         extra_file_content: extraFileContent  
                                     }),
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    timeout: localStorage.getItem("timeInetrval"),
                                     context: self,
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);
@@ -336,7 +336,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error:", textStatus); 
@@ -363,7 +363,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 async function convertCurrency(amount, sourceCurrency) {
-                    const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                    const targetCurrency = localStorage.getItem("currency"); // Get target currency from session storage
                     const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
                 
                     try {

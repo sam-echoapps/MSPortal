@@ -8,14 +8,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
                
                 self.itemName = ko.observable('');
               
                 self.filter = ko.observable('');
                 self.CancelBehaviorOpt = ko.observable('icon'); 
                
-                self.userId = ko.observable(sessionStorage.getItem("userId"));
+                self.userId = ko.observable(localStorage.getItem("userId"));
                 self.poid = ko.observable();
                 self.owner = ko.observable('');
                 self.requestDate = ko.observable('');
@@ -49,7 +49,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.billFile = ko.observable('');
                 self.fileBill = ko.observable('');
                 self.typeErrorGuarantee = ko.observable('');
-                self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
+                self.purchaseId = ko.observable(localStorage.getItem("purchaseId"));
                 self.selectedOptions = ko.observable('No');
                 self.billManadatory = ko.observable('');
                 self.guaranteeManadatory = ko.observable('');
@@ -72,9 +72,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.currency = ko.observable('');
 
 
-                let userrole = sessionStorage.getItem("userRole")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
-                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencySelected = ko.observable(localStorage.getItem("currency"));
                 self.currencies = [
                     {"label":"USD","value":"USD"},
                     {"label":"INR","value":"INR"},
@@ -89,7 +89,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -122,10 +122,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetPurchaseClosureInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            purchaseId: sessionStorage.getItem("purchaseId")
+                            purchaseId: localStorage.getItem("purchaseId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -186,7 +186,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error:", textStatus); 
@@ -212,7 +212,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 async function convertCurrency(amount, sourceCurrency) {
-                    const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                    const targetCurrency = localStorage.getItem("currency"); // Get target currency from session storage
                     const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
                 
                     try {
@@ -456,7 +456,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL + "/HRModuleSavePurchaseClosure",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    purchaseId: sessionStorage.getItem("purchaseId"),
+                                    purchaseId: localStorage.getItem("purchaseId"),
                                     have_bill: self.have_bill(),
                                     bill_number: self.billNumber(),
                                     have_bill_attach: self.have_bill_attach(),
@@ -477,7 +477,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     extra_file_content: extraFileContent  
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -571,11 +571,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleUpdatePurchaseClosure",
                             type: 'POST',
                             data: JSON.stringify({
-                                purchaseId: sessionStorage.getItem("purchaseId"),
+                                purchaseId: localStorage.getItem("purchaseId"),
                                 status : 'Closed'
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);

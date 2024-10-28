@@ -8,13 +8,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -57,26 +57,41 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.OffStaffDet = ko.observableArray([]);
                 self.allocationExistVal = ko.observable('No');
                 
+                self.selectDiv = () => {
+                    const selectedValue = self.rota_duration();
+                    
+                    if (selectedValue === 'month') {
+                        self.showSelectMonth(true);
+                        self.showRangeDate(false);
+                    } else {
+                        self.showSelectMonth(false);
+                        self.showRangeDate(true);
+                    }
+                };
                 self.selectDiv2 = () => {
                     const selectedValue = self.edit_rota_duration();
                     
                     if (selectedValue === 'month') {
                         self.showSelectMonth(true);
                         self.showRangeDate(false);
+                        //self.edit_rota_date('')
                         self.edit_rota_date('')
                     } else {
                         self.showSelectMonth(false);
                         self.showRangeDate(true);
+                        //self.edit_rota_date('')
                         self.edit_rota_month('')
                     }
                 };
-
                 self.edit_rota_name = ko.observable('');
+                self.edit_rota_name_check = ko.observable('');
                 self.edit_rota_duration = ko.observable('');
                 self.edit_rota_date = ko.observable('');
                 self.edit_rota_month = ko.observable('');
                 self.shift_date = ko.observable('');
                 self.shift_date_format = ko.observable('');
+                self.edit_rota_status = ko.observable('');
+                self.existRota = ko.observable('');
 
                 self.durations = [
                     {"label":"4 days","value":"4"},
@@ -100,7 +115,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 const currentDate = new Date();
                 const options = { year: 'numeric', month: 'short' };
 
-                for (let i = 0; i < 12; i++) {
+                for (let i = 1; i < 12; i++) {
                     const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + i);
                     const year = nextMonth.getFullYear();
                     const month = String(nextMonth.getMonth() + 1).padStart(2, '0'); 
@@ -117,15 +132,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
                 self.showRangeDate = ko.observable(false);
                 self.showSelectMonth = ko.observable(false);
+                
 
                 self.getRotaInfo = () => {
+                    $("#loaderView").show();
                     $.ajax({
                         url: BaseURL + "/HRModuleGetRotaInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            rotaId: sessionStorage.getItem("rotaId")
+                            rotaId: localStorage.getItem("rotaId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -134,7 +151,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             data = JSON.parse(data[0]);
                             console.log(data);
                             self.edit_rota_name(data[1])
+                            self.edit_rota_name_check(data[1])
                             self.edit_rota_duration(data[2])
+                            self.edit_rota_status(data[5])
                             if(data[3]){
                             self.edit_rota_date(data[3])
                             self.tableGet(self.edit_rota_duration(),self.edit_rota_date());
@@ -146,27 +165,40 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             // Generate label (like "Apr 2025") using the same formatting options
                             const label = date.toLocaleDateString('en-US', options);
                             // Update the edit_rota_month observable with the formatted label
-                            self.edit_rota_month(label);
+                            self.edit_rota_month(dateStr);
+
+                            const [monthName, yearVal] = label.split(" ");
+                            const monthMap = {
+                                "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", 
+                                "May": "05", "Jun": "06", "Jul": "07", "Aug": "08", 
+                                "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+                            };
+                            const formattedMonth = monthMap[monthName];
+                            const formattedDate = `${yearVal}-${formattedMonth}`;
+                            
+                            self.tableGetMonth(formattedDate);
                             }
                         }
                     });
                 };
 
-                self.editRota = ()=>{                        
+                self.editRota = ()=>{ 
+                    const formValid = self._checkValidationGroup("formValidation"); 
+                    if (formValid) {
                     let popup = document.getElementById("loaderPopup");
                     popup.open();
                     $.ajax({
                         url: BaseURL+"/HRModuleUpdateRota",
                         type: 'POST',
                         data: JSON.stringify({
-                            rotaId: sessionStorage.getItem("rotaId"),
+                            rotaId: localStorage.getItem("rotaId"),
                             rota_name: self.edit_rota_name(),            
                             rota_duration: self.edit_rota_duration(),
                             rota_date: self.edit_rota_date(),
                             rota_month: self.edit_rota_month(),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -180,7 +212,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     })
                 }
+                }
                 self.tableGet = (duration, start) => {
+                    $("#loaderView").show();
+                    $("#publishBtn").hide();
                     const options = { weekday: 'short', day: 'numeric', month: 'short' };
                     const shiftData = []; // Declare the array to hold shift data
                 
@@ -207,7 +242,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         const ajaxCall = $.ajax({
                             url: BaseURL + "/HRModuleGetAssignStaffList",
                             type: 'GET',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -421,11 +456,230 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 // Append week off row to the table (hidden initially)
                                 tableBody.appendChild(weekOffRow);
                             });
+                            $("#loaderView").hide();
+                            $("#publishBtn").show();
                         });
+                      
                     }).catch(err => {
                         console.error("Error occurred while fetching shifts:", err);
                     });
                 };
+
+
+                self.tableGetMonth = (month) => {
+                    $("#loaderView").show();
+                    $("#publishBtn").hide();
+                    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+                    const shiftData = []; // Array to hold shift data
+                
+                    // Parse the month parameter (format "YYYY-MM")
+                    const [year, monthIndex] = month.split('-').map(Number);
+                    const startDate = new Date(year, monthIndex - 1, 1); // First day of the month
+                    const endDate = new Date(year, monthIndex, 0); // Last day of the month
+                
+                    const colors = ['#007BFF', '#FF6F61', '#28A745', '#FF00FF'];
+                    const ajaxCalls = []; // Array to hold AJAX promises
+                
+                    for (let day = 1; day <= endDate.getDate(); day++) {
+                        const shiftDate = new Date(year, monthIndex - 1, day);
+                        const formattedDateISO = shiftDate.toISOString().split('T')[0];
+                        const formattedDate = shiftDate.toLocaleDateString('en-GB', options);
+                        const dayShifts = [];
+                        const weekOff = [];
+                
+                        // Create a promise for each AJAX call
+                        const ajaxCall = $.ajax({
+                            url: BaseURL + "/HRModuleGetAssignStaffList",
+                            type: 'GET',
+                            timeout: localStorage.getItem("timeInetrval"),
+                            context: self,
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.log(textStatus);
+                            },
+                            success: function (data) {
+                                data = JSON.parse(data[0]);
+                                console.log(data);
+                
+                                const employeeShifts = [];
+                                const offEmployeeShifts = [];
+                                for (var j = 0; j < data.length; j++) {
+                                    var employeeNames = data[j][7].split(',').map(name => name.trim());
+                                    var offEmployeeNames = data[j][9].split(',').map(name => name.trim());
+                                    var colorIndex = j % colors.length;
+                                    employeeShifts.push({
+                                        'date': data[j][1],
+                                        'employees': employeeNames,
+                                        'startTime': data[j][5],
+                                        'endTime': data[j][6],
+                                        'color': colors[colorIndex]
+                                    });
+                                    offEmployeeShifts.push({
+                                        'date': data[j][1],
+                                        'offEmployees': offEmployeeNames,
+                                        'color': colors[colorIndex]
+                                    });
+                                }
+                
+                                employeeShifts.forEach(shift => {
+                                    if (shift.date === formattedDate) {
+                                        dayShifts.push({
+                                            employees: shift.employees,
+                                            startTime: shift.startTime,
+                                            endTime: shift.endTime,
+                                            color: shift.color
+                                        });
+                                    }
+                                });
+                
+                                offEmployeeShifts.forEach(off => {
+                                    if (off.date === formattedDate) {
+                                        weekOff.push({
+                                            offEmployees: off.offEmployees,
+                                            color: "#FF0000"
+                                        });
+                                    }
+                                });
+                
+                                shiftData.push({
+                                    fullDate: formattedDateISO,
+                                    date: formattedDate,
+                                    shifts: dayShifts,
+                                    weekOff: weekOff
+                                });
+                            }
+                        });
+                
+                        // Collect each AJAX call promise
+                        ajaxCalls.push(ajaxCall);
+                    }
+                
+                    // Wait for all AJAX calls to complete
+                    Promise.all(ajaxCalls).then(() => {
+                        const tableBody = document.querySelector('#shift-table tbody');
+                        
+                        shiftData.forEach(day => {
+                            const sanitizedDate = day.date.replace(/,/g, '').replace(/\s+/g, '-');
+                            const sanitizedFullDate = day.fullDate.replace(/,/g, '').replace(/\s+/g, '-');
+                
+                            let dateRow = document.createElement('tr');
+                            dateRow.classList.add('date-row');
+                
+                            let dateCell = document.createElement('td');
+                            dateCell.textContent = day.date;
+                            dateRow.appendChild(dateCell);
+                
+                            let buttonCell = document.createElement('div');
+                            buttonCell.style.display = 'flex';
+                            buttonCell.style.alignItems = 'center';
+                
+                            let addShiftButton = document.createElement('button');
+                            addShiftButton.classList.add('btn');
+                
+                            let icon = document.createElement('i');
+                            icon.classList.add('fas', 'fa-eye');
+                            addShiftButton.appendChild(icon);
+                
+                            addShiftButton.addEventListener('click', () => {
+                                const shiftRowsForDay = document.querySelectorAll(`.shift-row-${sanitizedDate}`);
+                                const weekOffRowsForDay = document.querySelectorAll(`.weekoff-row-${sanitizedDate}`);
+                                const isAnyVisible = Array.from(shiftRowsForDay).some(row => !row.classList.contains('hidden')) ||
+                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden'));
+                                
+                                if (isAnyVisible) {
+                                    shiftRowsForDay.forEach(row => row.classList.add('hidden'));
+                                    weekOffRowsForDay.forEach(row => row.classList.add('hidden'));
+                                } else {
+                                    document.querySelectorAll('.shift-row').forEach(row => row.classList.add('hidden'));
+                                    document.querySelectorAll('.weekoff-row').forEach(row => row.classList.add('hidden'));
+                                    shiftRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                    weekOffRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                }
+                            });
+                
+                            buttonCell.appendChild(addShiftButton);
+                
+                            let anotherButton = document.createElement('button');
+                            anotherButton.classList.add('btn');
+                
+                            let iconPlus = document.createElement('i');
+                            iconPlus.classList.add('fas', 'fa-user-plus');
+                            anotherButton.appendChild(iconPlus);
+                
+                            anotherButton.addEventListener('click', () => {
+                                self.shift_date(`${day.date}`);
+                                self.shift_date_format(`${day.fullDate}`);
+                                self.getShiftList();
+                                self.getAllocateStaffList();
+                                self.selectedEmployees([]);
+                                self.selectedOffEmployees([]);
+                                self.allocationExistVal('No');
+                                document.querySelector('#openAssignEmployees').open();
+                            });
+                
+                            buttonCell.appendChild(anotherButton);
+                            dateRow.appendChild(buttonCell);
+                
+                            for (let i = 0; i < 23; i++) {
+                                let hourCell = document.createElement('td');
+                                dateRow.appendChild(hourCell);
+                            }
+                
+                            tableBody.appendChild(dateRow);
+                
+                            day.shifts.forEach(shift => {
+                                const startHour = parseInt(shift.startTime.split(':')[0], 10);
+                                const endHour = parseInt(shift.endTime.split(':')[0], 10);
+                                const colspan = endHour - startHour;
+                
+                                let shiftRow = document.createElement('tr');
+                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row', 'hidden');
+                
+                                let shiftTimeCell = document.createElement('td');
+                                shiftRow.appendChild(shiftTimeCell);
+                
+                                for (let hour = 0; hour < startHour; hour++) {
+                                    let emptyCell = document.createElement('td');
+                                    shiftRow.appendChild(emptyCell);
+                                }
+                
+                                let shiftCell = document.createElement('td');
+                                shiftCell.colSpan = colspan;
+                                shiftCell.classList.add('shift');
+                                shiftCell.textContent = shift.employees.join(', ');
+                                shiftCell.style.backgroundColor = shift.color;
+                                shiftCell.style.color = '#FFFFFF';
+                                shiftRow.appendChild(shiftCell);
+                
+                                for (let hour = endHour; hour < 24; hour++) {
+                                    let emptyCell = document.createElement('td');
+                                    shiftRow.appendChild(emptyCell);
+                                }
+                
+                                tableBody.appendChild(shiftRow);
+                            });
+                
+                            day.weekOff.forEach(off => {
+                                let weekOffRow = document.createElement('tr');
+                                weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row', 'hidden');
+                
+                                let weekOffCell = document.createElement('td');
+                                weekOffCell.colSpan = 25;
+                                weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
+                                weekOffCell.style.backgroundColor = off.color;
+                                weekOffCell.style.color = '#FFFFFF';
+                                weekOffRow.appendChild(weekOffCell);
+                
+                                tableBody.appendChild(weekOffRow);
+                            });
+                            $("#loaderView").hide();
+                            $("#publishBtn").show();
+                        });
+                       
+                    }).catch(err => {
+                        console.error("Error occurred while fetching shifts:", err);
+                    });
+                };
+                
                 
                 
                 
@@ -436,7 +690,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetShiftList",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -464,7 +718,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAllocateStaffList",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
                             shift_date: self.shift_date(),
@@ -496,89 +750,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.StaffList = new ArrayDataProvider(this.StaffDet, { keyAttributes: "value"});
                 self.OffStaffList = new ArrayDataProvider(this.OffStaffDet, { keyAttributes: "value"});
-
-
-                // self.tableGet = ()=>{
-                //     const shiftData = [
-                //         {
-                //           date: 'Wed 16 Oct',
-                //           shifts: [
-                //             { employees: ['Kannan M', 'Manju Mathew'], startTime: '03:00', endTime: '24:00', color: '#4395e7' },
-                //             { employees: ['Sam Thomas'], startTime: '09:00', endTime: '19:00', color: '#f37c58' },
-                //             { employees: ['Mohammed Yaseen'], startTime: '05:00', endTime: '12:00', color: '#7aef7ed9' }
-                //           ],
-                //           weekOff: ['Issac', 'Sam']
-                //         },
-                //         {
-                //           date: 'Thu 17 Oct',
-                //           shifts: [
-                //             { employees: ['Mohammed Yaseen'], startTime: '08:00', endTime: '16:00', color: '#e387f3' },
-                //             { employees: ['Aparna'], startTime: '14:00', endTime: '22:00', color: '#fe4545' }
-                //           ],
-                //           weekOff: ['Manju Mathew']
-                //         },
-                //         {
-                //           date: 'Fri 18 Oct',
-                //           shifts: [],
-                //           weekOff: ['Kannan M', 'Sayooj']
-                //         },
-                //         {
-                //             date: 'Sat 19 Oct',
-                //             shifts: [],
-                //             weekOff: ['Kannan M', 'Sayooj']
-                //         },
-                //         {
-                //             date: 'Mon 21 Oct',
-                //             shifts: [],
-                //             weekOff: ['Kannan M', 'Sayooj']
-                //         },
-                //         {
-                //             date: 'Tue 22 Oct',
-                //             shifts: [],
-                //             weekOff: ['Kannan M', 'Sayooj']
-                //         }
-                //       ];
-                  
-                // const tableBody = document.querySelector('#shift-table tbody');
-
-                // shiftData.forEach(day => {
-                //     // Create a row for the date
-                //     let dateRow = document.createElement('tr');
-                //     dateRow.classList.add('date-row'); // Add date row class
-                
-                //     // Create the date cell
-                //     let dateCell = document.createElement('td');
-                //     dateCell.textContent = day.date; // Only the date is displayed
-                //     dateRow.appendChild(dateCell);
-                
-                //     // Create the button cell
-                //     let buttonCell = document.createElement('div');
-                //     buttonCell.style.display = 'flex'; // Add this line for flexbox
-                //     buttonCell.style.alignItems = 'center'; // Align items vertically centered
-
-                    
-
-                   
-
-                //     // Create empty hour cells
-                //     for (let i = 0; i < 23; i++) { // Create 20 hour cells
-                //         let hourCell = document.createElement('td');
-                //         dateRow.appendChild(hourCell);
-                //     }
-                    
-                //     // Add the last hour cell
-                //     dateRow.appendChild(document.createElement('td')); // Last hour cell
-                
-                //     // Add click event to toggle shift and week off rows
-                   
-                
-                //     tableBody.appendChild(dateRow); // Append the date row to the table
-                
-                
-                   
-                // });
-                
-                // }                             
+                         
 
             self.shift = ko.observable('');
             self.selectedEmployees = ko.observableArray([]); 
@@ -614,14 +786,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL+"/HRModuleAssignEmployees",
                             type: 'POST',
                             data: JSON.stringify({
-                                rotaId : sessionStorage.getItem("rotaId"),
+                                rotaId : localStorage.getItem("rotaId"),
                                 shift_date: self.shift_date(),            
                                 shiftId: self.shift(),            
                                 selectedEmployees: self.selectedEmployees(),
                                 selectedOffEmployees: self.selectedOffEmployees(),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -642,36 +814,6 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     } 
                 }
 
-            
-            self.goToEditShift = (event,data)=>{
-                console.log(data)
-                var clickedRotaId = data.item.data.id
-                sessionStorage.setItem("rotaId", clickedRotaId);
-                document.querySelector('#openEditRota').open();
-                //self.getShiftInfo();
-            }
-            self.getShiftInfo = () => {
-                $.ajax({
-                    url: BaseURL + "/HRModuleGetRotaInfo",
-                    type: 'POST',
-                    timeout: sessionStorage.getItem("timeInetrval"),
-                    context: self,
-                    data: JSON.stringify({
-                        rotaId: sessionStorage.getItem("rotaId")
-                    }),
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log(textStatus);
-                    },
-                    success: function (data) {
-                        data = JSON.parse(data[0]);
-                        //console.log(data);
-                        self.edit_shiftName(data[1])
-                        self.edit_startTime(data[2])
-                        self.edit_endTime(data[3])
-                        self.edit_notes(data[4])
-                    }
-                });
-            };
 
             self.messageClose = ()=>{
                 location.reload();
@@ -681,13 +823,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.router.go({path:'rota'})
             }
 
+            self.confirmPublishRota = (event)=>{
+                localStorage.setItem("activeRotaTab", 'Yes');
+                self.router.go({path:'rota'})
+            }
+
             self.allocationExist = ()=>{
                 self.selectedEmployees([])
                 if(self.shift()!=""){
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAllocationExist",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
                             shift_date: self.shift_date(),
@@ -741,7 +888,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         selectedOffEmployees: self.selectedOffEmployees(),
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -765,6 +912,66 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.warnMsgClose = ()=>{
                 let popup1 = document.getElementById("warningView");
                 popup1.close();
+            }
+
+            self.publishRota = ()=>{
+                let popup1 = document.getElementById("warningView");
+                popup1.open();
+            }
+
+            self.goToShiftTab = (event)=>{
+                localStorage.setItem("shiftTab", 'Yes');
+                self.router.go({path:'rota'})
+            }
+
+            self.confirmPublishRota = ()=>{
+                $.ajax({
+                    url: BaseURL+"/HRModulePublishRota",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        rotaId: localStorage.getItem("rotaId")
+                    }),
+                    dataType: 'json',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        localStorage.setItem("activeRotaTab", 'Yes');
+                        self.router.go({path:'rota'})
+                    }
+                }) 
+            }
+
+            self.rotaExistCheck = (event)=> {
+                if(self.edit_rota_name()!=self.edit_rota_name_check()){
+                let valueCheck = event.detail.value
+                $.ajax({
+                    url: BaseURL+"/HRModuleRotaExistCheck",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        checkRotaName: valueCheck
+                    }),
+                    dataType: 'json',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        console.log(data[0].length)
+
+                         if(data[0].length !=0){
+                                self.existRota("Oops! This rota name is already taken. Please try a different one.");
+                        }else{
+                            self.existRota('');
+                        }
+                    }
+                })
+            }
             }
 
 

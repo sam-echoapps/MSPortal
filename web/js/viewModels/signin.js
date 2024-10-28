@@ -14,7 +14,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                 self.companyLogoShow = ko.observable();
 
                 self.logout = ()=>{
-                    sessionStorage.clear();
+                    localStorage.clear();
                 }
                 self.logout()
 
@@ -33,7 +33,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                                 passwd : self.password()
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 let popup = document.getElementById("popup1");
@@ -46,14 +46,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                             success: function (data) {
                                 console.log(data);
                                 if (data[1]== 'Y') {
-                                    // sessionStorage.setItem("BaseURL", "/Hr");
-                                    // sessionStorage.setItem("BaseURL", "");
-                                    sessionStorage.setItem("BaseURL", "http://65.0.111.226:8050");
-                                    sessionStorage.setItem("userId", data[2]);
-                                    sessionStorage.setItem("staffId", data[2]);
-                                    sessionStorage.setItem("userName", data[3]);
-                                    sessionStorage.setItem("userRole", data[4]);
-                                    sessionStorage.setItem("loginedUser", data[5]);
+                                    // localStorage.setItem("BaseURL", "/Hr");
+                                    // localStorage.setItem("BaseURL", "");
+                                    localStorage.setItem("BaseURL", "http://65.0.111.226:8050");
+                                    localStorage.setItem("userId", data[2]);
+                                    localStorage.setItem("staffId", data[2]);
+                                    localStorage.setItem("userName", data[3]);
+                                    localStorage.setItem("userRole", data[4]);
+                                    localStorage.setItem("loginedUser", data[5]);
                                     self.SignIn('Y');
                                     app.onLoginSuccess();
                                 }
@@ -118,7 +118,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojinputtext", "oj
                         // url: "/HRModuleGetCompanyInfo",
                         url: "http://65.0.111.226:8050//HRModuleGetCompanyInfo",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

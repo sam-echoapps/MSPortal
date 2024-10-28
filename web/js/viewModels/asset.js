@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
 
                 self.AssetDet = ko.observableArray([]);
 
@@ -38,7 +38,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "report", label: "Get Report" },
                 ];
 
-                let userrole = sessionStorage.getItem("userRole")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.notificationCount = ko.observable(0); 
@@ -93,7 +93,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -127,7 +127,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error:", textStatus); 
@@ -135,7 +135,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         },
                         success: function (data) {
                             self.currency(data[0][0])
-                            sessionStorage.setItem("currency",self.currency())
+                            localStorage.setItem("currency",self.currency())
                         }
                     });
                 }
@@ -158,7 +158,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         $.ajax({
                             url: BaseURL+"/HRModuleGetAssetInfoList",
                             type: 'GET',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             
                             error: function (xhr, textStatus, errorThrown) {
@@ -169,14 +169,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 console.log(data)
                                 data=data[0]
                                 console.log(data.length)
-                                if(sessionStorage.getItem("currency") == null){
+                                if(localStorage.getItem("currency") == null){
                                     location.reload()
                                 }
-                                if(sessionStorage.getItem("currency") =='INR'){
+                                if(localStorage.getItem("currency") =='INR'){
                                     self.currencyType('(₹)')
-                                }else if(sessionStorage.getItem("currency") =='USD'){
+                                }else if(localStorage.getItem("currency") =='USD'){
                                     self.currencyType('($)')
-                                }else if(sessionStorage.getItem("currency") =='GBP'){
+                                }else if(localStorage.getItem("currency") =='GBP'){
                                     self.currencyType('(£)')
                                 }
                                 self.totalAmountHeaderText('Total Amount' + self.currencyType())
@@ -234,7 +234,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetAddAssetInfo",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -280,13 +280,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.goToAsset = (event,data)=>{
                     var clickedRowId = data.item.data.assetId
-                    sessionStorage.setItem("assetId", clickedRowId);
+                    localStorage.setItem("assetId", clickedRowId);
                     self.router.go({path:'assetView'})
                 }
 
                 self.goToAssetView = (event,data)=>{
                     var clickedRowId = data.item.data.assetId
-                    sessionStorage.setItem("assetId", clickedRowId);
+                    localStorage.setItem("assetId", clickedRowId);
                     self.router.go({path:'assetAddView'})
                 }
 
@@ -381,7 +381,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             status : status
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);

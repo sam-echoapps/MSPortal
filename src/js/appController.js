@@ -12,7 +12,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
         self.footerLinks = ko.observableArray([]);
         self.onepDepType = ko.observable();
         
-        let BaseURL = sessionStorage.getItem("BaseURL")
+        let BaseURL = localStorage.getItem("BaseURL")
 
         self.notificationCount = ko.observable(0);
         
@@ -24,10 +24,10 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
                   url: BaseURL + "/HRModuleGetStaffAllNotificationCount",
                   type: 'POST',
                   data: JSON.stringify({
-                      userId: sessionStorage.getItem("userId"),
+                      userId: localStorage.getItem("userId"),
                   }),
                   dataType: 'json',
-                  timeout: sessionStorage.getItem("timeInetrval"),
+                  timeout: localStorage.getItem("timeInetrval"),
                   context: self,
                   error: function(xhr, textStatus, errorThrown) {
                       console.log("Error occurred: ", textStatus);
@@ -99,10 +99,10 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
               url: BaseURL + "/HRModuleGetStaffAllNotification",
               type: 'POST',
               data: JSON.stringify({
-                  userId: sessionStorage.getItem("userId"),
+                  userId: localStorage.getItem("userId"),
               }),
               dataType: 'json',
-              timeout: sessionStorage.getItem("timeInetrval"),
+              timeout: localStorage.getItem("timeInetrval"),
               context: self,
               error: function (xhr, textStatus, errorThrown) {
                   console.log(textStatus);
@@ -166,7 +166,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
         self.viewMore = function (event, data) {
           self.closeMenu(); 
           router.go({ path: 'notice' }); 
-          //sessionStorage.clear();
+          //localStorage.clear();
           //self.getAllNotificationCount();
           //location.reload();
         };
@@ -193,7 +193,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
       self.count = ko.observable(3);
       this.selectedItem = ko.observable('dashboardAdmin');
 
-      if(sessionStorage.getItem('userRole')=='employee'){
+      if(localStorage.getItem('userRole')=='employee'){
         var navData = [
           { path:"" ,redirect : 'signin'},
           { path: 'signin', detail : {label: 'SignIn',iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chart-icon-24'} },
@@ -218,7 +218,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='junior manager'){
+      else if(localStorage.getItem('userRole')=='junior manager'){
         var navData = [
           { path:"" ,redirect : 'signin'},
           { path: 'signin', detail : {label: 'SignIn',iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chart-icon-24'} },
@@ -245,7 +245,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='senior manager'){
+      else if(localStorage.getItem('userRole')=='senior manager'){
         var navData = [
           { path: 'dashboardSeniorManager', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'employees', detail : {label: 'Employees',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
@@ -284,7 +284,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'poSettings', detail : {label: 'Purchase Order Settings',iconClass: 'oj-navigationlist-item-icon fa fa-list-check'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='senior hr'){
+      else if(localStorage.getItem('userRole')=='senior hr'){
         var navData = [
           { path: 'dashboardSeniorHR', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'employees', detail : {label: 'Employees',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
@@ -330,7 +330,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='junior hr'){
+      else if(localStorage.getItem('userRole')=='junior hr'){
         var navData = [
           { path: 'dashboardJuniorHR', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'employees', detail : {label: 'Employees',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
@@ -357,7 +357,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='junior accounts'){
+      else if(localStorage.getItem('userRole')=='junior accounts'){
         var navData = [
           { path: 'dashboardJuniorAccounts', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'employees', detail : {label: 'Employees',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
@@ -391,7 +391,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='senior accounts'){
+      else if(localStorage.getItem('userRole')=='senior accounts'){
         var navData = [
           { path: 'dashboardSeniorAccounts', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'employees', detail : {label: 'Employees',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
@@ -437,7 +437,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='intern'){
+      else if(localStorage.getItem('userRole')=='intern'){
         var navData = [
           { path: 'dashboardIntern', detail : {label: 'Dashboard',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path:"" ,redirect : 'signin'},
@@ -462,7 +462,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
        ];  
       }
-      else if(sessionStorage.getItem('userRole')=='external'){
+      else if(localStorage.getItem('userRole')=='external'){
         var navData = [
           { path:"" ,redirect : 'signin'},
           { path: 'signin', detail : {label: 'SignIn',iconClass: 'oj-navigationlist-item-icon demo-icon-font-24 demo-chart-icon-24'} },
@@ -533,13 +533,13 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'assetView', detail : {label: 'Asset View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'assetAdd', detail : {label: 'Asset Add',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'assetAddView', detail : {label: 'Asset Add View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
-          { path: 'rota', detail : {label: 'Rota',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
-          { path: 'rotaView', detail : {label: 'Rota View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'rota', detail : {label: 'Rota',iconClass: 'oj-navigationlist-item-icon fa-calendar'} },
+          { path: 'rotaView', detail : {label: 'Rota View',iconClass: 'oj-navigationlist-item-icon fa-calendar'} },
           { path: 'rotaViewUI', detail : {label: 'Rota View',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
         ];
       }
 
-      if (sessionStorage.getItem("userRole") == "employee") {
+      if (localStorage.getItem("userRole") == "employee") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardEmployee","icons": "fa-solid fa fa-home", "path":"dashboardEmployee"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -556,7 +556,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]       
       }
-      else if (sessionStorage.getItem("userRole") == "junior manager") {
+      else if (localStorage.getItem("userRole") == "junior manager") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardJuniorManager","icons": "fa-solid fa fa-home", "path":"dashboardJuniorManager"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -574,7 +574,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]       
       }
-      else if (sessionStorage.getItem("userRole") == "senior manager") {
+      else if (localStorage.getItem("userRole") == "senior manager") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardSeniorManager","icons": "fa-solid fa fa-home", "path":"dashboardSeniorManager"},
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -603,7 +603,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]      
       }
-      else if (sessionStorage.getItem("userRole") == "senior hr") {
+      else if (localStorage.getItem("userRole") == "senior hr") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardSeniorHR","icons": "fa-solid fa fa-home", "path":"dashboardSeniorHR"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -634,7 +634,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]      
       }
-      else if (sessionStorage.getItem("userRole") == "junior hr") {
+      else if (localStorage.getItem("userRole") == "junior hr") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardJuniorHR","icons": "fa-solid fa fa-home", "path":"dashboardJuniorHR"},
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -652,7 +652,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
         ]        
       }
-      else if (sessionStorage.getItem("userRole") == "junior accounts") {
+      else if (localStorage.getItem("userRole") == "junior accounts") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardJuniorAccounts","icons": "fa-solid fa fa-home", "path":"dashboardJuniorAccounts"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -672,7 +672,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Documents","id": "documentsView","icons": "fa-solid fa fa-file", "path":"editDocuments"},
         ]     
       }
-      else if (sessionStorage.getItem("userRole") == "senior accounts") {
+      else if (localStorage.getItem("userRole") == "senior accounts") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardSeniorAccounts","icons": "fa-solid fa fa-home", "path":"dashboardSeniorAccounts"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -703,7 +703,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]       
       }
-      else if (sessionStorage.getItem("userRole") == "intern") {
+      else if (localStorage.getItem("userRole") == "intern") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardIntern","icons": "fa-solid fa fa-home", "path":"dashboardIntern"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -720,7 +720,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           },
         ]      
       }
-      else if (sessionStorage.getItem("userRole") == "external") {
+      else if (localStorage.getItem("userRole") == "external") {
         self.navMenu = [
           {"name": "Dashboard","id": "dashboardExternal","icons": "fa-solid fa fa-home", "path":"dashboardExternal"},        
           {"name": "My Profile","id": "myProfile","icons": "fa-solid fa fa-user", "path":"myProfile"},
@@ -757,7 +757,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Expense Manager","id": "checkExpense","icons": "fa-solid fa fa-wallet", "path":"myExpense"},
           {"name": "Finance Manager","id": "checkfinance","icons": "fa-solid fa fa-piggy-bank", "path":"finance"},
           {"name": "Notice Board","id": "notice","icons": "fa-solid fa fa-bullhorn", "path":"notice"},
-          {"name": "Rota System","id": "rota","icons": "fa-solid fa fa-bullhorn", "path":"rota"},
+          {"name": "Rota System","id": "rota","icons": "fa-solid fa fa-calendar", "path":"rota"},
           {"name": "Settings", "id": "settings", "icons": "fa-solid fa fa-cogs", 
             "children": [
               {"name": "Company Settings","id": "addCompany","icons": "fa-solid fa fa-building", "path":"addCompany"},
@@ -817,9 +817,9 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
     }
 
     ControllerViewModel.prototype.onAppSuccess = function() {
-      self.username(sessionStorage.getItem("userName"));
-      self.userrole(sessionStorage.getItem("userRole"));
-      self.logineduser(sessionStorage.getItem("loginedUser"));
+      self.username(localStorage.getItem("userName"));
+      self.userrole(localStorage.getItem("userRole"));
+      self.logineduser(localStorage.getItem("loginedUser"));
       self.SignIn('Y');
        if(BaseURL == null)
         {
@@ -828,47 +828,47 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
     };
 
     ControllerViewModel.prototype.onLoginSuccess = function() {
-      if(sessionStorage.getItem("userRole")=="employee"){
+      if(localStorage.getItem("userRole")=="employee"){
         
         router.go({path : 'dashboardEmployee'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="junior manager"){
+      else if(localStorage.getItem("userRole")=="junior manager"){
         
         router.go({path : 'dashboardJuniorManager'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="senior manager"){
+      else if(localStorage.getItem("userRole")=="senior manager"){
         
         router.go({path : 'dashboardSeniorManager'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="senior hr"){
+      else if(localStorage.getItem("userRole")=="senior hr"){
         
         router.go({path : 'dashboardSeniorHR'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="junior hr"){
+      else if(localStorage.getItem("userRole")=="junior hr"){
         
         router.go({path : 'dashboardJuniorHR'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="junior accounts"){
+      else if(localStorage.getItem("userRole")=="junior accounts"){
         
         router.go({path : 'dashboardJuniorAccounts'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="senior accounts"){
+      else if(localStorage.getItem("userRole")=="senior accounts"){
         
         router.go({path : 'dashboardSeniorAccounts'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="intern"){
+      else if(localStorage.getItem("userRole")=="intern"){
         
         router.go({path : 'dashboardIntern'});
 
       }
-      else if(sessionStorage.getItem("userRole")=="external"){
+      else if(localStorage.getItem("userRole")=="external"){
         
         router.go({path : 'dashboardExternal'});
 
@@ -890,7 +890,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
         self.username('');
         self.logineduser('');
 
-        sessionStorage.clear();
+        localStorage.clear();
       event.preventDefault();
       self.goToSignIn();
       }else if (self.selectedMenuItem() == 'editStaff'){

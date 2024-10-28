@@ -61,36 +61,50 @@
 
   </style>
 
-
 <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad; border-radius: 10px; padding: 20px;">
-  <oj-validation-group id="formValidation" class="form-container" role="group" style="padding: 0 20px 30px;">
-    <oj-form-layout id="rota-information" class="form" direction="row" max-columns="4">
-      <oj-input-text id="editRotaName" label-hint="Rota Name" required="true" value="{{edit_rota_name}}"></oj-input-text>
+  <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+    <div style="flex: 1; max-width: 1200px; margin: 20px -180px -10px 0;"> <!-- Top, Right, Bottom, Left Margins -->
+      <oj-validation-group id="formValidation" class="form-container" role="group">
+      <oj-form-layout id="rota-information" class="form" direction="row" max-columns="4" style="width: 100%; gap: 20px;">
+        <div style="display: flex; flex-direction: column;">
+          <oj-input-text id="editRotaName" label-hint="Rota Name" required="true" value="{{edit_rota_name}}" on-value-changed="[[rotaExistCheck]]"></oj-input-text>
+          <oj-bind-if test="[[existRota() != '' ]]">
+            <div style="color: red; margin-top: -20px;">
+              <oj-bind-text value="[[existRota]]"></oj-bind-text>
+            </div>
+          </oj-bind-if>
+        </div>
+        <oj-select-single id="editDuration" label-hint="Rota Duration" label-edge="inside"
+          data="[[durationList]]" value="{{edit_rota_duration}}" on-value-changed="[[selectDiv2]]" required></oj-select-single>
 
-      <oj-select-single id="editDuration" label-hint="Rota Duration" label-edge="inside"
-        data="[[durationList]]" value="{{edit_rota_duration}}" on-value-changed="[[selectDiv2]]"></oj-select-single>
+       
+        <div style="position: relative; ">
+          <oj-input-date id="editRotaDate" label-hint="Rota Start Date" class="oj-form-control-max-width-sm" 
+              data-bind="visible: showRangeDate, attr: { required: !showSelectMonth() }" style="position: absolute;" value="{{edit_rota_date}}"></oj-input-date>
+          <oj-select-single id="selectMonth" label-hint="Rota Month" label-edge="inside"
+              data="[[monthList]]" value="{{edit_rota_month}}" 
+              data-bind="visible: showSelectMonth, attr: { required: showSelectMonth() }" style="position: absolute;"></oj-select-single>
+      </div>  
 
-      <div style="display: flex; align-items: center;">
-        <oj-input-date id="editRotaDate" label-hint="Rota Start Date" class="oj-form-control-max-width-sm" 
-            data-bind="visible: showRangeDate" style="margin-right: 10px;" value="{{edit_rota_date}}"></oj-input-date>
-        
-        <oj-combobox-one id="selectMonth" label-hint="Rota Month" label-edge="inside"
-            options="{{months}}" value="{{edit_rota_month}}" 
-            data-bind="visible: showSelectMonth"></oj-combobox-one>
-      </div>
-
-      <oj-button id="save" chroming="solid" on-oj-action="[[editRota]]" >
-        <i class="fas fa-save"></i> Update
-      </oj-button>
-    </oj-form-layout>
-  </oj-validation-group>
+        <oj-button id="save" chroming="solid" on-oj-action="[[editRota]]">
+          <i class="fas fa-save"></i> Update
+        </oj-button>
+      </oj-form-layout>
+      </oj-validation-group>
+    </div>
+  </div>
 </div>
+
 
 <div class="oj-flex oj-xl-margin-4x oj-md-flex-items-initial oj-md-justify-content-space-between">
   <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
                 style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:20px;">
                 <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Rota List</span>
             </oj-button>
+            <oj-button id="back"chroming="borderless" on-oj-action="[[goToShiftTab]]" 
+            style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:20px;">
+            <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Shift List</span>
+        </oj-button>
 <!-- <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
   <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
     <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
@@ -156,7 +170,41 @@ position.at.vertical="center" position.of="window" tail="none" style="width: 300
             <!-- Dynamic rows will be added here -->
         </tbody>
     </table>
+    <br>
+    <div style="display: flex; justify-content: center;" id="publishBtn">
+      <oj-bind-if test="[[edit_rota_status() == 'Draft' ]]">
+      <oj-button chroming="solid" on-oj-action="[[publishRota]]" class="oj-sm-padding-3x-vertical">
+          <i class="fas fa-save"></i>&nbsp; Publish
+      </oj-button>
+      </oj-bind-if>
+    </div>
  </div>
+
+ <oj-popup id="warningView" class="demo-popup" auto-dismiss="none" modality="modal" aria-labelledby="popupTitle"
+position.my.horizontal="center" position.my.vertical="center" position.at.horizontal="center"
+position.at.vertical="center" position.of="window" tail="none" style="width: 300px;border-radius: 10px;">
+<div class="demo-popup-body oj-sm-padding-2x">
+    <div class="demo-popup-content oj-sm-padding-2x oj-flex oj-sm-flex-direction-column 
+        oj-sm-justify-content-center oj-sm-align-items-center">
+        <i class="fa-solid fa-exclamation-triangle fa-3x" style="color: #c70000;"></i>
+        <p style="font-weight: 500;text-align: center;font-size: 18px;margin-top: 20px;">Are you sure you want to publish this rota?</p>
+        <br>
+        <div style="text-align: center;">
+          <oj-button id="btnCancel1" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[warnMsgClose]]"
+              style="background-color: #c70000; border-radius: 10px; padding: 5px; display: inline-block; margin-right: 10px;">
+              <span style="color: #fff; font-size: 20px;">Cancel</span>
+          </oj-button>
+          <oj-button id="btnCancel2" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[confirmPublishRota]]"
+              style="background-color: green; border-radius: 10px; padding: 5px; display: inline-block;">
+              <span style="color: #fff; font-size: 20px;">Okay</span>
+          </oj-button>
+      </div>
+      
+    </div>
+</div>
+</oj-popup>
+
+
 
  <oj-dialog id="openAssignEmployees" class="popupShift" dialog-title="Assign Employees" modality="modeless" drag-affordance="title-bar"
   cancel-behavior="[[CancelBehaviorOpt]]">

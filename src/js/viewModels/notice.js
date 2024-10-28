@@ -8,7 +8,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
+                let BaseURL = localStorage.getItem("BaseURL")
                 
                 self.subject = ko.observable();
                 self.description = ko.observable();
@@ -26,7 +26,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "companyNotice", label: "Company Notice" },
                 ];
 
-                let userrole = sessionStorage.getItem("userRole")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.notificationCount = ko.observable(0); 
@@ -37,10 +37,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     url: BaseURL+"/HRModuleGetStaffAllNotificationCount",
                     type: 'POST',
                     data: JSON.stringify({
-                    userId: sessionStorage.getItem("userId"),
+                    userId: localStorage.getItem("userId"),
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     
                     error: function (xhr, textStatus, errorThrown) {
@@ -50,13 +50,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     count = JSON.parse(data);
                     console.log('count from notice add', count);
                     self.notificationCount(count);
-                    //sessionStorage.setItem("notificationCount", count);
+                    //localStorage.setItem("notificationCount", count);
                     }  
                     });
                     }
                 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -102,7 +102,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaffNoticeList",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -134,7 +134,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaffNoticeCloseButtonLoadCompanyNotice",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -214,10 +214,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 data: JSON.stringify({
                                     notice_name: self.subject(),            
                                     notice_description: self.description(),
-                                    userId: sessionStorage.getItem("userId"),
+                                    userId: localStorage.getItem("userId"),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -270,7 +270,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.goToEditNotice = (event,data)=>{
                     console.log(data)
                     var clickedNoticeId = data.item.data.id
-                    sessionStorage.setItem("noticeId", clickedNoticeId);
+                    localStorage.setItem("noticeId", clickedNoticeId);
                     document.querySelector('#openEditNotice').open();
                     self.getNoticeInfo();
                 }
@@ -279,10 +279,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetNoticeInfo",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            noticeId: sessionStorage.getItem("noticeId")
+                            noticeId: localStorage.getItem("noticeId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -306,7 +306,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             noticeId: noticeId
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -329,12 +329,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleUpdateNotice",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    noticeId: sessionStorage.getItem("noticeId"),
+                                    noticeId: localStorage.getItem("noticeId"),
                                     notice_name : self.editNoticeName(),
                                     notice_description : self.editNoticeDescription(),
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -358,10 +358,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleGetStaffAllNotice",
                             type: 'POST',
                             data: JSON.stringify({
-                                userId: sessionStorage.getItem("userId"),
+                                userId: localStorage.getItem("userId"),
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
 
                             error: function (xhr, textStatus, errorThrown) {
@@ -394,10 +394,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     url: BaseURL + "/HRModuleGetStaffNoticeCloseButtonLoadAllNoification",
                                     type: 'POST',
                                     data: JSON.stringify({
-                                        userId: sessionStorage.getItem("userId"),
+                                        userId: localStorage.getItem("userId"),
                                     }),
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    timeout: localStorage.getItem("timeInetrval"),
                                     context: self,     
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);

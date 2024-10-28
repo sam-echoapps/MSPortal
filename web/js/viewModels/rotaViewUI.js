@@ -8,13 +8,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -140,7 +140,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     // Add an event listener to the first button
                     addShiftButton.addEventListener('click', () => {
                         // var clickedRotaId = data.item.data.id
-                        // sessionStorage.setItem("rotaId", clickedRotaId);
+                        // localStorage.setItem("rotaId", clickedRotaId);
                         //document.querySelector('#openAssignEmployees').open();
                     });
                     buttonCell.appendChild(addShiftButton);
@@ -152,7 +152,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     // Add an event listener to the second button
                     anotherButton.addEventListener('click', () => {
                         // var clickedRotaId = data.item.data.id
-                        // sessionStorage.setItem("rotaId", clickedRotaId);
+                        // localStorage.setItem("rotaId", clickedRotaId);
                         //document.querySelector('#openEditShift').open();
                         //self.getShiftInfo();
                     });
@@ -245,10 +245,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         shift: self.shift(),            
                         selectedEmployees: self.selectedEmployees(),
                         selectedOffEmployees: self.selectedOffEmployees(),
-                        userId: sessionStorage.getItem("userId"),
+                        userId: localStorage.getItem("userId"),
                     }),
                     dataType: 'json',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);
@@ -268,7 +268,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.goToEditShift = (event,data)=>{
                 console.log(data)
                 var clickedRotaId = data.item.data.id
-                sessionStorage.setItem("rotaId", clickedRotaId);
+                localStorage.setItem("rotaId", clickedRotaId);
                 document.querySelector('#openEditRota').open();
                 //self.getShiftInfo();
             }
@@ -276,10 +276,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 $.ajax({
                     url: BaseURL + "/HRModuleGetRotaInfo",
                     type: 'POST',
-                    timeout: sessionStorage.getItem("timeInetrval"),
+                    timeout: localStorage.getItem("timeInetrval"),
                     context: self,
                     data: JSON.stringify({
-                        rotaId: sessionStorage.getItem("rotaId")
+                        rotaId: localStorage.getItem("rotaId")
                     }),
                     error: function (xhr, textStatus, errorThrown) {
                         console.log(textStatus);

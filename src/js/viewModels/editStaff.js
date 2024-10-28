@@ -9,12 +9,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -668,7 +668,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetRoles2",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching roles:", textStatus); // Log any error
@@ -696,9 +696,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetReportTo",
                         type: 'POST',
                         data: JSON.stringify({
-                            staff_id: sessionStorage.getItem("staffId"),
+                            staff_id: localStorage.getItem("staffId"),
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching Member:", textStatus);
@@ -726,10 +726,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleGetStaff",
                         type: 'POST',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId")
+                            staffId : localStorage.getItem("staffId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -854,7 +854,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleUpdateStaff",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId : sessionStorage.getItem("staffId"),
+                                    staffId : localStorage.getItem("staffId"),
                                     firstName : self.firstName(),
                                     lastName : self.lastName(),
                                     countryCode : self.countryCode(),
@@ -884,7 +884,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     responsibilities : self.responsibilities()
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -902,7 +902,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL+"/HRModuleUpdateStaff",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    staffId : sessionStorage.getItem("staffId"),
+                                    staffId : localStorage.getItem("staffId"),
                                     firstName : self.firstName(),
                                     lastName : self.lastName(),
                                     countryCode : self.countryCode(),
@@ -932,7 +932,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     responsibilities : self.responsibilities()
                                 }),
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInetrval"),
+                                timeout: localStorage.getItem("timeInetrval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -998,12 +998,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleStaffCredentialSend",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId"),
+                            staffId : localStorage.getItem("staffId"),
                             username : self.username(),
                             password : self.password(),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1120,9 +1120,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             type: 'POST',
                             data: JSON.stringify({
                                 departmentId : self.department(),
-                                staffId : sessionStorage.getItem("staffId"),
+                                staffId : localStorage.getItem("staffId"),
                             }),
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1164,11 +1164,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleCredentialUpdate",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId"),
+                            staffId : localStorage.getItem("staffId"),
                             password : self.password()
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1229,16 +1229,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 url: BaseURL + "/HRModuleDocumentUpload",
                                 type: 'POST',
                                 data: JSON.stringify({
-                                    userId: sessionStorage.getItem("userId"),
-                                    staffId: sessionStorage.getItem("staffId"),
-                                    userRole: sessionStorage.getItem("userRole"),
+                                    userId: localStorage.getItem("userId"),
+                                    staffId: localStorage.getItem("staffId"),
+                                    userRole: localStorage.getItem("userRole"),
                                     document_name: documentName,
                                     file_name: documentFileName,
                                     file: fileContent
                                 }),
                                 contentType: 'application/json',
                                 dataType: 'json',
-                                timeout: sessionStorage.getItem("timeInterval"),
+                                timeout: localStorage.getItem("timeInterval"),
                                 context: self,
                                 error: function (xhr, textStatus, errorThrown) {
                                     console.log(textStatus);
@@ -1266,13 +1266,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetDocuments",
                         type: 'POST',
                         data: JSON.stringify({
-                            userId: sessionStorage.getItem("userId"),
-                            userRole: sessionStorage.getItem("userRole"),
-                            staffId: sessionStorage.getItem("staffId")  // Pass the staffId here
+                            userId: localStorage.getItem("userId"),
+                            userRole: localStorage.getItem("userRole"),
+                            staffId: localStorage.getItem("staffId")  // Pass the staffId here
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1355,7 +1355,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({ document_id: documentId }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1424,12 +1424,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }); 
 
                 self.EditSalary = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getSalaryDetails(staffId); // Fetch salary details for the staff
                         document.querySelector('#openEditSalary').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -1443,7 +1443,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1464,9 +1464,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
 
                 self.fetchSalaryDetailsOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1475,7 +1475,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1504,14 +1504,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateSalaryDetails",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"), // Retrieve the staff ID from session storage
+                                staff_id: localStorage.getItem("staffId"), // Retrieve the staff ID from session storage
                                 amount: self.amount(),
                                 hourly_rate: self.hourly_rate(),
                                 payment_frequency: self.payment_frequency(),
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1534,12 +1534,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.sort_code = ko.observable();
 
                 self.EditBank = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getBankDetails(staffId); // Fetch salary details for the staff
                         document.querySelector('#openEditBank').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -1553,7 +1553,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1576,9 +1576,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
                 
                 self.fetchBankDetailsOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1587,7 +1587,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1618,7 +1618,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateBankDetails",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"), // Retrieve the staff ID from session storage
+                                staff_id: localStorage.getItem("staffId"), // Retrieve the staff ID from session storage
                                 name_on_account: self.name_on_account(),
                                 name_of_bank: self.name_of_bank(),
                                 bank_branch: self.bank_branch(),
@@ -1627,7 +1627,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1647,12 +1647,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.pension_eligible = ko.observable('No');
 
                 self.EditPayroll = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getPayrollDetails(staffId); // Fetch payroll details for the staff
                         document.querySelector('#openEditPayroll').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -1666,7 +1666,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1686,9 +1686,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
 
                 self.fetchPayrollDetailsOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1697,7 +1697,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1725,13 +1725,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdatePayrollDetails",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"), // Retrieve the staff ID from session storage
+                                staff_id: localStorage.getItem("staffId"), // Retrieve the staff ID from session storage
                                 payroll_number: self.payroll_number(),
                                 pension_eligible: self.pension_eligible()
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1752,11 +1752,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 // Function to open the edit dialog and fetch employment summary details
                 self.EditEmploymentSummary = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getEmploymentSummaryDetails(staffId);
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -1771,7 +1771,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1791,9 +1791,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 // Function to fetch employment summary details on page load
                 self.fetchEmploymentSummaryDetailsOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1802,7 +1802,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1830,13 +1830,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateEmploymentSummaryDetails",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"), // Retrieve the staff ID from session storage
+                                staff_id: localStorage.getItem("staffId"), // Retrieve the staff ID from session storage
                                 joining_date: self.joining_date2(),
                                 termination_date: self.termination_date2()
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -1862,12 +1862,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 // Function to edit role information
                 self.EditRoleInformation = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getRoleInformationDetails(staffId); // Fetch role information details for the staff
                         document.querySelector('#openEditRoleInformation').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -1884,9 +1884,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
 
                 self.fetchTeamsForStaff = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1895,7 +1895,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }),
                         contentType: "application/json",
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1924,7 +1924,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1948,9 +1948,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 // Call this function to fetch role information on page load
                 self.fetchRoleInformationOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -1959,7 +1959,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1989,7 +1989,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateRoleInformationDetails",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"),
+                                staff_id: localStorage.getItem("staffId"),
                                 job_title: self.job_title(),
                                 contract_type: self.contract_type(),
                                 probation_details: self.probation_details(),
@@ -1997,7 +1997,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -2022,9 +2022,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.leave_balance = ko.observable();
 
                 self.fetchContractDetailsOnLoad = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -2033,7 +2033,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2058,12 +2058,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
                 
                 self.EditContract = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getContractDetails(staffId); // Fetch salary details for the staff
                         document.querySelector('#openEditContract').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
                 
@@ -2073,7 +2073,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetWorkPatternList2",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching:", textStatus); 
@@ -2106,7 +2106,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }),
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2135,14 +2135,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateContractInformation",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"),
+                                staff_id: localStorage.getItem("staffId"),
                                 contract_start: self.contract_start2(),
                                 work_pattern: self.work_pattern2(),
                                 min_leave: self.min_leave2()
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -2163,7 +2163,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL+"/HRModuleChangeLeaveBalance",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error fetching :", textStatus); // Log any error
@@ -2177,9 +2177,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.work_location = ko.observable();
 
                 self.getWorkLocation = () => {
-                    const staffId = sessionStorage.getItem("staffId");
+                    const staffId = localStorage.getItem("staffId");
                     if (!staffId) {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                         return;
                     }
                     document.getElementById('loaderView').style.display = 'block';
@@ -2188,7 +2188,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }),
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2207,12 +2207,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.work_location2 = ko.observable();
 
                 self.openEditWorkLocation = (event, data) => {
-                    var staffId = sessionStorage.getItem("staffId"); // Get the staff_id from sessionStorage
+                    var staffId = localStorage.getItem("staffId"); // Get the staff_id from localStorage
                     if (staffId) {
                         self.getWorkLocationDetails(staffId); // Fetch salary details for the staff
                         document.querySelector('#openEditWorkLocation').open(); // Open the edit popup
                     } else {
-                        console.error("No staff_id found in sessionStorage");
+                        console.error("No staff_id found in localStorage");
                     }
                 };
 
@@ -2226,7 +2226,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         type: 'POST',
                         data: JSON.stringify({ staff_id: staffId }),
                         contentType: "application/json",
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2253,12 +2253,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleUpdateWorkLocation",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"),
+                                staff_id: localStorage.getItem("staffId"),
                                 location: self.work_location2()
                             }),
                             contentType: "application/json",
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInterval"),
+                            timeout: localStorage.getItem("timeInterval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
                                 console.log(textStatus);
@@ -2286,9 +2286,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetSelfLeaveStatus",
                         type: 'POST',
                         data: JSON.stringify({
-                            staff_id: sessionStorage.getItem("staffId")
+                            staff_id: localStorage.getItem("staffId")
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function(xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2351,11 +2351,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             url: BaseURL + "/HRModuleGetSelfLeaveStatusFilter",
                             type: 'POST',
                             data: JSON.stringify({
-                                staff_id: sessionStorage.getItem("staffId"),
+                                staff_id: localStorage.getItem("staffId"),
                                 year: self.yearFilter()
                             }),
                             dataType: 'json',
-                            timeout: sessionStorage.getItem("timeInetrval"),
+                            timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function(xhr, textStatus, errorThrown) {
                                 if (textStatus == 'timeout' || textStatus == 'error') {
@@ -2425,10 +2425,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetLeaveBalance",
                         type: 'POST',
                         data: JSON.stringify({ 
-                            staff_id: sessionStorage.getItem("staffId"),
+                            staff_id: localStorage.getItem("staffId"),
                         }),
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2452,10 +2452,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/getClockinDetails",
                         type: 'POST',
                         data: JSON.stringify({ 
-                            staffId: sessionStorage.getItem("staffId"),
+                            staffId: localStorage.getItem("staffId"),
                         }),
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2500,12 +2500,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/getOverTimeData",
                         type: 'POST',
                         data: JSON.stringify({ 
-                            staffId: sessionStorage.getItem("staffId"),
+                            staffId: localStorage.getItem("staffId"),
                             fromDate: self.overtimeFromDate(),
                             toDate: self.overtimeToDate()
                         }),
                         contentType: "application/json", // Specify the content type as JSON
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2544,10 +2544,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/getStaffWorkReport",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId : sessionStorage.getItem("staffId"),
+                            staffId : localStorage.getItem("staffId"),
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2600,7 +2600,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             reportId : requestId,
                         }),
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -2628,11 +2628,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL + "/HRModuleGetRoleForLineManager",
                         type: 'POST',
                         data: JSON.stringify({
-                            staffId: sessionStorage.getItem("staffId")
+                            staffId: localStorage.getItem("staffId")
                         }),
                         contentType: 'application/json',
                         dataType: 'json',
-                        timeout: sessionStorage.getItem("timeInterval"),
+                        timeout: localStorage.getItem("timeInterval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
