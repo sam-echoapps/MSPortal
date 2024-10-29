@@ -220,6 +220,16 @@
 
 <div id="active_rotas" style="display:none;">
   <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
+    <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
+        <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
+          <oj-button id="export"chroming="borderless" on-oj-action="[[addRota]]" 
+          style="background-color: #34b53a;color: #fff;border-radius: 5px;">
+          <span id="buttonText" style="color: #fff"> Create New Rota</span>
+      </oj-button>
+      </div>
+      </div> 
+  </div> 
+  <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <oj-table id='RotaTable' aria-label='All Table' data='[[RotaList]]' display='list'
       selection-mode='{"row": "single"}'  columns='[
       { "headerText": "SL.No", "field": "slno", "id": "slno",
@@ -311,7 +321,7 @@ position.my.vertical="center" position.at.horizontal="center" position.at.vertic
             <i class="fa-solid fa-circle-check fa-3x" style="color: #34B53A;"></i>
             <p style="font-weight: 500;text-align: center;font-size: 23px;margin-top: 20px;">Rota added successfully</p>
             <br>
-            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageClose]]"
+            <oj-button id="btnCancel" chroming="borderless" class="oj-button-sm" display="icons" on-oj-action="[[messageRotaClose]]"
             style="background-color: #34B53A;border-radius: 10px;padding: 5px;">
                 <span style="color: #fff;font-size: 20px;">Okay</span>
             </oj-button>

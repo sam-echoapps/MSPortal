@@ -80,11 +80,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.totalAmountHeaderText = ko.observable("");
                 self.currency = ko.observable("");
                 self.currencyType = ko.observable("");
-                self.statusFilter = ko.observable(['Active']);
+                self.statusFilter = ko.observable(['All']);
                 self.statusFilterOptions = [
                     {"label":"All","value":"All"},
-                    {"label":"Active","value":"Active"},
-                    {"label":"Inactive","value":"Inactive"}
+                    {"label":"In-store","value":"In-store"},
+                    {"label":"Currently Using","value":"Currently Using"},
+                    {"label":"Exhausted","value":"Exhausted"}
                 ]
                 self.statusFilterList = new ArrayDataProvider(self.statusFilterOptions, {
                     keyAttributes: 'value'
@@ -187,6 +188,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     if(data[i][1] != null){
                                         pono = "PO"+ data[i][1]
                                     }
+                                    console.log(data[i][4])
+
                                     self.AssetDet.push({
                                         'slno': i+1,
                                         'assetId':data[i][0], 
@@ -195,6 +198,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'po_no': pono, 
                                         'product_name': data[i][3],
                                         'asset_status': data[i][4],
+                                        'total_amount': data[i][5],
                                     });
                                 }
                                 

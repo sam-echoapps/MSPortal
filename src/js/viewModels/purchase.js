@@ -255,7 +255,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             document.getElementById('actionView').style.display='block';
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
-                                    console.log(data[i][1])
+                                    console.log(data[i][12])
                                     let dateCreated = new Date(data[i][8]);
                                     // Get only the date part (YYYY-MM-DD)
                                     let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
@@ -273,7 +273,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
                                         'ordered_by': data[i][10],    
-                                        'payment_status': data[i][11],                                                                  
+                                        'payment_status': data[i][11],
+                                        'total_amount': data[i][12],                                                                  
                                     });
                                     
                                 }
@@ -898,6 +899,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             success: function (data) {
                             console.log(data)
                             let totalEstimatedSum = 0;
+                            let totalAmountSum = 0;
                             document.getElementById('loaderView').style.display='none';
                             if(data[0]!="No data found"){
                             data = JSON.parse(data);
@@ -908,13 +910,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 csvContent += headers.join(',') + '\n';
                             if(data.length!=0){
                                 for (var i = 0; i < data.length; i++) {
-                                    console.log(data[i][1])
+                                    console.log(data[i][11])
                                     let dateCreated = new Date(data[i][8]);
                                     // Get only the date part (YYYY-MM-DD)
                                     let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                     //let totalAmount = data[i][11] ? data[i][11] + " " + localStorage.getItem("currency") : '';
                                     let totalAmount = data[i][11]
                                     let total_estimated_amount = parseFloat(data[i][6])
+                                    let total_amount_sum=0;
+                                    if(data[i][11] != null){
+                                      total_amount_sum = parseFloat(data[i][11])
+                                    }
                                     self.PurchaseReportDet.push({
                                         'slno': i+1,
                                         'id': data[i][0],
@@ -933,6 +939,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'payment_status': data[i][12],                                                                                                                                     
                                     });
                                     totalEstimatedSum += total_estimated_amount;
+                                    totalAmountSum += total_amount_sum;
 
                                     var rowData = [i+1, "PO"+data[i][0],data[i][2],data[i][10],data[i][6],data[i][11], data[i][8], data[i][7] ]; 
                                     csvContent += rowData.join(',') + '\n';
@@ -952,10 +959,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'created_date': '',
                                     'updated_at': '', 
                                     'ordered_by': '',
-                                    'total_amount': '',
+                                    'total_amount': '<strong>' + totalAmountSum.toFixed(2) + '</strong>',
                                     'payment_status': '',  
                                 });
-                                csvContent += [ '', '', '', '',totalEstimatedSum.toFixed(2),'', '', '' ].join(',') + '\n'; 
+                                csvContent += [ '', '', '', '',totalEstimatedSum.toFixed(2),totalAmountSum.toFixed(2), '', '' ].join(',') + '\n'; 
 
                                 var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                                 var today = new Date();
@@ -1084,7 +1091,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'created_date': dateCreatedOnly,
                                         'updated_at': data[i][9], 
                                         'ordered_by': data[i][10],    
-                                        'payment_status': data[i][11],                                                                  
+                                        'payment_status': data[i][11],  
+                                        'total_amount': data[i][12],                                                                  
                                     });
                                     
                                 }

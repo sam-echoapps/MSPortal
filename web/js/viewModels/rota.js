@@ -180,12 +180,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     self.selectedTab('active_rotas')
                     localStorage.removeItem('activeRotaTab')
                 }else{
-                    self.selectedTab('draft_rotas')
+                    self.selectedTab('active_rotas')
                 }
 
                 self.tabData = [
-                    { id: "draft_rotas", label: "Draft Rotas" },
                     { id: "active_rotas", label: "Active Rotas" },
+                    { id: "draft_rotas", label: "Draft Rotas" },
                     { id: "old_rotas", label: "Old Rotas" },
                     { id: "shifts", label: "Shifts" },
                     { id: "rota_settings", label: "Rota Settings" },
@@ -578,6 +578,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 let popup2 = document.getElementById("updateSuccessView2");
                 popup2.close();
                 getShiftList();
+            }
+
+            self.messageRotaClose = ()=>{
+                let popup1 = document.getElementById("successView");
+                popup1.close();
+                self.rota_name('');          
+                self.rota_duration('');
+                self.rota_date('');
+                self.rota_month('');
+                self.selectedTab('draft_rotas')
+                getRotaList();
             }
 
             self.rotaExistCheck = (event)=> {

@@ -139,10 +139,13 @@
             <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
         </template>
         <template slot="statusTemplate" data-oj-as="cell">
-          <oj-bind-if test="[[cell.row.asset_status == 'Active' ]]">
+          <oj-bind-if test="[[cell.row.asset_status == 'In-store' ]]">
+            <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+        </oj-bind-if>
+          <oj-bind-if test="[[cell.row.asset_status == 'Currently Using' ]]">
               <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
           </oj-bind-if>
-          <oj-bind-if test="[[cell.row.asset_status == 'Inactive' ]]">
+          <oj-bind-if test="[[cell.row.asset_status == 'Exhausted' ]]">
               <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
           </oj-bind-if>
         </template>
@@ -190,6 +193,8 @@
             { "headerClassName" : "table-header-style",
             "headerText": "Product Name", "field": "product_name", "id": "product_name"},
             { "headerClassName" : "table-header-style",
+            "headerText": "Total Amount", "field": "total_amount", "id": "total_amount", "template": "totalAmountTemplate", "headerTemplate": "totalAmountHeaderTemplate" },
+            { "headerClassName" : "table-header-style",
             "headerText": "Status", "field": "asset_status", "id": "asset_status", "template": "statusTemplate" }
             ]' style='width: 100%;' class="demo-table-container">
             <template slot="actionTemplate" data-oj-as="cell">
@@ -205,13 +210,23 @@
             </oj-bind-if>
              </template>
              <template slot="statusTemplate" data-oj-as="cell">
-              <oj-bind-if test="[[cell.row.asset_status == 'Active' ]]">
-                  <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
-              </oj-bind-if>
-              <oj-bind-if test="[[cell.row.asset_status == 'Inactive' ]]">
+              <oj-bind-if test="[[cell.row.asset_status == 'In-store' ]]">
+                <div class="oj-table-element-pending"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+            </oj-bind-if>
+            <oj-bind-if test="[[cell.row.asset_status == 'Currently Using' ]]">
+              <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+            </oj-bind-if>
+              <oj-bind-if test="[[cell.row.asset_status == 'Exhausted' ]]">
                   <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
               </oj-bind-if>
             </template>
+            <template slot="totalAmountTemplate" data-oj-as="cell">
+              <!-- Use the html binding to interpret the HTML content correctly -->
+              <span data-bind="html: cell.row.total_amount"></span>
+            </template>
+            <template slot="totalAmountHeaderTemplate">
+              <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
+          </template>
             </oj-table>
         </div>
         </div>

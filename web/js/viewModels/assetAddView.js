@@ -89,9 +89,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.assetType = ko.observable('');
                 self.assetTypeList = ko.observableArray([]);  
                 self.assetTypeList.push(
-                    {'value' : 'N/A', 'label' : 'N/A'},
-                    {'value' : 'Currently Usable', 'label' : 'Currently Usable'},
-                    {'value' : 'Exhausted ', 'label' : 'Exhausted '},  
+                    {'value' : 'In-store', 'label' : 'In-store'},
+                    {'value' : 'Currently Using', 'label' : 'Currently Using'},
+                    {'value' : 'Exhausted', 'label' : 'Exhausted'},  
                 );
                 self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
                 self.assetStatus = ko.observable('');
@@ -285,7 +285,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.assetRemove = ()=>{
                     document.getElementById('loaderView').style.display='block';
-                    if (self.assetType() == 'Currently Usable') {
+                    if (self.assetType() == 'Currently Using' || self.assetType() == 'In-store') {
                         document.getElementById('loaderView').style.display='none';
                         let popup1 = document.getElementById("warningView");
                         popup1.open();

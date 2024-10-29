@@ -809,7 +809,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }) 
                     }     
                     }else{
-                        let popup1 = document.getElementById("warningView");
+                        let popup1 = document.getElementById("warningViewDuplicate");
                         popup1.open();
                     } 
                 }
@@ -904,9 +904,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }) 
             } 
         }else{
-            let popup1 = document.getElementById("warningView");
+            let popup1 = document.getElementById("warningViewDuplicate");
             popup1.open();
         }    
+            }
+
+            self.warnDuplicateMsgClose = ()=>{
+                let popup1 = document.getElementById("warningViewDuplicate");
+                popup1.close();
             }
 
             self.warnMsgClose = ()=>{
@@ -946,8 +951,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             }
 
             self.rotaExistCheck = (event)=> {
-                if(self.edit_rota_name()!=self.edit_rota_name_check()){
                 let valueCheck = event.detail.value
+                if(valueCheck!=self.edit_rota_name_check()){
                 $.ajax({
                     url: BaseURL+"/HRModuleRotaExistCheck",
                     type: 'POST',

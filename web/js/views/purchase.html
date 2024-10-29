@@ -106,6 +106,8 @@
     { "headerClassName" : "table-header-style",
       "field": "estimated_price", "id": "estimated_price", "headerTemplate": "estimatedAmountHeaderTemplate" },
     { "headerClassName" : "table-header-style",
+     "field": "total_amount", "id": "total_amount",  "headerTemplate": "totalAmountHeaderTemplate" },
+    { "headerClassName" : "table-header-style",
       "headerText": "Owner", "field": "ordered_by", "id": "ordered_by" },
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
@@ -138,7 +140,7 @@
       <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
         <oj-bind-if test="[[cell.row.staff_id != userId() || userrole() == 'director']]">
         <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-          <div class="oj-table-element-review">
+          <div class="oj-table-element-pending">
           <oj-select-single required id="{{cell.row.id}}" 
           data="[[statusList]]" value="{{cell.row.status}}" on-value-changed="[[statusUpdateList]]"></oj-select-single>
           </div>
@@ -155,7 +157,7 @@
         </oj-bind-if>
       <oj-bind-if test="[[cell.row.staff_id == userId() && userrole() != 'director']]">
          <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+          <div class="oj-table-element-pending"><oj-bind-text value="Requested"></oj-bind-text></div>
       </oj-bind-if>
         <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
             <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
@@ -171,7 +173,7 @@
     </oj-bind-if>
       <oj-bind-if test="[[userrole() != 'director' && userrole() != 'senior hr' && userrole() != 'senior manager' && userrole() != 'senior accounts']]">
         <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-          <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+          <div class="oj-table-element-pending"><oj-bind-text value="Requested"></oj-bind-text></div>
       </oj-bind-if>
         <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
             <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
@@ -195,6 +197,9 @@
     <template slot="estimatedAmountHeaderTemplate">
       <oj-bind-text value="[[estimatedAmountHeaderText]]"></oj-bind-text>
   </template>
+  <template slot="totalAmountHeaderTemplate">
+    <oj-bind-text value="[[totalAmountHeaderText]]"></oj-bind-text>
+</template>
     </oj-table>
 </div>
 </div>
@@ -236,7 +241,7 @@
                 "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
          <template slot="bgTemplate" data-oj-as="cell">
           <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-              <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+              <div class="oj-table-element-pending"><oj-bind-text value="Requested"></oj-bind-text></div>
           </oj-bind-if>
           <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
               <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
@@ -335,7 +340,7 @@
   { "headerClassName" : "table-header-style",
      "field": "estimated_price", "id": "estimated_price", "headerTemplate": "estimatedAmountHeaderTemplate",  "template": "estimatedPriceTemplate"},
   { "headerClassName" : "table-header-style",
-     "field": "total_amount", "id": "total_amount",  "headerTemplate": "totalAmountHeaderTemplate" },
+     "field": "total_amount", "id": "total_amount",  "headerTemplate": "totalAmountHeaderTemplate", "template": "totalAmountTemplate" },
   { "headerClassName" : "table-header-style",
   "headerText": "Created Date", "field": "created_date", "id": "created_date" },
   { "headerClassName" : "table-header-style",
@@ -344,7 +349,7 @@
           "headerText": "Status", "field": "status", "id": "status", "template": "bgTemplate"}]' style='width: 100%;' class="demo-table-container">
    <template slot="bgTemplate" data-oj-as="cell">
     <oj-bind-if test="[[cell.row.status == 'Requested' ]]">
-        <div class="oj-table-element-review"><oj-bind-text value="Requested"></oj-bind-text></div>
+        <div class="oj-table-element-pending"><oj-bind-text value="Requested"></oj-bind-text></div>
     </oj-bind-if>
     <oj-bind-if test="[[cell.row.status == 'Approved' ]]">
         <div class="oj-table-element-approve"><oj-bind-text value="Approved"></oj-bind-text></div>
@@ -383,6 +388,10 @@
 <template slot="estimatedPriceTemplate" data-oj-as="cell">
   <!-- Use the html binding to interpret the HTML content correctly -->
   <span data-bind="html: cell.row.estimated_price"></span>
+</template>
+<template slot="totalAmountTemplate" data-oj-as="cell">
+  <!-- Use the html binding to interpret the HTML content correctly -->
+  <span data-bind="html: cell.row.total_amount"></span>
 </template>
   </oj-table>
 </div>

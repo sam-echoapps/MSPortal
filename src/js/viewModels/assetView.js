@@ -8,8 +8,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 var self = this;
 
                 self.router = args.parentRouter;
-                let BaseURL = sessionStorage.getItem("BaseURL")
-                let userrole = sessionStorage.getItem("userRole")
+                let BaseURL = localStorage.getItem("BaseURL")
+                let userrole = localStorage.getItem("userRole")
                 self.userrole = ko.observable(userrole);
                 
                 self.comments = ko.observable('');
@@ -56,7 +56,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.billFile = ko.observable('');
                 self.fileBill = ko.observable('');
                 self.typeErrorGuarantee = ko.observable('');
-                self.purchaseId = ko.observable(sessionStorage.getItem("purchaseId"));
+                self.purchaseId = ko.observable(localStorage.getItem("purchaseId"));
                 self.selectedOptions = ko.observable('No');
                 self.billManadatory = ko.observable('');
                 self.guaranteeManadatory = ko.observable('');
@@ -89,13 +89,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.assetType = ko.observable('');
                 self.assetTypeList = ko.observableArray([]);  
                 self.assetTypeList.push(
-                    {'value' : 'N/A', 'label' : 'N/A'},
-                    {'value' : 'Currently Usable', 'label' : 'Currently Usable'},
-                    {'value' : 'Exhausted ', 'label' : 'Exhausted '},  
+                    {'value' : 'In-store', 'label' : 'In-store'},
+                    {'value' : 'Currently Using', 'label' : 'Currently Using'},
+                    {'value' : 'Exhausted', 'label' : 'Exhausted'},  
                 );
                 self.assetTypeListDP = new ArrayDataProvider(self.assetTypeList, {keyAttributes: 'value'});
                 self.assetStatus = ko.observable('');
-                self.currencySelected = ko.observable(sessionStorage.getItem("currency"));
+                self.currencySelected = ko.observable(localStorage.getItem("currency"));
                 self.currencies = [
                     {"label":"USD","value":"USD"},
                     {"label":"INR","value":"INR"},
@@ -109,7 +109,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.totalAmountConvert = ko.observable('');
 
                 self.connected = function () {
-                    if (sessionStorage.getItem("userName") == null) {
+                    if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
                     }
                     else {
@@ -146,9 +146,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleGetAssetInfo",
                         type: 'POST',
                         data: JSON.stringify({
-                            assetId: sessionStorage.getItem("assetId"),
+                            assetId: localStorage.getItem("assetId"),
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -175,9 +175,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 self.owner_name('N/A')
                             }
                             self.selectedDepartment(data[0][10])
-                            self.assetType(data[0][12])
+                            if(data[0][12]==null){
+                            self.assetType('In-store')
+                            }else{
+                                self.assetType(data[0][12])
+                            }
                             data2 = JSON.parse(result[1]);
                             console.log(data2)
+                            if(data2!=null){
                             self.have_bill(data2[2])
                             self.billNumber(data2[3])
                             self.have_bill_attach(data2[4])
@@ -210,6 +215,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             // Get only the date part (YYYY-MM-DD)
                             let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
                             self.updatedAt(dateUpdatedOnly)
+                        }
                             data3= result[2]
                             console.log(data3)
                             if(data3.length !=0){
@@ -259,7 +265,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         data: JSON.stringify({
                             departmentId : departmentId,
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -284,7 +290,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.assetRemove = ()=>{
                     document.getElementById('loaderView').style.display='block';
-                    if (self.assetType() == 'Currently Usable') {
+                    if (self.assetType() == 'Currently Using' || self.assetType() == 'In-store') {
                         document.getElementById('loaderView').style.display='none';
                         let popup1 = document.getElementById("warningView");
                         popup1.open();
@@ -305,9 +311,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         url: BaseURL+"/HRModuleRemoveAsset",
                         type: 'POST',
                         data: JSON.stringify({
-                            assetId: sessionStorage.getItem("assetId"),
+                            assetId: localStorage.getItem("assetId"),
                         }),
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         
                         error: function (xhr, textStatus, errorThrown) {
@@ -327,9 +333,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 //         url: BaseURL+"/HRModuleDeleteAsset",
                 //         type: 'POST',
                 //         data: JSON.stringify({
-                //             assetId: sessionStorage.getItem("assetId"),
+                //             assetId: localStorage.getItem("assetId"),
                 //         }),
-                //         timeout: sessionStorage.getItem("timeInetrval"),
+                //         timeout: localStorage.getItem("timeInetrval"),
                 //         context: self,
                         
                 //         error: function (xhr, textStatus, errorThrown) {
@@ -410,7 +416,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     url: BaseURL + "/HRModuleUpdateAssetInfo",
                                     type: 'POST',
                                     data: JSON.stringify({
-                                        assetId: sessionStorage.getItem("assetId"),
+                                        assetId: localStorage.getItem("assetId"),
                                         have_bill: self.have_bill(),
                                         bill_number: self.billNumber(),
                                         have_bill_attach: self.have_bill_attach(),
@@ -435,7 +441,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         extra_file_content: extraFileContent  
                                     }),
                                     dataType: 'json',
-                                    timeout: sessionStorage.getItem("timeInetrval"),
+                                    timeout: localStorage.getItem("timeInetrval"),
                                     context: self,
                                     error: function (xhr, textStatus, errorThrown) {
                                         console.log(textStatus);
@@ -474,7 +480,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     $.ajax({
                         url: BaseURL + "/HRModuleGetCurrencyType",
                         type: 'GET',
-                        timeout: sessionStorage.getItem("timeInetrval"),
+                        timeout: localStorage.getItem("timeInetrval"),
                         context: self,
                         error: function (xhr, textStatus, errorThrown) {
                             console.log("Error:", textStatus); 
@@ -501,7 +507,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 }
 
                 async function convertCurrency(amount, sourceCurrency) {
-                    const targetCurrency = sessionStorage.getItem("currency"); // Get target currency from session storage
+                    const targetCurrency = localStorage.getItem("currency"); // Get target currency from session storage
                     const url = `https://api.exchangerate-api.com/v4/latest/${sourceCurrency}`; // API URL for currency rates
                 
                     try {

@@ -72,7 +72,7 @@
         <oj-action-card>
             
         </oj-action-card>
-        <oj-bind-if test="[[assetStatus()  == 'Active']]">
+        <oj-bind-if test="[[assetStatus()  == 'In-store' || assetStatus()  == 'Currently Using']]">
         <oj-button chroming="solid"  on-oj-action="[[assetRemove]]" class="oj-sm-padding-3x-vertical">
             Remove Asset
         </oj-button>
@@ -87,7 +87,7 @@
 <div class="oj-panel oj-xl-margin-4x" style="margin: 10px;padding: 10px; box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <oj-validation-group id="formValidation" class="form-container" role="group">
         <div id="form-container-employee">
-            <oj-bind-if test="[[assetStatus()  == 'Active']]">
+            <oj-bind-if test="[[assetStatus()  == 'In-store' || assetStatus()  == 'Currently Using']]">
             <oj-form-layout id="closure-information" class="form" direction="row" max-columns="2">
                 <oj-select-single required id="bill" label-hint="Do you have bill?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill}}" on-value-changed="[[billNumSec]]">
                 </oj-select-single>
@@ -254,12 +254,12 @@
                value="{{owner_name}}"
                required>
                 </oj-combobox-one>
-                <oj-select-single required id="select" label-hint="Asset Type" label-edge="inside"
+                <oj-select-single required id="select" label-hint="Asset Status" label-edge="inside"
                 data="[[assetTypeListDP]]" value="{{assetType}}"></oj-select-single>
                 </oj-form-layout>
             </oj-bind-if>
 
-            <oj-bind-if test="[[assetStatus()  == 'Inactive']]">
+            <oj-bind-if test="[[assetStatus()  == 'Exhausted']]">
                 <oj-form-layout id="closure-information" class="form" direction="row" max-columns="2">
                     <oj-select-single required id="bill" label-hint="Do you have bill?" label-edge="inside" data="[[choiceListDP]]" value="{{have_bill}}" on-value-changed="[[billNumSec]]" readonly="true">
                     </oj-select-single>
@@ -422,12 +422,12 @@
                    value="{{owner_name}}"
                    required  readonly="true">
                     </oj-combobox-one>
-                    <oj-select-single required id="select" label-hint="Asset Type" label-edge="inside"
+                    <oj-select-single required id="select" label-hint="Asset Status" label-edge="inside"
                     data="[[assetTypeListDP]]" value="{{assetType}}"  readonly="true"></oj-select-single>
                     </oj-form-layout>
                 </oj-bind-if>
 
-        <oj-bind-if test="[[assetStatus()  == 'Active']]">
+        <oj-bind-if test="[[assetStatus()  == 'In-store' || assetStatus()  == 'Currently Using']]">
             <div class="oj-flex oj-md-justify-content-center" style="gap: 30px;padding-bottom:10px;">
                 <oj-button id="save" chroming="borderless" on-oj-action="[[formSubmit]]" 
                     style="background-color: #6c5ffc;color: #fff;border-radius: 10px;">
