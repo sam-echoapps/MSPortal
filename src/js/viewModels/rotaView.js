@@ -19,7 +19,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                     else {
                         app.onAppSuccess();
-                        self.getRotaInfo()
+                        self.getRotaInfo();
 
                         if(window.location.pathname=='/Hr'){
                             document.querySelectorAll('link').forEach(function(link){
@@ -56,7 +56,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.StaffDet = ko.observableArray([]);
                 self.OffStaffDet = ko.observableArray([]);
                 self.allocationExistVal = ko.observable('No');
-                
+                self.divCheck = ko.observable();
+
                 self.selectDiv = () => {
                     const selectedValue = self.rota_duration();
                     
@@ -70,16 +71,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
                 self.selectDiv2 = () => {
                     const selectedValue = self.edit_rota_duration();
-                    
                     if (selectedValue === 'month') {
-                        self.showSelectMonth(true);
-                        self.showRangeDate(false);
-                        //self.edit_rota_date('')
+                        self.divCheck('month')
+                        // $("#showMonth").show();
+                        // $("#showDate").hide();
+
+                        // self.showSelectMonth(true);
+                        // self.showRangeDate(false);
+                        // //self.edit_rota_date('')
                         self.edit_rota_date('')
                     } else {
-                        self.showSelectMonth(false);
-                        self.showRangeDate(true);
-                        //self.edit_rota_date('')
+                        self.divCheck('date')
+                        // $("#showMonth").hide();
+                        // $("#showDate").show();
+                        // self.showSelectMonth(false);
+                        // self.showRangeDate(true);
+                        // //self.edit_rota_date('')
                         self.edit_rota_month('')
                     }
                 };
@@ -153,6 +160,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.edit_rota_name(data[1])
                             self.edit_rota_name_check(data[1])
                             self.edit_rota_duration(data[2])
+                            self.selectDiv2()
                             self.edit_rota_status(data[5])
                             if(data[3]){
                             self.edit_rota_date(data[3])
@@ -367,9 +375,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             });
                 
                             buttonCell.appendChild(addShiftButton);
+
+
+                            if(self.edit_rota_status() != 'Old'){
                 
                             // Create the second button
-                                                        let anotherButton = document.createElement('button');
+                            let anotherButton = document.createElement('button');
                             anotherButton.classList.add('btn');
 
                             // Create an <i> element for the icon
@@ -391,6 +402,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             });
                 
                             buttonCell.appendChild(anotherButton);
+                        }
                             dateRow.appendChild(buttonCell); // Append button cell to the date row
                 
                             // Create empty hour cells
@@ -428,6 +440,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 shiftCell.textContent = shift.employees.join(', ');
                                 shiftCell.style.backgroundColor = shift.color; // Set the background color
                                 shiftCell.style.color = '#FFFFFF'; // Set text color to white
+                                shiftCell.title = `Allocated Staff`;
                                 shiftRow.appendChild(shiftCell);
                 
                                 // Fill empty cells for hours after the shift
@@ -451,6 +464,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
                                 weekOffCell.style.backgroundColor = off.color; // Set the background color for week off
                                 weekOffCell.style.color = '#FFFFFF'; // Set text color to white
+                                weekOffCell.title = `Weekoff Staff`;
                                 weekOffRow.appendChild(weekOffCell);
                 
                                 // Append week off row to the table (hidden initially)
@@ -946,6 +960,35 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         console.log(data)
                         localStorage.setItem("activeRotaTab", 'Yes');
                         self.router.go({path:'rota'})
+                    }
+                }) 
+            }
+
+            self.alertRota = ()=>{
+                let popup1 = document.getElementById("warningAlertView");
+                popup1.open();
+            }
+
+            self.warnAlertMsgClose = ()=>{
+                let popup1 = document.getElementById("warningAlertView");
+                popup1.close();
+            }
+
+            self.confirmAlertRota = ()=>{
+                $.ajax({
+                    url: BaseURL+"/HRModuleAlertRota",
+                    type: 'GET',
+                    dataType: 'json',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        location.reload()
+                        // localStorage.setItem("activeRotaTab", 'Yes');
+                        // self.router.go({path:'rota'})
                     }
                 }) 
             }

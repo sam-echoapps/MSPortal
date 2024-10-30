@@ -111,13 +111,24 @@
             <oj-select-single id="selectDuration" label-hint="Rota Duration" label-edge="inside"
             data="[[durationList]]" value="{{rota_duration}}" on-value-changed="[[selectDiv]]" required></oj-select-single>    
           </div>  
-            <div style="position: relative; ">
+
+          <oj-bind-if test="[[divCheck() == 'month' ]]">
+            <oj-select-single id="selectMonth" label-hint="Rota Month" label-edge="inside"
+                data="[[monthList]]" value="{{rota_month}}" required
+                ></oj-select-single>
+          </oj-bind-if>  
+
+            <oj-bind-if test="[[divCheck() == 'date' ]]">
+              <oj-input-date id="rangeDate" label-hint="Rota Start Date" 
+             value="{{rota_date}}" required></oj-input-date>
+            </oj-bind-if>  
+           <!--  <div style="position: relative; ">
               <oj-input-date id="rangeDate" label-hint="Rota Start Date" class="oj-form-control-max-width-sm" 
                   data-bind="visible: showRangeDate, attr: { required: !showSelectMonth() }" style="position: absolute;" value="{{rota_date}}"></oj-input-date>
               <oj-select-single id="selectMonth" label-hint="Rota Month" label-edge="inside"
                   data="[[monthList]]" value="{{rota_month}}" 
                   data-bind="visible: showSelectMonth, attr: { required: showSelectMonth() }" style="position: absolute;"></oj-select-single>
-          </div>  
+          </div>   -->
         
         </oj-form-layout>
         <oj-button chroming="solid"  on-oj-action="[[createRota]]" class="oj-sm-padding-3x-vertical">

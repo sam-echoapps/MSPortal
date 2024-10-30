@@ -122,7 +122,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.showRangeDate = ko.observable(false);
                 self.showSelectMonth = ko.observable(false);
 
-                self.selectDiv = () => {
+                /* self.selectDiv = () => {
                     const selectedValue = self.rota_duration();
                     
                     if (selectedValue === 'month') {
@@ -131,6 +131,27 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     } else {
                         self.showSelectMonth(false);
                         self.showRangeDate(true);
+                    }
+                }; */
+                self.selectDiv = () => {
+                    const selectedValue = self.rota_duration();
+                    if (selectedValue === 'month') {
+                        self.divCheck('month')
+                        // $("#showMonth").show();
+                        // $("#showDate").hide();
+
+                        // self.showSelectMonth(true);
+                        // self.showRangeDate(false);
+                        // //self.edit_rota_date('')
+                        self.rota_date('')
+                    } else {
+                        self.divCheck('date')
+                        // $("#showMonth").hide();
+                        // $("#showDate").show();
+                        // self.showSelectMonth(false);
+                        // self.showRangeDate(true);
+                        // //self.edit_rota_date('')
+                        self.rota_month('')
                     }
                 };
                 self.selectDiv2 = () => {
@@ -172,6 +193,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.existRota = ko.observable('');
 
                 self.selectedTab = ko.observable('');
+                self.divCheck = ko.observable();
 
                 if(localStorage.getItem("shiftTab")=="Yes"){
                     self.selectedTab('shifts')
@@ -188,7 +210,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     { id: "draft_rotas", label: "Draft Rotas" },
                     { id: "old_rotas", label: "Old Rotas" },
                     { id: "shifts", label: "Shifts" },
-                    { id: "rota_settings", label: "Rota Settings" },
+                    /* { id: "rota_settings", label: "Rota Settings" }, */
                 ];
 
                 self.selectedTabAction = ko.computed(() => { 

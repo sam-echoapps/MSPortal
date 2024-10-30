@@ -417,7 +417,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 const formValid = self._checkValidationGroup("formValidation");
             
                 // Validation for guarantee file
-                if (self.have_guarantee() == 'Yes' && self.guaranteeFile() == '') {
+                if (self.have_guarantee_card() == 'Yes' && self.guaranteeFile() == '') {
                     self.guaranteeManadatory('Upload');
                 } else {
                     self.guaranteeManadatory('');
@@ -429,6 +429,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 } else {
                     self.billManadatory('');
                 }
+
                
                 if (formValid && self.numError() == '' && self.typeErrorBill() == '' && self.typeErrorGuarantee() == '' && self.typeErrorExtra() == '' && self.billManadatory() == '' && self.guaranteeManadatory() == '') {
                     let popup = document.getElementById("loaderPopup");
