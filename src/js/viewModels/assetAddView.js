@@ -300,9 +300,38 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 }
 
+                self.assetRestore = ()=>{
+                    document.getElementById('loaderView').style.display='block';
+                    document.getElementById('loaderView').style.display='none';
+                    let popup1 = document.getElementById("confirmRestore");
+                    popup1.open();
+                    
+                }
+
+
                 self.confirmAssetRemove = ()=>{
                     $.ajax({
                         url: BaseURL+"/HRModuleRemoveAsset",
+                        type: 'POST',
+                        data: JSON.stringify({
+                            assetId: localStorage.getItem("assetId"),
+                        }),
+                        timeout: localStorage.getItem("timeInetrval"),
+                        context: self,
+                        
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            self.router.go({path:'asset'})
+                        }  
+                    });
+                }
+
+                self.confirmAssetRestore = ()=>{
+                    $.ajax({
+                        url: BaseURL+"/HRModuleRestoreAsset",
                         type: 'POST',
                         data: JSON.stringify({
                             assetId: localStorage.getItem("assetId"),

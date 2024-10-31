@@ -13,7 +13,7 @@ function (oj,ko,Context,$, app, ojconverterutils_i18n_1, ArrayDataProvider) {
             let BaseURL = localStorage.getItem("BaseURL")
             
             var routerLength = args.parentRouter._routes.length;
-            if(routerLength!=21){
+            if(routerLength!=23){
                 location.reload();
             }
 

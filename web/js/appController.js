@@ -216,6 +216,8 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           { path: 'myExpense', detail : {label: 'checkExpense',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchase', detail : {label: 'Purchase Manager',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
           { path: 'purchaseClosure', detail : {label: 'Purchase Closure',iconClass: 'oj-navigationlist-item-icon fa fa-home'} },
+          { path: 'rota', detail : {label: 'Rota',iconClass: 'oj-navigationlist-item-icon fa-calendar'} },
+          { path: 'rotaView', detail : {label: 'Rota View',iconClass: 'oj-navigationlist-item-icon fa-calendar'} },
        ];  
       }
       else if(localStorage.getItem('userRole')=='junior manager'){
@@ -548,6 +550,7 @@ define([ 'ojs/ojoffcanvas' , 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojre
           {"name": "Task Manager","id": "tasks","icons": "fa-solid fa fa-clipboard-list", "path":"taskView"},
           {"name": "Purchase Manager","id": "purchase","icons": "fa-solid fa fa-shopping-cart ", "path":"purchase"},
           {"name": "Expense Manager","id": "checkExpense","icons": "fa-solid fa fa-wallet", "path":"myExpense"},
+          {"name": "Rota System","id": "rota","icons": "fa-solid fa fa-calendar", "path":"rota"},
           {"name": "Notice Board","id": "notice","icons": "fa-solid fa fa-bullhorn", "path":"notice"},
           {"name": "Perfomance", "id": "performanceReview2", "icons": "fa-solid fa fa-chart-line",
             "children": [

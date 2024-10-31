@@ -85,7 +85,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     {"label":"All","value":"All"},
                     {"label":"In-store","value":"In-store"},
                     {"label":"Currently Using","value":"Currently Using"},
-                    {"label":"Exhausted","value":"Exhausted"}
+                    {"label":"Exhausted","value":"Exhausted"},
+                    {"label":"Removed","value":"Removed"}
                 ]
                 self.statusFilterList = new ArrayDataProvider(self.statusFilterOptions, {
                     keyAttributes: 'value'

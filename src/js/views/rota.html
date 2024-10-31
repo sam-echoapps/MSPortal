@@ -39,21 +39,24 @@
   }
 </style>
 
-<div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
-    <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
-        <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
-        <oj-bind-for-each data="[[tabData]]">
-        <template>
-            <oj-option value="[[$current.data.id]]">
-            <span>
-                <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
-            </span>
-            </oj-option>
-        </template>
-        </oj-bind-for-each>
-    </oj-buttonset-one>
-    </div>
-</div>
+<oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
+  <div class="oj-xl-margin-4x tab-bg-style" style="margin-top: 20px; margin-bottom: 20px;">
+      <div class="oj-flex oj-sm-justify-content-space-around oj-sm-align-items-center">
+          <oj-buttonset-one id="setMultipleButtons" value="{{selectedTab}}" aria-label="Choose only one format">
+          <oj-bind-for-each data="[[tabData]]">
+          <template>
+              <oj-option value="[[$current.data.id]]">
+              <span>
+                  <oj-bind-text value="[[$current.data.label]]"></oj-bind-text>
+              </span>
+              </oj-option>
+          </template>
+          </oj-bind-for-each>
+      </oj-buttonset-one>
+      </div>
+  </div>
+</oj-bind-if>
+
 
 <div id="draft_rotas" style="display:none;">
 <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
@@ -230,6 +233,7 @@
 
 
 <div id="active_rotas" style="display:none;">
+  <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
   <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-end">
         <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
@@ -240,6 +244,7 @@
       </div>
       </div> 
   </div> 
+  </oj-bind-if>
   <div class="oj-panel oj-xl-margin-4x" style="box-shadow: 0 0 10px #b9adad;border-radius: 10px;">
     <oj-table id='RotaTable' aria-label='All Table' data='[[RotaList]]' display='list'
       selection-mode='{"row": "single"}'  columns='[

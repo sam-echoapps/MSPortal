@@ -201,8 +201,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 } else if(localStorage.getItem("activeRotaTab")=="Yes"){
                     self.selectedTab('active_rotas')
                     localStorage.removeItem('activeRotaTab')
+                } else if(localStorage.getItem("draftRotaTab")=="Yes"){
+                    self.selectedTab('draft_rotas')
+                    localStorage.removeItem('draftRotaTab')
                 }else{
                     self.selectedTab('active_rotas')
+                }
+
+                if(self.userrole() != 'director' && self.userrole() != 'senior hr' && self.userrole() != 'senior manager' && self.userrole() != 'senior accounts' ){
+                    self.selectedTab('active_rotas')
+                    getActiveRotaList();
                 }
 
                 self.tabData = [

@@ -233,7 +233,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     // Create a promise array to handle all AJAX calls
                     const ajaxCalls = [];
                 
-                    const colors = ['#007BFF', '#FF6F61', '#28A745', '#FF00FF'];
+                    const colors = ['#cff4fc', '#fff3cd', '#1abc9c', '#6c5ffc'];
                 
                     for (let i = 0; i < duration; i++) {
                         // Calculate the next date
@@ -245,6 +245,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         const formattedDate = shiftDate.toLocaleDateString('en-GB', options);
                         const dayShifts = [];
                         const weekOff = [];
+                        const leaveStaff = [];
+                        
                 
                         // Create a promise for each AJAX call
                         const ajaxCall = $.ajax({
@@ -262,13 +264,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 // Populate the employeeShifts array
                                 const employeeShifts = []; // Declare it here for each call
                                 const offEmployeeShifts = []; // Declare it here for each call
+                                const leaveEmployee = []; // Declare it here for each call
                                 for (var j = 0; j < data.length; j++) {
                                     var employeeNames = data[j][7].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var offEmployeeNames = data[j][9].split(',').map(name => name.trim()); // Clean up any extra whitespace
+                                    var leaveStaffNames = data[j][10].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var colorIndex = j % colors.length;
                                     employeeShifts.push({
                                         'date': data[j][1],
                                         'employees': employeeNames,
+                                        'shiftName': data[j][4],
                                         'startTime': data[j][5],
                                         'endTime': data[j][6],
                                         'color': colors[colorIndex]
@@ -276,6 +281,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     offEmployeeShifts.push({
                                         'date': data[j][1],
                                         'offEmployees': offEmployeeNames,
+                                        'color': colors[colorIndex]
+                                    });
+                                    leaveEmployee.push({
+                                        'date': data[j][1],
+                                        'leaveStaff': leaveStaffNames,
                                         'color': colors[colorIndex]
                                     });
                                 }
@@ -287,6 +297,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     if (shift.date === formattedDate) {
                                         dayShifts.push({
                                             employees: shift.employees,
+                                            shiftName: shift.shiftName,
                                             startTime: shift.startTime,
                                             endTime: shift.endTime,
                                             color: shift.color
@@ -299,17 +310,29 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     if (off.date === formattedDate) {
                                         weekOff.push({
                                             offEmployees: off.offEmployees,
-                                            color: "#FF0000"
+                                            color: "#ced4da"
                                         });
                                     }
                                 });
+
+                                leaveEmployee.forEach(leave => {
+                                    // If the shift date matches the formatted date, add the week off to the day's weekOff
+                                    if (leave.date === formattedDate) {
+                                        leaveStaff.push({
+                                            leaveStaffNames: leave.leaveStaff,
+                                            color: "#f8d7da"
+                                        });
+                                    }
+                                });
+
                 
                                 // Push the shift data for the current date
                                 shiftData.push({
                                     fullDate : formattedDateISO,
                                     date: formattedDate,
                                     shifts: dayShifts,
-                                    weekOff: weekOff
+                                    weekOff: weekOff,
+                                    leaveStaff: leaveStaff
                                 });
                             }
                         });
@@ -359,25 +382,30 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             addShiftButton.addEventListener('click', () => {
                                 const shiftRowsForDay = document.querySelectorAll(`.shift-row-${sanitizedDate}`);
                                 const weekOffRowsForDay = document.querySelectorAll(`.weekoff-row-${sanitizedDate}`);
-                
+                                const leaveRowsForDay = document.querySelectorAll(`.leave-row-${sanitizedDate}`);
+
                                 const isAnyVisible = Array.from(shiftRowsForDay).some(row => !row.classList.contains('hidden')) ||
-                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden'));
+                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden'))||
+                                                     Array.from(leaveRowsForDay).some(row => !row.classList.contains('hidden'));
                 
                                 if (isAnyVisible) {
                                     shiftRowsForDay.forEach(row => row.classList.add('hidden'));
                                     weekOffRowsForDay.forEach(row => row.classList.add('hidden'));
+                                    leaveRowsForDay.forEach(row => row.classList.add('hidden'));
                                 } else {
                                     document.querySelectorAll('.shift-row').forEach(row => row.classList.add('hidden'));
                                     document.querySelectorAll('.weekoff-row').forEach(row => row.classList.add('hidden'));
+                                    document.querySelectorAll('.leave-row').forEach(row => row.classList.add('hidden'));
                                     shiftRowsForDay.forEach(row => row.classList.remove('hidden'));
                                     weekOffRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                    leaveRowsForDay.forEach(row => row.classList.remove('hidden'));
                                 }
                             });
                 
                             buttonCell.appendChild(addShiftButton);
 
-
-                            if(self.edit_rota_status() != 'Old'){
+                            if(self.userrole() == 'director' || self.userrole() == 'senior hr' || self.userrole() == 'senior manager' || self.userrole() == 'senior accounts' ){
+                                if(self.edit_rota_status() != 'Old'){
                 
                             // Create the second button
                             let anotherButton = document.createElement('button');
@@ -403,6 +431,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                             buttonCell.appendChild(anotherButton);
                         }
+                    }
                             dateRow.appendChild(buttonCell); // Append button cell to the date row
                 
                             // Create empty hour cells
@@ -421,7 +450,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 const colspan = endHour - startHour;
                 
                                 let shiftRow = document.createElement('tr');
-                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row', 'hidden'); // Initially hidden
+                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row'); // Initially show now, if add hidden class then hide 
                 
                                 // Create an empty cell for the shift time
                                 let shiftTimeCell = document.createElement('td');
@@ -437,10 +466,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let shiftCell = document.createElement('td');
                                 shiftCell.colSpan = colspan;
                                 shiftCell.classList.add('shift');
-                                shiftCell.textContent = shift.employees.join(', ');
+                                shiftCell.textContent = "Allocated Staff: " + shift.employees.join(', ');
                                 shiftCell.style.backgroundColor = shift.color; // Set the background color
-                                shiftCell.style.color = '#FFFFFF'; // Set text color to white
-                                shiftCell.title = `Allocated Staff`;
+                                shiftCell.style.color = '#000000'; // Set text color to white
+                                shiftCell.title = shift.shiftName + " : " + shift.startTime+"-"+shift.endTime;
                                 shiftRow.appendChild(shiftCell);
                 
                                 // Fill empty cells for hours after the shift
@@ -454,22 +483,108 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             });
                 
                             // Create rows for week-off and hide initially
+                            // day.weekOff.forEach(off => {
+                            //     let weekOffRow = document.createElement('tr');
+                            //     weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row'); // Initially hidden
+                
+                            //     // Create a cell for week off employees
+                            //     let weekOffCell = document.createElement('td');
+                            //     weekOffCell.colSpan = 25; // Span the entire row
+                            //     weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
+                            //     weekOffCell.style.backgroundColor = off.color; // Set the background color for week off
+                            //     weekOffCell.style.color = '#000000'; // Set text color to white
+                            //     weekOffCell.title = `Weekoff Staff`;
+                            //     weekOffRow.appendChild(weekOffCell);
+                
+                            //     // Append week off row to the table (hidden initially)
+                            //     tableBody.appendChild(weekOffRow);
+                            // });
+                            // Create a Set to track unique week-off entries
+                        const uniqueWeekOffEntries = new Set();
+
+                        // Check if there are any week-off entries for the day
+                        if (day.weekOff.length > 0) {
+                            // Loop through the weekOff entries to aggregate unique values
                             day.weekOff.forEach(off => {
-                                let weekOffRow = document.createElement('tr');
-                                weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row', 'hidden'); // Initially hidden
-                
-                                // Create a cell for week off employees
-                                let weekOffCell = document.createElement('td');
-                                weekOffCell.colSpan = 25; // Span the entire row
-                                weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
-                                weekOffCell.style.backgroundColor = off.color; // Set the background color for week off
-                                weekOffCell.style.color = '#FFFFFF'; // Set text color to white
-                                weekOffCell.title = `Weekoff Staff`;
-                                weekOffRow.appendChild(weekOffCell);
-                
-                                // Append week off row to the table (hidden initially)
-                                tableBody.appendChild(weekOffRow);
+                                // Create a unique key based on the employee names and color
+                                const key = `${off.offEmployees.join(', ')}|${off.color}`;
+                                uniqueWeekOffEntries.add(key); // Add to the Set to ensure uniqueness
                             });
+
+                            // Create a single row for all unique week-off employees
+                            let weekOffRow = document.createElement('tr');
+                            weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row'); // Class for styling
+
+                            // Create a cell for week off employees
+                            let weekOffCell = document.createElement('td');
+                            weekOffCell.colSpan = 25; // Span the entire row
+
+                            // Aggregate all unique week-off employee names and their colors
+                            const allOffEntries = Array.from(uniqueWeekOffEntries).map(entry => {
+                                const [employees, color] = entry.split('|');
+                                return { employees, color };
+                            });
+
+                            // Combine all unique employee entries into a single string
+                            const combinedEmployees = allOffEntries.map(entry => entry.employees).join(', ');
+
+                            // Set the text content to the list of week-off employees
+                            weekOffCell.textContent = `Week Off: ${combinedEmployees}`;
+                            
+                            // Set the background color for week off using the color of the first entry (or adjust as needed)
+                            weekOffCell.style.backgroundColor = allOffEntries.length > 0 ? allOffEntries[0].color : '#fff'; // Set the background color for week off
+                            weekOffCell.style.color = '#000000'; // Set text color to black
+                            weekOffCell.title = `Weekoff Staff`;
+                            
+                            weekOffRow.appendChild(weekOffCell);
+
+                            // Append week off row to the table (this will only happen once)
+                            tableBody.appendChild(weekOffRow);
+                        }
+
+                        // Create a Set to track unique leave entries
+                        const uniqueLeaveEntries = new Set();
+
+                        // Check if there are any leave entries for the day
+                        if (day.leaveStaff.length > 0) {
+                            // Loop through the leaves entries to aggregate unique values
+                            day.leaveStaff.forEach(leave => {
+                                // Create a unique key based on the leave staff names and color
+                                const key = `${leave.leaveStaffNames.join(', ')}|${leave.color}`;
+                                uniqueLeaveEntries.add(key); // Add to the Set to ensure uniqueness
+                            });
+
+                            // Create a single row for all unique leave staff
+                            let leaveRow = document.createElement('tr');
+                            leaveRow.classList.add(`leave-row-${sanitizedDate}`, 'leave-row'); // Class for styling
+
+                            // Create a cell for leave staff
+                            let leaveCell = document.createElement('td');
+                            leaveCell.colSpan = 25; // Span the entire row
+
+                            // Aggregate all unique leave staff names and their colors
+                            const allLeaveEntries = Array.from(uniqueLeaveEntries).map(entry => {
+                                const [staff, color] = entry.split('|');
+                                return { staff, color };
+                            });
+
+                            // Combine all unique leave staff entries into a single string
+                            const combinedLeaveStaff = allLeaveEntries.map(entry => entry.staff).join(', ');
+
+                            // Set the text content to the list of leave staff
+                            leaveCell.textContent = `Leave Staff: ${combinedLeaveStaff}`;
+                            
+                            // Set the background color for leave using the color of the first entry (or adjust as needed)
+                            leaveCell.style.backgroundColor = allLeaveEntries[0].color;
+                            leaveCell.style.color = '#000000'; // Set text color as needed
+                            leaveCell.title = `Leave Staff`;
+
+                            leaveRow.appendChild(leaveCell);
+
+                            // Append leave row to the table (hidden initially)
+                            tableBody.appendChild(leaveRow);
+                        }
+
                             $("#loaderView").hide();
                             $("#publishBtn").show();
                         });
@@ -491,16 +606,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     const startDate = new Date(year, monthIndex - 1, 1); // First day of the month
                     const endDate = new Date(year, monthIndex, 0); // Last day of the month
                 
-                    const colors = ['#007BFF', '#FF6F61', '#28A745', '#FF00FF'];
+                    const colors = ['#cff4fc', '#fff3cd', '#1abc9c', '#6c5ffc'];
                     const ajaxCalls = []; // Array to hold AJAX promises
                 
                     for (let day = 1; day <= endDate.getDate(); day++) {
                         const shiftDate = new Date(year, monthIndex - 1, day);
-                        const formattedDateISO = shiftDate.toISOString().split('T')[0];
+                        //const formattedDateISO = shiftDate.toISOString().split('T')[0];
+                        const nextDayDate = new Date(shiftDate);
+                        // Add one day to the new date
+                        nextDayDate.setDate(nextDayDate.getDate() + 1);
+                        // Format the new date to ISO format (YYYY-MM-DD)
+                        const formattedDateISO = nextDayDate.toISOString().split('T')[0];
                         const formattedDate = shiftDate.toLocaleDateString('en-GB', options);
                         const dayShifts = [];
                         const weekOff = [];
-                
+                        const leaveStaff = [];
+
                         // Create a promise for each AJAX call
                         const ajaxCall = $.ajax({
                             url: BaseURL + "/HRModuleGetAssignStaffList",
@@ -516,13 +637,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                                 const employeeShifts = [];
                                 const offEmployeeShifts = [];
+                                const leaveEmployee = [];
                                 for (var j = 0; j < data.length; j++) {
                                     var employeeNames = data[j][7].split(',').map(name => name.trim());
                                     var offEmployeeNames = data[j][9].split(',').map(name => name.trim());
+                                    var leaveStaffNames = data[j][10].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var colorIndex = j % colors.length;
                                     employeeShifts.push({
                                         'date': data[j][1],
                                         'employees': employeeNames,
+                                        'shiftName': data[j][4],
                                         'startTime': data[j][5],
                                         'endTime': data[j][6],
                                         'color': colors[colorIndex]
@@ -532,12 +656,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'offEmployees': offEmployeeNames,
                                         'color': colors[colorIndex]
                                     });
+                                    leaveEmployee.push({
+                                        'date': data[j][1],
+                                        'leaveStaff': leaveStaffNames,
+                                        'color': colors[colorIndex]
+                                    });
                                 }
                 
                                 employeeShifts.forEach(shift => {
                                     if (shift.date === formattedDate) {
                                         dayShifts.push({
                                             employees: shift.employees,
+                                            shiftName: shift.shiftName,
                                             startTime: shift.startTime,
                                             endTime: shift.endTime,
                                             color: shift.color
@@ -549,7 +679,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     if (off.date === formattedDate) {
                                         weekOff.push({
                                             offEmployees: off.offEmployees,
-                                            color: "#FF0000"
+                                            color: "#ced4da"
+                                        });
+                                    }
+                                });
+
+                                leaveEmployee.forEach(leave => {
+                                    // If the shift date matches the formatted date, add the week off to the day's weekOff
+                                    if (leave.date === formattedDate) {
+                                        leaveStaff.push({
+                                            leaveStaffNames: leave.leaveStaff,
+                                            color: "#f8d7da"
                                         });
                                     }
                                 });
@@ -558,7 +698,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     fullDate: formattedDateISO,
                                     date: formattedDate,
                                     shifts: dayShifts,
-                                    weekOff: weekOff
+                                    weekOff: weekOff,
+                                    leaveStaff: leaveStaff
                                 });
                             }
                         });
@@ -596,17 +737,24 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             addShiftButton.addEventListener('click', () => {
                                 const shiftRowsForDay = document.querySelectorAll(`.shift-row-${sanitizedDate}`);
                                 const weekOffRowsForDay = document.querySelectorAll(`.weekoff-row-${sanitizedDate}`);
+                                const leaveRowsForDay = document.querySelectorAll(`.leave-row-${sanitizedDate}`);
+
                                 const isAnyVisible = Array.from(shiftRowsForDay).some(row => !row.classList.contains('hidden')) ||
-                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden'));
+                                                     Array.from(weekOffRowsForDay).some(row => !row.classList.contains('hidden')) ||
+                                                     Array.from(leaveRowsForDay).some(row => !row.classList.contains('hidden'));
+                                                     
                                 
                                 if (isAnyVisible) {
                                     shiftRowsForDay.forEach(row => row.classList.add('hidden'));
                                     weekOffRowsForDay.forEach(row => row.classList.add('hidden'));
+                                    leaveRowsForDay.forEach(row => row.classList.add('hidden'));
                                 } else {
                                     document.querySelectorAll('.shift-row').forEach(row => row.classList.add('hidden'));
                                     document.querySelectorAll('.weekoff-row').forEach(row => row.classList.add('hidden'));
+                                    document.querySelectorAll('.leave-row').forEach(row => row.classList.add('hidden'));
                                     shiftRowsForDay.forEach(row => row.classList.remove('hidden'));
                                     weekOffRowsForDay.forEach(row => row.classList.remove('hidden'));
+                                    leaveRowsForDay.forEach(row => row.classList.remove('hidden'));
                                 }
                             });
                 
@@ -646,7 +794,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 const colspan = endHour - startHour;
                 
                                 let shiftRow = document.createElement('tr');
-                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row', 'hidden');
+                                shiftRow.classList.add(`shift-row-${sanitizedDate}`, 'shift-row');
                 
                                 let shiftTimeCell = document.createElement('td');
                                 shiftRow.appendChild(shiftTimeCell);
@@ -659,9 +807,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let shiftCell = document.createElement('td');
                                 shiftCell.colSpan = colspan;
                                 shiftCell.classList.add('shift');
-                                shiftCell.textContent = shift.employees.join(', ');
+                                shiftCell.textContent = "Allocated Staff: " + shift.employees.join(', ');
                                 shiftCell.style.backgroundColor = shift.color;
-                                shiftCell.style.color = '#FFFFFF';
+                                shiftCell.style.color = '#000000';
+                                shiftCell.title = shift.shiftName + " : " + shift.startTime+"-"+shift.endTime;
                                 shiftRow.appendChild(shiftCell);
                 
                                 for (let hour = endHour; hour < 24; hour++) {
@@ -672,19 +821,105 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 tableBody.appendChild(shiftRow);
                             });
                 
+                            // day.weekOff.forEach(off => {
+                            //     let weekOffRow = document.createElement('tr');
+                            //     weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row');
+                
+                            //     let weekOffCell = document.createElement('td');
+                            //     weekOffCell.colSpan = 25;
+                            //     weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
+                            //     weekOffCell.style.backgroundColor = off.color;
+                            //     weekOffCell.style.color = '#000000';
+                            //     weekOffRow.appendChild(weekOffCell);
+                
+                            //     tableBody.appendChild(weekOffRow);
+                            // });
+                            // Create a Set to track unique week-off entries
+                        const uniqueWeekOffEntries = new Set();
+
+                        // Check if there are any week-off entries for the day
+                        if (day.weekOff.length > 0) {
+                            // Loop through the weekOff entries to aggregate unique values
                             day.weekOff.forEach(off => {
-                                let weekOffRow = document.createElement('tr');
-                                weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row', 'hidden');
-                
-                                let weekOffCell = document.createElement('td');
-                                weekOffCell.colSpan = 25;
-                                weekOffCell.textContent = `Week Off: ${off.offEmployees.join(', ')}`;
-                                weekOffCell.style.backgroundColor = off.color;
-                                weekOffCell.style.color = '#FFFFFF';
-                                weekOffRow.appendChild(weekOffCell);
-                
-                                tableBody.appendChild(weekOffRow);
+                                // Create a unique key based on the employee names and color
+                                const key = `${off.offEmployees.join(', ')}|${off.color}`;
+                                uniqueWeekOffEntries.add(key); // Add to the Set to ensure uniqueness
                             });
+
+                            // Create a single row for all unique week-off employees
+                            let weekOffRow = document.createElement('tr');
+                            weekOffRow.classList.add(`weekoff-row-${sanitizedDate}`, 'weekoff-row'); // Class for styling
+
+                            // Create a cell for week off employees
+                            let weekOffCell = document.createElement('td');
+                            weekOffCell.colSpan = 25; // Span the entire row
+
+                            // Aggregate all unique week-off employee names and their colors
+                            const allOffEntries = Array.from(uniqueWeekOffEntries).map(entry => {
+                                const [employees, color] = entry.split('|');
+                                return { employees, color };
+                            });
+
+                            // Combine all unique employee entries into a single string
+                            const combinedEmployees = allOffEntries.map(entry => entry.employees).join(', ');
+
+                            // Set the text content to the list of week-off employees
+                            weekOffCell.textContent = `Week Off: ${combinedEmployees}`;
+                            
+                            // Set the background color for week off using the color of the first entry (or adjust as needed)
+                            weekOffCell.style.backgroundColor = allOffEntries.length > 0 ? allOffEntries[0].color : '#fff'; // Set the background color for week off
+                            weekOffCell.style.color = '#000000'; // Set text color to black
+                            weekOffCell.title = `Weekoff Staff`;
+                            
+                            weekOffRow.appendChild(weekOffCell);
+
+                            // Append week off row to the table (this will only happen once)
+                            tableBody.appendChild(weekOffRow);
+                        }
+
+                         // Create a Set to track unique leave entries
+                         const uniqueLeaveEntries = new Set();
+
+                         // Check if there are any leave entries for the day
+                         if (day.leaveStaff.length > 0) {
+                             // Loop through the leaves entries to aggregate unique values
+                             day.leaveStaff.forEach(leave => {
+                                 // Create a unique key based on the leave staff names and color
+                                 const key = `${leave.leaveStaffNames.join(', ')}|${leave.color}`;
+                                 uniqueLeaveEntries.add(key); // Add to the Set to ensure uniqueness
+                             });
+ 
+                             // Create a single row for all unique leave staff
+                             let leaveRow = document.createElement('tr');
+                             leaveRow.classList.add(`leave-row-${sanitizedDate}`, 'leave-row'); // Class for styling
+ 
+                             // Create a cell for leave staff
+                             let leaveCell = document.createElement('td');
+                             leaveCell.colSpan = 25; // Span the entire row
+ 
+                             // Aggregate all unique leave staff names and their colors
+                             const allLeaveEntries = Array.from(uniqueLeaveEntries).map(entry => {
+                                 const [staff, color] = entry.split('|');
+                                 return { staff, color };
+                             });
+ 
+                             // Combine all unique leave staff entries into a single string
+                             const combinedLeaveStaff = allLeaveEntries.map(entry => entry.staff).join(', ');
+ 
+                             // Set the text content to the list of leave staff
+                             leaveCell.textContent = `Leave Staff: ${combinedLeaveStaff}`;
+                             
+                             // Set the background color for leave using the color of the first entry (or adjust as needed)
+                             leaveCell.style.backgroundColor = allLeaveEntries[0].color;
+                             leaveCell.style.color = '#000000'; // Set text color as needed
+                             leaveCell.title = `Leave Staff`;
+ 
+                             leaveRow.appendChild(leaveCell);
+ 
+                             // Append leave row to the table (hidden initially)
+                             tableBody.appendChild(leaveRow);
+                         }
+
                             $("#loaderView").hide();
                             $("#publishBtn").show();
                         });
@@ -805,6 +1040,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 shiftId: self.shift(),            
                                 selectedEmployees: self.selectedEmployees(),
                                 selectedOffEmployees: self.selectedOffEmployees(),
+                                shift_date_format: self.shift_date_format(),            
                             }),
                             dataType: 'json',
                             timeout: localStorage.getItem("timeInetrval"),
@@ -867,7 +1103,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let selectedEmployee = data1[0][0].split(',').map(Number);
                                 self.selectedEmployees(selectedEmployee)
                             }
-                            if(data2.length != 0){
+                            if(data2[0][0] != null){
                                 let selectedOffEmployees = data2[0][0].split(',').map(Number);
                                 self.selectedOffEmployees(selectedOffEmployees)
                             }
@@ -897,6 +1133,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     url: BaseURL+"/HRModuleUpdateAssignEmployees",
                     type: 'POST',
                     data: JSON.stringify({
+                        shiftId: self.shift(),            
                         shift_date: self.shift_date(),            
                         selectedEmployees: self.selectedEmployees(),
                         selectedOffEmployees: self.selectedOffEmployees(),
@@ -931,10 +1168,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
             self.warnMsgClose = ()=>{
                 let popup1 = document.getElementById("warningView");
                 popup1.close();
+                let popup2 = document.getElementById("warningUnpublishView");
+                popup2.close();
             }
 
             self.publishRota = ()=>{
                 let popup1 = document.getElementById("warningView");
+                popup1.open();
+            }
+
+            self.unpublishRota = ()=>{
+                let popup1 = document.getElementById("warningUnpublishView");
                 popup1.open();
             }
 
@@ -959,6 +1203,27 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     success: function (data) {
                         console.log(data)
                         localStorage.setItem("activeRotaTab", 'Yes');
+                        self.router.go({path:'rota'})
+                    }
+                }) 
+            }
+
+            self.confirmUnpublishRota = ()=>{
+                $.ajax({
+                    url: BaseURL+"/HRModuleUnpublishRota",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        rotaId: localStorage.getItem("rotaId")
+                    }),
+                    dataType: 'json',
+                    timeout: localStorage.getItem("timeInetrval"),
+                    context: self,
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log(textStatus);
+                    },
+                    success: function (data) {
+                        console.log(data)
+                        localStorage.setItem("draftRotaTab", 'Yes');
                         self.router.go({path:'rota'})
                     }
                 }) 

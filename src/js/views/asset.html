@@ -146,8 +146,11 @@
               <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
           </oj-bind-if>
           <oj-bind-if test="[[cell.row.asset_status == 'Exhausted' ]]">
-              <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+              <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
           </oj-bind-if>
+          <oj-bind-if test="[[cell.row.asset_status == 'Removed' ]]">
+            <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+        </oj-bind-if>
         </template>
           </oj-table>
       </div>
@@ -217,8 +220,11 @@
               <div class="oj-table-element-approve"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
             </oj-bind-if>
               <oj-bind-if test="[[cell.row.asset_status == 'Exhausted' ]]">
-                  <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+                  <div class="oj-table-element-review"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
               </oj-bind-if>
+            <oj-bind-if test="[[cell.row.asset_status == 'Removed' ]]">
+                <div class="oj-table-element-reject"><oj-bind-text value="[[cell.row.asset_status]]"></oj-bind-text></div>
+            </oj-bind-if>
             </template>
             <template slot="totalAmountTemplate" data-oj-as="cell">
               <!-- Use the html binding to interpret the HTML content correctly -->
