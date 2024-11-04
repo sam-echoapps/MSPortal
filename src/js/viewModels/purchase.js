@@ -156,6 +156,17 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
 
                 self.currencySelected = ko.observable(localStorage.getItem("currency"));
+
+                self.currencySymbol = ko.pureComputed(function() {
+                    switch(self.currency()) {
+                        case 'INR': return '₹';
+                        case 'USD': return '$';
+                        case 'GBP': return '£';
+                        case 'AED': return 'د.إ';
+                        default: return '';
+                    }
+                });
+                
                 self.currencies = [
                     {"label":"USD","value":"USD"},
                     {"label":"INR","value":"INR"},

@@ -2,10 +2,9 @@
 
 <style>
     body {
-      font-family: Arial, sans-serif;
       background-color: #f4f4f9;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
     table {
       width: 100%;
@@ -176,13 +175,13 @@
 
   <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-start">
     <oj-button id="back"chroming="borderless" on-oj-action="[[goToPage]]" 
-    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:28px;">
+    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:28px;;margin-left:10px;">
     <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Rota List</span>
 </oj-button>
 <oj-bind-if test="[[userrole() == 'director' || userrole() == 'senior hr' || userrole() == 'senior manager' || userrole() == 'senior accounts']]">
       <div class="oj-flex-item oj-md-padding-2x-horizontal oj-sm-padding-2x-vertical">
         <oj-button id="back"chroming="borderless" on-oj-action="[[goToShiftTab]]" 
-        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:20px;">
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:20px;;margin-left:10px;">
         <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-arrow-left"></i> Back To Shift List</span>
     </oj-button>
       </div>
@@ -192,17 +191,17 @@
     <div class="oj-flex oj-sm-flex-items-initial oj-md-justify-content-flex-start">
     <oj-bind-if test="[[edit_rota_status() == 'Draft' ]]">
     <oj-button id="back"chroming="borderless" on-oj-action="[[publishRota]]" 
-    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;">
+    style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;margin-right:10px;">
     <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-calendar"></i> Publish</span>
     </oj-button>
       </oj-bind-if>
       <oj-bind-if test="[[edit_rota_status() == 'Active' ]]">
         <oj-button id="back"chroming="borderless" on-oj-action="[[unpublishRota]]" 
-        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;">
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;;margin-right:10px;">
         <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-calendar"></i> Unpublish</span>
         </oj-button>&nbsp
         <oj-button id="back"chroming="borderless" on-oj-action="[[alertRota]]" 
-        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;">
+        style="background-color: #6c5ffc;color: #fff;border-radius: 10px;margin-top:18px;;margin-right:10px;">
         <span id="buttonText" style="color: #fff;"><i class="fa-solid fa-calendar"></i> Publish</span>
         </oj-button>
       </oj-bind-if>

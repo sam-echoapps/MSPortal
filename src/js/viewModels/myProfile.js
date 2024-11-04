@@ -641,6 +641,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.line_manager = ko.observable('');
                 self.line_manager2 = ko.observable('');
                 self.EmployeeDet = ko.observableArray([]);
+                self.asset_name = ko.observable('');
 
                 self.getRoles = ()=>{
                     $.ajax({
@@ -1048,6 +1049,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.fetchContractDetailsOnLoad();
                         self.changeLeaveBalance();
                         self.getWorkLocation();
+                        self.fetchAssetDetailsOnLoad();
                         $("#employment").show();
                         $("#documents").hide();
                         $("#absence").hide();
@@ -2634,6 +2636,38 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     });
                 }
+
+                self.fetchAssetDetailsOnLoad = () => {
+                    const staffId = localStorage.getItem("userId");
+                    if (!staffId) {
+                        console.error("No staff_id found in localStorage");
+                        return;
+                    }
+                    document.getElementById('loaderView').style.display = 'block';
+                    $.ajax({
+                        url: BaseURL + "/HRModuleGetStaffAssetDetails",
+                        type: 'POST',
+                        data: JSON.stringify({ staff_id: staffId }), // Send staff ID as a parameter
+                        contentType: "application/json", // Specify the content type as JSON
+                        timeout: localStorage.getItem("timeInterval"),
+                        context: self,
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            document.getElementById('loaderView').style.display = 'none';
+                        },
+                        success: function (data) {
+                            data = data.data
+                            console.log(data)
+                            document.getElementById('loaderView').style.display = 'none';
+                            if (data && data.length > 0) {
+                                const assetNames = data.map(item => item.asset_name).join(', ');
+                                self.asset_name(assetNames); 
+                            } else {
+                                console.error("No data returned from the API");
+                            }
+                        }                        
+                    });
+                };
                 
                 self.rewriteUrl=(url)=> {
                     if (url.includes('/Hr')) {
