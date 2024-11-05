@@ -82,7 +82,7 @@
                 <div style="color:red;margin-top:-40px">
                   <oj-bind-text value="[[numError]]"></oj-bind-text>
                 </div>
-                <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
+                <oj-select-single required id="select" label-hint="Currency convert from" label-edge="inside"
                 data="[[currencyList]]" value="{{currencySelected}}" on-value-changed="[[clearText]]"></oj-select-single>
               <oj-input-text id="estimatedPriceConvert" data-bind="attr: { 'label-hint': 'Converted Estimated Price (' + currencySymbol() + ')' }"
                required="true" value="{{estimatedPrice}}" readonly="true"></oj-input-text>
@@ -452,7 +452,7 @@ cancel-behavior="[[CancelBehaviorOpt]]">
           <div style="color:red;margin-top:-40px">
             <oj-bind-text value="[[numError]]"></oj-bind-text>
           </div>
-          <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
+          <oj-select-single required id="select" label-hint="Currency convert from" label-edge="inside"
           data="[[currencyList]]" value="{{currencySelected}}" on-value-changed="[[clearText]]"></oj-select-single>
           <oj-input-text id="editEstimatedPrice" data-bind="attr: { 'label-hint': 'Converted Estimated Price (' + currencySymbol() + ')' }" required="true" value="{{editEstimatedPrice}}" readonly="true"></oj-input-text>
          

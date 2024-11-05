@@ -188,6 +188,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 for (var i = 0; i < data.length; i++) {
                                     if(data[i][1] != null){
                                         pono = "PO"+ data[i][1]
+                                    }else{
+                                        pono = null;
                                     }
                                     console.log(data[i][4])
 

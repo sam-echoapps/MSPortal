@@ -169,15 +169,17 @@
                 <div>
                        
                 </div> 
-                <oj-select-single required id="select" label-hint="Currency" label-edge="inside"
-                data="[[currencyList]]" value="{{currencySelected}}" on-value-changed="[[clearText]]"></oj-select-single>
-                <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
+                <div class="oj-flex-item">
                     <oj-input-text id="totalAmountConvert" label-hint="Total Amount" value="{{totalAmountConvert}}" on-value-changed="[[priceValidate]]" required="true"></oj-input-text>
 
                     <div style="color:red;margin-top:-20px">
                         <oj-bind-text value="[[numError]]"></oj-bind-text>
                     </div>
                 </div> 
+                
+                <oj-select-single required id="select" label-hint="Currency convert from" label-edge="inside"
+                data="[[currencyList]]" value="{{currencySelected}}" on-value-changed="[[clearText]]"></oj-select-single>
+              
                  <div class="oj-flex">
                     <div class="oj-flex-item oj-sm-8 oj-sm-padding-2x-end oj-md-padding-3x-end">
                         <oj-input-text id="totalAmount" data-bind="attr: { 'label-hint': 'Converted Total Amount (' + currencySymbol() + ')' }" value="{{totalAmount}}" required="true" readonly="true"></oj-input-text>
