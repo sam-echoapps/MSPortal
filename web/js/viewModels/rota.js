@@ -14,6 +14,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
+
+                
                 self.connected = function () {
                     if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
@@ -74,17 +76,18 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
 
                 self.durations = [
-                    {"label":"4 days","value":"4"},
-                    {"label":"5 days","value":"5"},
-                    {"label":"6 days","value":"6"},
-                    {"label":"7 days","value":"7"},
-                    {"label":"8 days","value":"8"},
-                    {"label":"9 days","value":"9"},
-                    {"label":"10 days","value":"10"},
-                    {"label":"11 days","value":"11"},
-                    {"label":"12 days","value":"12"},
-                    {"label":"13 days","value":"13"},
-                    {"label":"14 days","value":"14"},
+                    // {"label":"4 days","value":"4"},
+                    // {"label":"5 days","value":"5"},
+                    // {"label":"6 days","value":"6"},
+                    // {"label":"7 days","value":"7"},
+                    // {"label":"8 days","value":"8"},
+                    // {"label":"9 days","value":"9"},
+                    // {"label":"10 days","value":"10"},
+                    // {"label":"11 days","value":"11"},
+                    // {"label":"12 days","value":"12"},
+                    // {"label":"13 days","value":"13"},
+                    // {"label":"14 days","value":"14"},
+                    {"label":"Custom Date","value":"date"},
                     {"label":"Calender Month","value":"month"},
                 ]
 
@@ -121,6 +124,21 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
                 self.showRangeDate = ko.observable(false);
                 self.showSelectMonth = ko.observable(false);
+                self.currentDate = ko.observable();
+
+                const CurrentDate = new Date(); 
+                let currentYear= CurrentDate.getFullYear(); 
+                let currentMonth= CurrentDate.getMonth()+1; 
+                let currentDay= CurrentDate.getDate(); 
+                //console.log(CurrentDate); 
+                
+                if(currentMonth<10){
+                    currentMonth = '0'+currentMonth;
+                }       
+                if(currentDay<10){
+                    currentDay = '0'+currentDay;
+                }
+                self.currentDate(currentYear+'-'+currentMonth+'-'+currentDay)
 
                 /* self.selectDiv = () => {
                     const selectedValue = self.rota_duration();
@@ -134,7 +152,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 }; */
                 self.selectDiv = () => {
-                    const selectedValue = self.rota_duration();
+                    const selectedValue = self.rota_type();
                     if (selectedValue === 'month') {
                         self.divCheck('month')
                         // $("#showMonth").show();
@@ -144,6 +162,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         // self.showRangeDate(false);
                         // //self.edit_rota_date('')
                         self.rota_date('')
+                        self.rota_end_date('')
                     } else {
                         self.divCheck('date')
                         // $("#showMonth").hide();
@@ -161,6 +180,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         self.showSelectMonth(true);
                         self.showRangeDate(false);
                         self.rota_date('')
+                        self.rota_end_date('')
                         self.edit_rota_date('')
                     } else {
                         self.showSelectMonth(false);
@@ -171,6 +191,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
                 self.addRota = ()=>{
                     document.querySelector('#openAddRota').open();
+                    self.rota_name('')
+                    self.rota_type('')
                 }
                 self.addShift = ()=>{
                     document.querySelector('#openAddShift').open();
@@ -178,7 +200,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                 self.rota_name = ko.observable('');
                 self.rota_duration = ko.observable('');
+                self.rota_type = ko.observable('');
                 self.rota_date = ko.observable('');
+                self.rota_end_date = ko.observable('');
                 self.rota_month = ko.observable('');
                 self.edit_rota_name = ko.observable('');
                 self.edit_rota_duration = ko.observable('');
@@ -194,6 +218,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.selectedTab = ko.observable('');
                 self.divCheck = ko.observable();
+                self.equalDate = ko.observable('');
+                self.dateIssue = ko.observable('');
 
                 if(localStorage.getItem("shiftTab")=="Yes"){
                     self.selectedTab('shifts')
@@ -321,8 +347,43 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
     
 
                 self.createRota = ()=>{
-                    const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
+                // Define the start and end dates as strings
+                const startDateStr = self.rota_date(); // Example: "2024-11-01"
+                const endDateStr = self.rota_end_date(); // Example: "2024-11-26"
+
+                // Convert the strings to Date objects
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(endDateStr);
+
+                // Calculate the difference in milliseconds
+                const diffInMs = endDate - startDate;
+
+
+                // Calculate the difference in days, hours, minutes, and seconds
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                self.rota_duration(diffInDays+1)
+
+                if(self.rota_date() == self.rota_end_date() && self.rota_date() != "" && self.rota_end_date()!=""){
+                    self.equalDate('Yes')
+                    let popup1 = document.getElementById("warningViewDateSame");
+                    popup1.open();
+                }else{
+                    self.equalDate() == ''
+                }
+                if(self.rota_date() > self.rota_end_date() && self.rota_date() != "" && self.rota_end_date()!=""){
+                    self.dateIssue('Yes')
+                    let popup1 = document.getElementById("warningViewDateIssue");
+                    popup1.open();
+                }else{
+                    self.dateIssue() == ''
+                }
+
+                // const diffInHours = Math.floor((diffInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                // const diffInMinutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+                // const diffInSeconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
+                // console.log(`Duration: ${diffInDays} days, ${diffInHours} hours, ${diffInMinutes} minutes, and ${diffInSeconds} seconds.`);                    
+                const formValid = self._checkValidationGroup("formValidation"); 
+                    if (formValid && self.equalDate() == '' && self.dateIssue() == '') {
                     let popup = document.getElementById("loaderPopup");
                     popup.open();
                     $.ajax({
@@ -334,6 +395,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             rota_date: self.rota_date(),
                             rota_month: self.rota_month(),
                             userId: localStorage.getItem("userId"),
+                            rota_end_date: self.rota_end_date(),
+                            rota_type: self.rota_type(),
                         }),
                         dataType: 'json',
                         timeout: localStorage.getItem("timeInetrval"),
@@ -351,6 +414,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         }
                     })      
                 }
+            }
+
+            self.warnDateIssueMsgClose = ()=>{
+                self.equalDate('')
+                self.dateIssue('')
+                let popup1 = document.getElementById("warningViewDateSame");
+                popup1.close();
+                let popup2 = document.getElementById("warningViewDateIssue");
+                popup2.close();
             }
 
                 self.editRota = ()=>{                        
@@ -495,7 +567,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
-                                if(data[i][2] !='month'){
+                                if(data[i][2] !=null){
                                     duration = data[i][2] + " days"
                                 }else{
                                     duration = "Calendar month"
@@ -518,7 +590,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8]                                                                                                 
+                                    'updated_at': data[i][8],
+                                    'rota_end_date': data[i][9]                                                                                                                                                                                                  
                                 });
                                 
                             }
@@ -617,6 +690,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.rota_duration('');
                 self.rota_date('');
                 self.rota_month('');
+                self.rota_end_date('');
                 self.selectedTab('draft_rotas')
                 getRotaList();
             }
@@ -672,7 +746,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
-                                if(data[i][2] !='month'){
+                                if(data[i][2] !=null){
                                     duration = data[i][2] + " days"
                                 }else{
                                     duration = "Calendar month"
@@ -695,7 +769,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8]                                                                                                 
+                                    'updated_at': data[i][8],
+                                    'rota_end_date': data[i][9]                                                                                                                                                                                                                                                                                                  
                                 });
                                 
                             }
@@ -732,7 +807,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
-                                if(data[i][2] !='month'){
+                                if(data[i][2] !=null){
                                     duration = data[i][2] + " days"
                                 }else{
                                     duration = "Calendar month"
@@ -755,7 +830,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8]                                                                                                 
+                                    'updated_at': data[i][8],
+                                    'rota_end_date': data[i][9]                                                                                                                                                                                                                                                                                                                                                                                                   
                                 });
                                 
                             }

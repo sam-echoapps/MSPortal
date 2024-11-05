@@ -70,7 +70,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     }
                 };
                 self.selectDiv2 = () => {
-                    const selectedValue = self.edit_rota_duration();
+                    const selectedValue = self.edit_rota_type();
                     if (selectedValue === 'month') {
                         self.divCheck('month')
                         // $("#showMonth").show();
@@ -80,6 +80,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         // self.showRangeDate(false);
                         // //self.edit_rota_date('')
                         self.edit_rota_date('')
+                        self.edit_rota_end_date('')
                     } else {
                         self.divCheck('date')
                         // $("#showMonth").hide();
@@ -99,19 +100,26 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.shift_date_format = ko.observable('');
                 self.edit_rota_status = ko.observable('');
                 self.existRota = ko.observable('');
+                self.edit_rota_type = ko.observable('');
+                self.edit_rota_date = ko.observable('');
+                self.edit_rota_end_date = ko.observable('');
+
+                self.equalDate = ko.observable('');
+                self.dateIssue = ko.observable('');
 
                 self.durations = [
-                    {"label":"4 days","value":"4"},
-                    {"label":"5 days","value":"5"},
-                    {"label":"6 days","value":"6"},
-                    {"label":"7 days","value":"7"},
-                    {"label":"8 days","value":"8"},
-                    {"label":"9 days","value":"9"},
-                    {"label":"10 days","value":"10"},
-                    {"label":"11 days","value":"11"},
-                    {"label":"12 days","value":"12"},
-                    {"label":"13 days","value":"13"},
-                    {"label":"14 days","value":"14"},
+                    // {"label":"4 days","value":"4"},
+                    // {"label":"5 days","value":"5"},
+                    // {"label":"6 days","value":"6"},
+                    // {"label":"7 days","value":"7"},
+                    // {"label":"8 days","value":"8"},
+                    // {"label":"9 days","value":"9"},
+                    // {"label":"10 days","value":"10"},
+                    // {"label":"11 days","value":"11"},
+                    // {"label":"12 days","value":"12"},
+                    // {"label":"13 days","value":"13"},
+                    // {"label":"14 days","value":"14"},
+                    {"label":"Custom Date","value":"date"},
                     {"label":"Calender Month","value":"month"},
                 ]
 
@@ -139,6 +147,23 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 });
                 self.showRangeDate = ko.observable(false);
                 self.showSelectMonth = ko.observable(false);
+
+                self.currentDate = ko.observable();
+
+                const CurrentDate = new Date(); 
+                let currentYear= CurrentDate.getFullYear(); 
+                let currentMonth= CurrentDate.getMonth()+1; 
+                let currentDay= CurrentDate.getDate(); 
+                //console.log(CurrentDate); 
+                
+                if(currentMonth<10){
+                    currentMonth = '0'+currentMonth;
+                }       
+                if(currentDay<10){
+                    currentDay = '0'+currentDay;
+                }
+                self.currentDate(currentYear+'-'+currentMonth+'-'+currentDay)
+
                 
 
                 self.getRotaInfo = () => {
@@ -160,10 +185,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             self.edit_rota_name(data[1])
                             self.edit_rota_name_check(data[1])
                             self.edit_rota_duration(data[2])
+                            self.edit_rota_type(data[7])
                             self.selectDiv2()
                             self.edit_rota_status(data[5])
                             if(data[3]){
                             self.edit_rota_date(data[3])
+                            self.edit_rota_end_date(data[6])
                             self.tableGet(self.edit_rota_duration(),self.edit_rota_date());
                             }
                             if(data[4]){
@@ -191,8 +218,39 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 };
 
                 self.editRota = ()=>{ 
+                    // Define the start and end dates as strings
+                const startDateStr = self.edit_rota_date(); // Example: "2024-11-01"
+                const endDateStr = self.edit_rota_end_date(); // Example: "2024-11-26"
+
+                // Convert the strings to Date objects
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(endDateStr);
+
+                // Calculate the difference in milliseconds
+                const diffInMs = endDate - startDate;
+
+
+                // Calculate the difference in days, hours, minutes, and seconds
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                self.edit_rota_duration(diffInDays+1)
+
+                if(self.edit_rota_date() == self.edit_rota_end_date() && self.edit_rota_date() != "" && self.edit_rota_end_date()!=""){
+                    self.equalDate('Yes')
+                    let popup1 = document.getElementById("warningViewDateSame");
+                    popup1.open();
+                }else{
+                    self.equalDate() == ''
+                }
+                if(self.edit_rota_date() > self.edit_rota_end_date() && self.edit_rota_date() != "" && self.edit_rota_end_date()!=""){
+                    self.dateIssue() == 'Yes'
+                    let popup1 = document.getElementById("warningViewDateIssue");
+                    popup1.open();
+                }else{
+                    self.dateIssue() == ''
+                }
+
                     const formValid = self._checkValidationGroup("formValidation"); 
-                    if (formValid) {
+                    if (formValid && self.equalDate() == '' && self.dateIssue() == '') {
                     let popup = document.getElementById("loaderPopup");
                     popup.open();
                     $.ajax({
@@ -204,6 +262,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             rota_duration: self.edit_rota_duration(),
                             rota_date: self.edit_rota_date(),
                             rota_month: self.edit_rota_month(),
+                            rota_end_date: self.edit_rota_end_date(),
+                            rota_type: self.edit_rota_type(),
                         }),
                         dataType: 'json',
                         timeout: localStorage.getItem("timeInetrval"),
@@ -221,6 +281,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     })
                 }
                 }
+
+                self.warnDateIssueMsgClose = ()=>{
+                    self.equalDate('')
+                    self.dateIssue('')
+                    let popup1 = document.getElementById("warningViewDateSame");
+                    popup1.close();
+                    let popup2 = document.getElementById("warningViewDateIssue");
+                    popup2.close();
+                }
+    
                 self.tableGet = (duration, start) => {
                     $("#loaderView").show();
                     $("#publishBtn").hide();
@@ -473,7 +543,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 shiftRow.appendChild(shiftCell);
                 
                                 // Fill empty cells for hours after the shift
-                                for (let hour = endHour; hour < 24; hour++) {
+                                for (let hour = endHour; hour < 23; hour++) {
                                     let emptyCell = document.createElement('td');
                                     shiftRow.appendChild(emptyCell);
                                 }
@@ -813,7 +883,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 shiftCell.title = shift.shiftName + " : " + shift.startTime+"-"+shift.endTime;
                                 shiftRow.appendChild(shiftCell);
                 
-                                for (let hour = endHour; hour < 24; hour++) {
+                                for (let hour = endHour; hour < 23; hour++) {
                                     let emptyCell = document.createElement('td');
                                     shiftRow.appendChild(emptyCell);
                                 }
