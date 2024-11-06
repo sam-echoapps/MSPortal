@@ -1,8 +1,8 @@
-define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils", "ojs/ojconverterutils-i18n",
+define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovider", "ojs/ojlistdataproviderview", "ojs/ojdataprovider", "ojs/ojfilepickerutils", "ojs/ojconverterutils-i18n","ojs/ojconverter-datetime",
     "ojs/ojinputtext", "ojs/ojformlayout", "ojs/ojvalidationgroup", "ojs/ojselectsingle","ojs/ojdatetimepicker",'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter',
      "ojs/ojfilepicker", "ojs/ojpopup", "ojs/ojprogress-circle", "ojs/ojdialog","ojs/ojselectcombobox","ojs/ojavatar","ojs/ojradioset", "ojs/ojcheckboxset", "ojs/ojcollapsible", "ojs/ojtable"], 
-    function (oj,ko,$, app, ArrayDataProvider,CoreRouter, ModuleRouterAdapter,
-        KnockoutRouterAdapter, ListDataProviderView, ojdataprovider_1, FilePickerUtils, ojconverterutils_i18n_1) {
+    function (oj,ko,$, app, ArrayDataProvider, ListDataProviderView, ojdataprovider_1, FilePickerUtils, 
+        ojconverterutils_i18n_1, ojconverter_datetime_1, CoreRouter, ModuleRouterAdapter,KnockoutRouterAdapter) {
 
         class leaves {
             constructor(args) {
@@ -14,7 +14,11 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
-
+                self.timeConverter = ko.observable(new ojconverter_datetime_1.IntlDateTimeConverter({
+                    minute: '2-digit',
+                    hour: '2-digit',
+                    hour12: false
+                }));
                 
                 self.connected = function () {
                     if (localStorage.getItem("userName") == null) {
@@ -565,6 +569,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreated = new Date(data[i][7]);
                                 // Get only the date part (YYYY-MM-DD)
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
+                                let dateUpdated = new Date(data[i][8]);
+                                // Get only the date part (YYYY-MM-DD)
+                                let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
                                 if(data[i][2] !=null){
@@ -590,7 +597,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8],
+                                    'updated_at': dateUpdatedOnly,
                                     'rota_end_date': data[i][9]                                                                                                                                                                                                  
                                 });
                                 
@@ -744,6 +751,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreated = new Date(data[i][7]);
                                 // Get only the date part (YYYY-MM-DD)
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
+                                let dateUpdated = new Date(data[i][8]);
+                                // Get only the date part (YYYY-MM-DD)
+                                let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
                                 if(data[i][2] !=null){
@@ -769,7 +779,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8],
+                                    'updated_at': dateUpdatedOnly,
                                     'rota_end_date': data[i][9]                                                                                                                                                                                                                                                                                                  
                                 });
                                 
@@ -805,6 +815,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 let dateCreated = new Date(data[i][7]);
                                 // Get only the date part (YYYY-MM-DD)
                                 let dateCreatedOnly = dateCreated.toISOString().slice(0, 10);
+                                let dateUpdated = new Date(data[i][8]);
+                                // Get only the date part (YYYY-MM-DD)
+                                let dateUpdatedOnly = dateUpdated.toISOString().slice(0, 10);
                                 let duration;
                                 let rotaMonth;
                                 if(data[i][2] !=null){
@@ -830,7 +843,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                     'rota_month': rotaMonth,
                                     'created_by': data[i][6], 
                                     'created_date': dateCreatedOnly,
-                                    'updated_at': data[i][8],
+                                    'updated_at': dateUpdatedOnly,
                                     'rota_end_date': data[i][9]                                                                                                                                                                                                                                                                                                                                                                                                   
                                 });
                                 

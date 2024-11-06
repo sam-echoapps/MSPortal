@@ -13,6 +13,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.userrole = ko.observable(userrole);
                 self.CancelBehaviorOpt = ko.observable('icon');
 
+
                 self.connected = function () {
                     if (localStorage.getItem("userName") == null) {
                         self.router.go({path : 'signin'});
@@ -57,6 +58,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 self.OffStaffDet = ko.observableArray([]);
                 self.allocationExistVal = ko.observable('No');
                 self.divCheck = ko.observable();
+                self.blob = ko.observable()
+                self.fileName = ko.observable()
 
                 self.selectDiv = () => {
                     const selectedValue = self.rota_duration();
@@ -106,6 +109,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
 
                 self.equalDate = ko.observable('');
                 self.dateIssue = ko.observable('');
+                self.publishIssueMsg = ko.observable('');
 
                 self.durations = [
                     // {"label":"4 days","value":"4"},
@@ -289,6 +293,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     popup1.close();
                     let popup2 = document.getElementById("warningViewDateIssue");
                     popup2.close();
+                    let popup3 = document.getElementById("publishNotAllowed");
+                    popup3.close();
                 }
     
                 self.tableGet = (duration, start) => {
@@ -303,7 +309,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     // Create a promise array to handle all AJAX calls
                     const ajaxCalls = [];
                 
-                    const colors = ['#cff4fc', '#fff3cd', '#1abc9c', '#6c5ffc'];
+                    const colors = ['#cff4fc', '#fff3cd', '#d1e7dd', '#EAEAFB'];
                 
                     for (let i = 0; i < duration; i++) {
                         // Calculate the next date
@@ -321,7 +327,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         // Create a promise for each AJAX call
                         const ajaxCall = $.ajax({
                             url: BaseURL + "/HRModuleGetAssignStaffList",
-                            type: 'GET',
+                            type: 'POST',
+                            data: JSON.stringify({
+                                rotaId: localStorage.getItem("rotaId")
+                            }),
                             timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
@@ -335,11 +344,15 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 const employeeShifts = []; // Declare it here for each call
                                 const offEmployeeShifts = []; // Declare it here for each call
                                 const leaveEmployee = []; // Declare it here for each call
+                                var csvContent = '';
+                                var headers = ['Shift Date','Shift Name','Start Time','End Time','Staff Name'];
+                                csvContent += headers.join(',') + '\n';
                                 for (var j = 0; j < data.length; j++) {
                                     var employeeNames = data[j][7].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var offEmployeeNames = data[j][9].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var leaveStaffNames = data[j][10].split(',').map(name => name.trim()); // Clean up any extra whitespace
                                     var colorIndex = j % colors.length;
+                                    
                                     employeeShifts.push({
                                         'date': data[j][1],
                                         'employees': employeeNames,
@@ -348,6 +361,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'endTime': data[j][6],
                                         'color': colors[colorIndex]
                                     });
+                                    var rowData = [data[j][11],data[j][4],data[j][5],data[j][6], `"${employeeNames.join(', ')}"`];
+                                    csvContent += rowData.join(',') + '\n';
                                     offEmployeeShifts.push({
                                         'date': data[j][1],
                                         'offEmployees': offEmployeeNames,
@@ -359,6 +374,12 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'color': colors[colorIndex]
                                     });
                                 }
+
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                self.blob(blob);
+                                self.fileName(fileName);
 
                 
                                 // Process the shifts to find matching dates
@@ -676,7 +697,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     const startDate = new Date(year, monthIndex - 1, 1); // First day of the month
                     const endDate = new Date(year, monthIndex, 0); // Last day of the month
                 
-                    const colors = ['#cff4fc', '#fff3cd', '#1abc9c', '#6c5ffc'];
+                    const colors = ['#cff4fc', '#fff3cd', '#d1e7dd', '#EAEAFB'];
                     const ajaxCalls = []; // Array to hold AJAX promises
                 
                     for (let day = 1; day <= endDate.getDate(); day++) {
@@ -695,7 +716,10 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         // Create a promise for each AJAX call
                         const ajaxCall = $.ajax({
                             url: BaseURL + "/HRModuleGetAssignStaffList",
-                            type: 'GET',
+                            type: 'POST',
+                            data: JSON.stringify({
+                                rotaId: localStorage.getItem("rotaId")
+                            }),
                             timeout: localStorage.getItem("timeInetrval"),
                             context: self,
                             error: function (xhr, textStatus, errorThrown) {
@@ -708,6 +732,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                 const employeeShifts = [];
                                 const offEmployeeShifts = [];
                                 const leaveEmployee = [];
+                                var csvContent = '';
+                                var headers = ['Shift Date','Shift Name','Start Time','End Time','Staff Name'];
+                                csvContent += headers.join(',') + '\n';
                                 for (var j = 0; j < data.length; j++) {
                                     var employeeNames = data[j][7].split(',').map(name => name.trim());
                                     var offEmployeeNames = data[j][9].split(',').map(name => name.trim());
@@ -721,6 +748,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'endTime': data[j][6],
                                         'color': colors[colorIndex]
                                     });
+                                    var rowData = [data[j][11],data[j][4],data[j][5],data[j][6], `"${employeeNames.join(', ')}"`];
+                                    csvContent += rowData.join(',') + '\n';
                                     offEmployeeShifts.push({
                                         'date': data[j][1],
                                         'offEmployees': offEmployeeNames,
@@ -732,6 +761,13 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                                         'color': colors[colorIndex]
                                     });
                                 }
+
+                                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                var today = new Date();
+                                var fileName = 'data_' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '.csv';
+                                self.blob(blob);
+                                self.fileName(fileName);
+
                 
                                 employeeShifts.forEach(shift => {
                                     if (shift.date === formattedDate) {
@@ -1158,7 +1194,8 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         context: self,
                         data: JSON.stringify({
                             shift_date: self.shift_date(),
-                            shift: self.shift()
+                            shift: self.shift(),
+                            rotaId: localStorage.getItem("rotaId")
                         }),
                         error: function (xhr, textStatus, errorThrown) {
                             console.log(textStatus);
@@ -1207,6 +1244,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                         shift_date: self.shift_date(),            
                         selectedEmployees: self.selectedEmployees(),
                         selectedOffEmployees: self.selectedOffEmployees(),
+                        rotaId: localStorage.getItem("rotaId")
                     }),
                     dataType: 'json',
                     timeout: localStorage.getItem("timeInetrval"),
@@ -1272,8 +1310,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                     },
                     success: function (data) {
                         console.log(data)
-                        localStorage.setItem("activeRotaTab", 'Yes');
-                        self.router.go({path:'rota'})
+                        if(data[0][0]=='Success'){
+                            localStorage.setItem("activeRotaTab", 'Yes');
+                            self.router.go({path:'rota'})
+                        }else{
+                            self.publishIssueMsg(data[0][0])
+                            let popup = document.getElementById("warningView");
+                            popup.close();
+                            let popup1 = document.getElementById("publishNotAllowed");
+                            popup1.open();
+                        }
                     }
                 }) 
             }
@@ -1356,6 +1402,22 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 })
             }
             }
+
+            self.downloadExcel = ()=> {
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                  // For Internet Explorer
+                  window.navigator.msSaveOrOpenBlob(self.blob(), self.fileName());
+                } else {
+                  // For modern browsers
+                  var link = document.createElement('a');
+                  link.href = window.URL.createObjectURL(self.blob());
+                  link.download = self.fileName();
+                  link.style.display = 'none';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+              }
 
 
             self.rewriteUrl=(url)=> {

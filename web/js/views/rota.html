@@ -87,6 +87,8 @@
     { "headerClassName" : "table-header-style",
     "headerText": "Created Date", "field": "created_date", "id": "created_date" },
     { "headerClassName" : "table-header-style",
+    "headerText": "Updated Date", "field": "updated_at", "id": "updated_date" },
+    { "headerClassName" : "table-header-style",
     "headerText": "Created By", "field": "created_by", "id": "created_by" }
       ]' style='width: 100%;' class="demo-table-container"> 
 
@@ -150,9 +152,9 @@
   <oj-validation-group id="formValidation" class="form-container" role="group">
     <div id="form-container">
         <oj-form-layout id="shift-information" class="form" direction="row" max-columns="1">
-              <oj-input-text value="{{shiftName}}" id="shiftName" label-hint="Shift Name" required></oj-input-text>
-              <oj-input-time value="{{startTime}}" id="startTime" label-hint="Shift Start Time" required></oj-input-time>
-              <oj-input-time value="{{endTime}}" id="endTime" label-hint="Shift End Time" required></oj-input-time>
+              <oj-input-text value="{{shiftName}}" id="shiftName" label-hint="Shift Name" required ></oj-input-text>
+              <oj-input-time value="{{startTime}}" id="startTime" label-hint="Shift Start Time" required converter="[[timeConverter]]"></oj-input-time>
+              <oj-input-time value="{{endTime}}" id="endTime" label-hint="Shift End Time" required converter="[[timeConverter]]"></oj-input-time>
               <oj-text-area id="notes" label-hint="Additional Notes(Optional)" rows="3" value="{{notes}}">
             </oj-text-area>
         </oj-form-layout>
@@ -181,6 +183,8 @@
         "headerClassName" : "table-header-style"	 },  
       { "headerClassName" : "table-header-style",
       "headerText": "Created Date", "field": "created_date", "id": "created_date" },
+      { "headerClassName" : "table-header-style",
+      "headerText": "Updated Date", "field": "updated_at", "id": "updated_date" },
       { "headerClassName" : "table-header-style",
       "headerText": "Created By", "field": "created_by", "id": "created_by" }
         ]' style='width: 100%;' class="demo-table-container"> 
@@ -276,6 +280,8 @@
       { "headerClassName" : "table-header-style",
       "headerText": "Created Date", "field": "created_date", "id": "created_date" },
       { "headerClassName" : "table-header-style",
+      "headerText": "Updated Date", "field": "updated_at", "id": "updated_date" },
+      { "headerClassName" : "table-header-style",
       "headerText": "Created By", "field": "created_by", "id": "created_by" }
         ]' style='width: 100%;' class="demo-table-container"> 
            <template slot="viewTemplate" data-oj-as="cell">
@@ -322,8 +328,8 @@
     <div id="form-container">
         <oj-form-layout id="shift-information" class="form" direction="row" max-columns="1">
               <oj-input-text value="{{editShiftName}}" id="shiftName" label-hint="Shift Name" required></oj-input-text>
-              <oj-input-time value="{{editStartTime}}" id="startTime" label-hint="Shift Start Time" required></oj-input-time>
-              <oj-input-time value="{{editEndTime}}" id="endTime" label-hint="Shift End Time" required></oj-input-time>
+              <oj-input-time value="{{editStartTime}}" id="startTime" label-hint="Shift Start Time" required converter="[[timeConverter]]"></oj-input-time>
+              <oj-input-time value="{{editEndTime}}" id="endTime" label-hint="Shift End Time" required converter="[[timeConverter]]"></oj-input-time>
               <oj-text-area id="notes" label-hint="Additional Notes(Optional)" rows="3" value="{{editNotes}}">
             </oj-text-area>
         </oj-form-layout>
