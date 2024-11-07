@@ -434,6 +434,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                     // Wait for all AJAX calls to complete
                     Promise.all(ajaxCalls).then(() => {
+                        shiftData.sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate));
                         // Now all shift data is populated
                         console.log(shiftData);
                 
@@ -457,10 +458,16 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             let buttonCell = document.createElement('div');
                             buttonCell.style.display = 'flex'; // Flexbox for button alignment
                             buttonCell.style.alignItems = 'center';
-                
-                            // Create the button to assign employees
+                            console.log(day.shifts.length)
                             let addShiftButton = document.createElement('button');
+                            if(day.shifts.length!=0){
+                            // Create the button to assign employees
                             addShiftButton.classList.add('btn');
+                            }else{
+                                // Create the button to assign employees
+                                addShiftButton.classList.add('btnnothing');
+                                addShiftButton.title = "No staff is allocated for this date."; 
+                            }
                             
                             // Create an <i> element for the icon
                             let icon = document.createElement('i');
@@ -816,6 +823,7 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                 
                     // Wait for all AJAX calls to complete
                     Promise.all(ajaxCalls).then(() => {
+                        shiftData.sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate));
                         const tableBody = document.querySelector('#shift-table tbody');
                         
                         shiftData.forEach(day => {
@@ -834,7 +842,14 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             buttonCell.style.alignItems = 'center';
                 
                             let addShiftButton = document.createElement('button');
+                            if(day.shifts.length!=0){
+                            // Create the button to assign employees
                             addShiftButton.classList.add('btn');
+                            }else{
+                                // Create the button to assign employees
+                                addShiftButton.classList.add('btnnothing');
+                                addShiftButton.title = "No staff is allocated for this date."; 
+                            }
                 
                             let icon = document.createElement('i');
                             icon.classList.add('fas', 'fa-eye');
@@ -865,6 +880,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             });
                 
                             buttonCell.appendChild(addShiftButton);
+                            
+                            if(self.userrole() == 'director' || self.userrole() == 'senior hr' || self.userrole() == 'senior manager' || self.userrole() == 'senior accounts' ){
+                                if(self.edit_rota_status() != 'Old'){
                 
                             let anotherButton = document.createElement('button');
                             anotherButton.classList.add('btn');
@@ -885,6 +903,9 @@ define(['ojs/ojcore',"knockout","jquery","appController", "ojs/ojarraydataprovid
                             });
                 
                             buttonCell.appendChild(anotherButton);
+
+                        }
+                    }
                             dateRow.appendChild(buttonCell);
                 
                             for (let i = 0; i < 23; i++) {
